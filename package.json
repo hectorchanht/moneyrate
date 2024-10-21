@@ -9,9 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^2.1.10",
+    "@heroicons/react": "^2.1.5",
+    "clsx": "^2.1.1",
+    "lodash": "^4.17.21",
+    "next": "14.2.15",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.15"
+    "swr": "^2.2.5"
   },
   "devDependencies": {
     "typescript": "^5",
