@@ -1,266 +1,113 @@
 "use client";
-import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions } from '@headlessui/react';
-import { CheckIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
-import clsx from 'clsx';
-import { useState } from 'react';
-
-import Image from "next/image";
+import { useEffect, useState } from 'react';
+import { ReactSearchAutocomplete } from 'react-search-autocomplete';
 import useSWR from 'swr';
-import { CurrencyRate4All, CurrencyRate4BaseCur, getApiUrl } from './api';
-const _ = require("lodash");
+import { CurrencyRate4All, CurrencyRate4BaseCur, fetcher, getApiUrl } from './api';
+const _ = require('lodash/core');
 
 
-const fetcher = (...args: Parameters<typeof fetch>) => fetch(...args).then(res => res.json());
+type SearchItem = {
+  id: string;
+  name: string;
+};
 
-{/*
-  Heads up! 👋
 
-  Plugins:
-    - @tailwindcss/forms
-*/}
+const MoneySvg = ()=><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+<path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+</svg>;
 
-const Checkbox = ({ options = [] }) => <div >
-  <form className="max-w-sm mx-auto">
-    <label htmlFor="currency" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select an option</label>
-    <select onChange={e => {
-      console.log(` page.tsx --- e:`, e.target.value)
-
-    }} defaultValue={''} id="currency" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-      <option value='' >💸</option>
-      {options.map((opt, i) => <option key={i} value={opt}>{opt}</option>)}
-
-    </select>
-  </form>
-</div>;
-
-interface SearchBarProps {
-    allCurrency: string[];
-    query: string;
-    setQuery: React.Dispatch<React.SetStateAction<string>>;
-    selected: string;
-    setSelected: (sel: string) => void;
-    exclude?: string[];
-}
-
-const SearchBar = ({ allCurrency, query='', setQuery, selected, setSelected, exclude=[] }:SearchBarProps) => {
-  console.log(` page.tsx --- exclude:`, exclude)
-  
-  
-  // const filteredAllCurrency =
-  //   query === ''
-  //     ? allCurrency
-  //     : allCurrency.filter((c) => {
-
-  //       const isInQuery = c.toLowerCase().includes(query.toLowerCase());
-  //       const isExcluded = exclude.includes(c);
-  
-  //       return isInQuery && !isExcluded;
-
-  //     });
-  
-      const filteredAllCurrency = query === ''
-      ? allCurrency
-      : _.filter(allCurrency, c => {
-          const isInQuery = c.toLowerCase().includes(query.toLowerCase());
-          const isExcluded = _.includes(exclude, c);
-    
-          return isInQuery && !isExcluded;
-        });
-  
-console.log(` page.tsx --- filteredAllCurrency:`, filteredAllCurrency)
-
-  return (
-    <div className="mx-auto h-screen w-52 pt-20">
-      <Combobox value={selected} onChange={(value) => setSelected(value)} onClose={() => setQuery('')}>
-        <div className="relative">
-          <ComboboxInput
-            className={clsx(
-              'w-full rounded-lg border-none bg-white/5 py-1.5 pr-8 pl-3 text-sm/6 text-white',
-              'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25'
-            )}
-            displayValue={(person) => person}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-          <ComboboxButton className="group absolute inset-y-0 right-0 px-2.5">
-            <ChevronDownIcon className="size-4 fill-white/60 group-data-[hover]:fill-white" />
-          </ComboboxButton>
-        </div>
-
-        <ComboboxOptions
-          anchor="bottom"
-          transition
-          className={clsx(
-            'w-[var(--input-width)] rounded-xl border border-white/5 bg-white/5 p-1 [--anchor-gap:var(--spacing-1)] empty:invisible',
-            'transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0'
-          )}
-        >
-          {filteredAllCurrency.map((person, i) => (
-            <ComboboxOption
-              key={i}
-              value={person}
-              className="group flex cursor-default items-center gap-2 rounded-lg py-1.5 px-3 select-none data-[focus]:bg-white/10"
-            >
-              <CheckIcon className="invisible size-4 fill-white group-data-[selected]:visible" />
-              <div className="text-sm/6 text-white">{person}</div>
-            </ComboboxOption>
-          ))}
-        </ComboboxOptions>
-      </Combobox>
-    </div>
-  )
-
-}
+const CrossSvg = ({cur, removeCurrency2Display}) => <svg onClick={() => removeCurrency2Display({ name: cur })}
+xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 cursor-pointer">
+<path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+</svg>;
 
 
 export default function Home() {
   const [query, setQuery] = useState('');
-  const [selected, setSelected1] = useState('');
-  const [currency2Display, setCurrency2Display] = useState(['cad', 'afn']);
-  const [baseCur, setBaseCur] = useState(['usd']);
+  const [baseCur, setBaseCur] = useState<string>((localStorage.getItem("baseCur")) || 'usd');
+  const [currency2Display, setCurrency2Display] = useState<string[]>(JSON.parse(localStorage.getItem("currency2Display") ?? '[]') || [baseCur, 'cad', 'jpy']);
+  const [currencyValue, setCurrencyValue] = useState<number>(1);
+  const [lastCurrencyValue, setLastCurrencyValue] = useState({});
 
-  const setSelected = (sel) => {
-    setCurrency2Display(d => [...d, sel]);
-    setSelected1('');
+
+  useEffect(() => {
+    localStorage.setItem("baseCur", (baseCur));
+  }, [baseCur]);
+
+  useEffect(() => {
+    localStorage.setItem("currency2Display", JSON.stringify(currency2Display));
+  }, [currency2Display]);
+
+  const addCurrency2Display = ({ name }: { name: string }) => {
+    setCurrency2Display(d => [...d, name]);
+    setQuery('');
+    // const divElements = document.querySelectorAll('.clear-icon');
+    // divElements.forEach((divElement) => {
+    //   divElement.click();
+    // });
   }
 
-  let url4All = getApiUrl({});
+  const removeCurrency2Display = ({ name }: { name: string }) => {
+    setCurrency2Display(d => d.filter(c => c !== name));
+    setQuery('');
+  }
 
-  const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(url4All, fetcher,);
+  const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getApiUrl({}), fetcher,);
+  const { data: data4BaseCur, error: err2, isLoading: isLoad2 } = useSWR<CurrencyRate4BaseCur>(getApiUrl({ baseCurrencyCode: baseCur }), fetcher,);
 
+  const allCurrency: string[] = data4All ? Object.keys(data4All) : [];
 
-  let baseUsd = getApiUrl({ baseCurrencyCode: 'usd' });
-  const { data: data4BaseUsd, error: err2, isLoading: isLoad2 } = useSWR<CurrencyRate4BaseCur>(baseUsd, fetcher,);
+  const curObj = _.pick(data4BaseCur?.[baseCur], currency2Display)
+  const currencyRatesPairs2Display: [string, number][] = Object.entries(curObj) || [];
+  // console.log(curObj);
 
+  const onBaseCurChange = (cur: string, val: number) => {
+    setCurrencyValue(curObj[cur] || 0);
+    setBaseCur(cur);
+  }
 
-  const allCurrency = data4All && Object.keys(data4All)
+const handleCurrencyValue = (e) => {
+  // setLastCurrencyValue(_.pick(data4BaseUsd?.[baseCur], currency2Display));
+  setCurrencyValue(parseFloat(e.target.value));
+}
 
-
-
-  if (err1 || err2) return <div>failed to load</div>
-  if (isLoad1 || isLoad2) return <div>loading...</div>
-
-  let a = Object.entries(_.pick(data4BaseUsd[baseCur], currency2Display))
-  console.log(` page.tsx --- data4All:`, data4All, data4BaseUsd, 'a', a);
-
-  return (
-    <div className="">
-      <main className="">
-        {a.map(([cur, val], i) => <div key={i} className='flex justify-center gap-2'>
-          <div className='w-1/2 text-center'>
-            {cur}
-          </div>
-          <div className='w-1/2 text-center'>
-            {val}
-          </div>
-        </div>)}
-        <SearchBar exclude={currency2Display} allCurrency={allCurrency} query={query} setQuery={setQuery} selected={selected} setSelected={setSelected} />
-        <Checkbox options={allCurrency} />
-
-
-
-
-      </main>
-    </div>
-
-  )
+if (err1 || err2) return <div>failed to load</div>;
+if (isLoad1) return <div>loading...</div>;
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-grow">
 
+        <div className='grid grid-cols-1 justify-between gap-2 gap-y-2'>
+          <ReactSearchAutocomplete<SearchItem>
+            items={allCurrency.filter(c => !currency2Display.includes(c)).map(c => ({ id: c, name: c }))}
+            onSelect={addCurrency2Display}
+            inputSearchString={query}
+          />
 
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+          {currencyRatesPairs2Display.map(([cur, val], i) => <div key={i} className='flex gap-2 gap-y-2 h-42'>
+            {cur === baseCur
+              ? <MoneySvg/>
+              : <CrossSvg cur={cur} removeCurrency2Display={removeCurrency2Display}/> }
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <div className='flex w-full'>
+              <div className='w-1/2 text-center'>
+                {cur.toUpperCase()}
+              </div>
+
+              {cur === baseCur
+                  ? <input min={0} onChange={handleCurrencyValue}
+                    value={currencyValue} type="number" placeholder="🔍" className="bg-black rounded-[24px] h-[1em] max-w-[33%]" />
+                  : <div onClick={() => onBaseCurChange(cur, val)} className='w-1/2 text-center'>
+                    {new Intl.NumberFormat('en-US', { style: 'decimal' }).format(val * currencyValue)}
+                  </div>}
+            </div>
+          </div>)}
+
         </div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
     </div>
-  );
+
+)
 }
