@@ -1,10 +1,10 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ReactSearchAutocomplete } from 'react-search-autocomplete';
 import useSWR from 'swr';
 import { CurrencyRate4All, CurrencyRate4BaseCur, fetcher, getApiUrl } from './api';
 import * as _ from "lodash";
-
+import CurrencyListModal from './components/CurrencyListModal'
 
 type SearchItem = {
   id: string;
@@ -23,9 +23,11 @@ xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={
 
 
 export default function Home() {
+  const inputObj = useRef<CurrencyRates>({});
+  
   const [query, setQuery] = useState('');
   const [baseCur, setBaseCur] = useState<string>('usd');
-  const [currency2Display, setCurrency2Display] = useState<string[]>(['usd', 'hkd', 'cad', 'jpy']);
+  const [currency2Display, setCurrency2Display] = useState<string[]>(['usd', 'hkd', 'cad', 'jpy', 'btc', 'eth']);
   const [currencyValue, setCurrencyValue] = useState<number>(1);
 
   useEffect(() => {
@@ -79,55 +81,69 @@ export default function Home() {
 
   const curObj: CurrencyRates = _.pick(data4BaseCur?.[baseCur] as CurrencyRates, currency2Display)
   const currencyRatesPairs2Display: [string, number][] = Object.entries(curObj) || [];
-  // console.log(curObj);
-
+  
   const onBaseCurChange = (cur: string) => {
-    setCurrencyValue(curObj[cur] || 0);
+    const data = inputObj.current;
+    const dataAfter = Object.entries(data).reduce<CurrencyRates>((acc, [code, val]) => {
+      if (code === baseCur) {
+        acc[code] = val;
+      } else {
+        acc[code] = val * currencyValue;
+      }
+      return acc;
+    }, {});
+
+    setCurrencyValue(dataAfter[cur] || 0);
     setBaseCur(cur);
   }
 
-const handleCurrencyValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-  // setLastCurrencyValue(_.pick(data4BaseUsd?.[baseCur], currency2Display));
-  setCurrencyValue(parseFloat(e.target.value));
-}
+  useEffect(() => {
+    inputObj.current = curObj;
+  }, [curObj]);
+  
+  const handleCurrencyValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrencyValue(parseFloat(e.target.value));
+  }
 
-if (err1 || err2) return <div>failed to load</div>;
-if (isLoad1) return <div>loading...</div>;
+  if (err1 || err2) return <div>failed to load</div>;
+  if (isLoad1) return <progress className="progress w-full mt-[2px]"></progress>; //<span className="loading loading-infinity loading-lg"></span>;
 
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow">
 
-        <div className='grid grid-cols-1 justify-between gap-2 gap-y-2'>
+        <div className='grid grid-cols-1 justify-between gap-6 gap-y-6 m-6'>
           <ReactSearchAutocomplete<SearchItem>
             items={allCurrency.filter(c => !currency2Display.includes(c)).map(c => ({ id: c, name: c }))}
             onSelect={addCurrency2Display} placeholder={'search and add more currency here'}
             inputSearchString={query}
           />
 
-          {currencyRatesPairs2Display.map(([cur, val], i) => <div key={i} className='flex gap-2 gap-y-2 h-42'>
-            {cur === baseCur
-              ? <MoneySvg/>
-              : <CrossSvg cur={cur} removeCurrency2Display={removeCurrency2Display}/> }
-
-            <div className='flex w-full'>
-              <div className='w-1/2 text-center'>
-                {cur.toUpperCase()}
-              </div>
-
+          {currencyRatesPairs2Display.map(([cur, val], i) => {
+            const val2Show = (val * currencyValue).toLocaleString(undefined, { minimumFractionDigits: 10 }) ?? 0;
+            
+            return <div key={i} className='flex gap-2 gap-y-2 h-42'>
               {cur === baseCur
-                  ? <input min={0} onChange={handleCurrencyValue}
+                ? <MoneySvg />
+                : <CrossSvg cur={cur} removeCurrency2Display={removeCurrency2Display} />}
+
+              <div className='flex w-full'>
+                <div className='w-1/2 text-start'>
+                  {cur.toUpperCase()}
+                </div>
+
+                {cur === baseCur
+                  ? <input min={0} onChange={handleCurrencyValue} step=".01"
                     value={currencyValue} type="number" placeholder="🔍" className="bg-black rounded-[24px] h-[1em] max-w-[33%]" />
-                  : <div onClick={() => onBaseCurChange(cur)} className='w-1/2 text-center'>
-                    {new Intl.NumberFormat('en-US', { style: 'decimal' }).format(val * currencyValue)}
-                  </div>}
+                  : <div onClick={() => onBaseCurChange(cur)} className='w-1/2 text-start pl-[14px]'>
+                  {val2Show}
+                </div>}
             </div>
-          </div>)}
+          </div>})}
 
         </div>
       </main>
-
+      <CurrencyListModal data={data4All ?? {}}/>
     </div>
-
 )
 }

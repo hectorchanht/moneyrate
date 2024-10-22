@@ -10,6 +10,7 @@ const config: Config = {
   theme: theme,
   plugins: [
     require('@tailwindcss/forms'),
+    require('daisyui'),
   ],
 };
 
