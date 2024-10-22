@@ -120,7 +120,7 @@ export default function Home() {
           />
 
           {currencyRatesPairs2Display.map(([cur, val], i) => {
-            const val2Show = (val * currencyValue).toLocaleString(undefined, { minimumFractionDigits: 10 }) ?? 0;
+            const val2Show = (val * currencyValue).toLocaleString(undefined, { minimumFractionDigits: ((val * currencyValue > 1) ? 3 : 10) }) ?? 0;
             
             return <div key={i} className='flex gap-2 gap-y-2 h-42'>
               {cur === baseCur
