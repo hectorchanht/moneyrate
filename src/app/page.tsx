@@ -124,17 +124,17 @@ export default function Home() {
             
             return <div key={i} className='flex gap-2 gap-y-2 h-42'>
               {cur === baseCur
-                ? <MoneySvg />
+                ? null
                 : <CrossSvg cur={cur} removeCurrency2Display={removeCurrency2Display} />}
 
               <div className='flex w-full'>
-                <div className='w-1/2 text-start'>
+                <div className='w-1/2 sm:w-3/10 text-start'>
                   {cur.toUpperCase()}
                 </div>
 
                 {cur === baseCur
                   ? <input min={0} onChange={handleCurrencyValue} step=".01"
-                    value={currencyValue} type="number" placeholder="🔍" className="bg-black rounded-[24px] h-[1em] max-w-[33%]" />
+                    value={currencyValue} type="number" placeholder="🔍" className="bg-black rounded-[24px] h-[1em] max-w-[50vw] sm:max-w-7/10" />
                   : <div onClick={() => onBaseCurChange(cur)} className='w-1/2 text-start'>
                   {val2Show}
                 </div>}
