@@ -15,7 +15,6 @@ export type CurrencyRate4All = {
 }
 
 export type CurrencyRate4BaseCur = {
-  // @ts-ignore: Property 'date'
   date: string;
   [currency: string]: {
     [key: string]: number;
