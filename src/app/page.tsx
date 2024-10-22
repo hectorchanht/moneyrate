@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { ReactSearchAutocomplete } from 'react-search-autocomplete';
 import useSWR from 'swr';
 import { CurrencyRate4All, CurrencyRate4BaseCur, fetcher, getApiUrl } from './api';
-const _ = require('lodash/core');
+import * as _ from "lodash";
 
 
 type SearchItem = {
@@ -24,18 +24,33 @@ xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={
 
 export default function Home() {
   const [query, setQuery] = useState('');
-  const [baseCur, setBaseCur] = useState<string>((localStorage.getItem("baseCur")) || 'usd');
-  const [currency2Display, setCurrency2Display] = useState<string[]>(JSON.parse(localStorage.getItem("currency2Display") ?? '[]') || [baseCur, 'cad', 'jpy']);
+  const [baseCur, setBaseCur] = useState<string>('usd');
+  const [currency2Display, setCurrency2Display] = useState<string[]>(['usd', 'cad', 'jpy']);
   const [currencyValue, setCurrencyValue] = useState<number>(1);
-  const [lastCurrencyValue, setLastCurrencyValue] = useState({});
-
 
   useEffect(() => {
-    localStorage.setItem("baseCur", (baseCur));
+    // Initialize state from localStorage after component mounts
+    const storedBaseCur = localStorage.getItem("baseCur");
+    if (storedBaseCur) {
+      setBaseCur(storedBaseCur);
+    }
+
+    const storedCurrency2Display = localStorage.getItem("currency2Display");
+    if (storedCurrency2Display) {
+      setCurrency2Display(JSON.parse(storedCurrency2Display));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("baseCur", (baseCur));
+    }
   }, [baseCur]);
 
   useEffect(() => {
-    localStorage.setItem("currency2Display", JSON.stringify(currency2Display));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("currency2Display", JSON.stringify(currency2Display));
+    }
   }, [currency2Display]);
 
   const addCurrency2Display = ({ name }: { name: string }) => {
@@ -53,15 +68,20 @@ export default function Home() {
   }
 
   const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getApiUrl({}), fetcher,);
-  const { data: data4BaseCur, error: err2, isLoading: isLoad2 } = useSWR<CurrencyRate4BaseCur>(getApiUrl({ baseCurrencyCode: baseCur }), fetcher,);
+  const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getApiUrl({ baseCurrencyCode: baseCur }), fetcher,);
 
   const allCurrency: string[] = data4All ? Object.keys(data4All) : [];
 
-  const curObj = _.pick(data4BaseCur?.[baseCur], currency2Display)
-  const currencyRatesPairs2Display: [string, number][] = Object.entries(curObj) || [];
-  // console.log(curObj);
 
-  const onBaseCurChange = (cur: string, val: number) => {
+  type CurrencyRates = {
+    [key: string]: number;
+  };
+
+  const curObj: CurrencyRates = _.pick(data4BaseCur?.[baseCur] as CurrencyRates, currency2Display)
+  const currencyRatesPairs2Display: [string, number][] = Object.entries(curObj) || [];
+  console.log(curObj);
+
+  const onBaseCurChange = (cur: string) => {
     setCurrencyValue(curObj[cur] || 0);
     setBaseCur(cur);
   }
@@ -98,7 +118,7 @@ if (isLoad1) return <div>loading...</div>;
               {cur === baseCur
                   ? <input min={0} onChange={handleCurrencyValue}
                     value={currencyValue} type="number" placeholder="🔍" className="bg-black rounded-[24px] h-[1em] max-w-[33%]" />
-                  : <div onClick={() => onBaseCurChange(cur, val)} className='w-1/2 text-center'>
+                  : <div onClick={() => onBaseCurChange(cur)} className='w-1/2 text-center'>
                     {new Intl.NumberFormat('en-US', { style: 'decimal' }).format(val * currencyValue)}
                   </div>}
             </div>

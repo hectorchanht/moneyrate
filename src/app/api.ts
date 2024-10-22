@@ -1,4 +1,3 @@
-
 export const fetcher = (...args: Parameters<typeof fetch>) => fetch(...args).then(res => res.json());
 
 // date can be YYYY-MM-DD: 2024-03-06
@@ -18,6 +17,5 @@ export type CurrencyRate4BaseCur = {
   date: string;
   [currency: string]: {
     [key: string]: number;
-  };
+  } | string; // Allow string for the 'date' property
 };
-
