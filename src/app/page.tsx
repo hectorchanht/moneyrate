@@ -25,7 +25,7 @@ xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={
 export default function Home() {
   const [query, setQuery] = useState('');
   const [baseCur, setBaseCur] = useState<string>('usd');
-  const [currency2Display, setCurrency2Display] = useState<string[]>(['usd', 'cad', 'jpy']);
+  const [currency2Display, setCurrency2Display] = useState<string[]>(['usd', 'hkd', 'cad', 'jpy']);
   const [currencyValue, setCurrencyValue] = useState<number>(1);
 
   useEffect(() => {
@@ -79,7 +79,7 @@ export default function Home() {
 
   const curObj: CurrencyRates = _.pick(data4BaseCur?.[baseCur] as CurrencyRates, currency2Display)
   const currencyRatesPairs2Display: [string, number][] = Object.entries(curObj) || [];
-  console.log(curObj);
+  // console.log(curObj);
 
   const onBaseCurChange = (cur: string) => {
     setCurrencyValue(curObj[cur] || 0);
@@ -101,7 +101,7 @@ if (isLoad1) return <div>loading...</div>;
         <div className='grid grid-cols-1 justify-between gap-2 gap-y-2'>
           <ReactSearchAutocomplete<SearchItem>
             items={allCurrency.filter(c => !currency2Display.includes(c)).map(c => ({ id: c, name: c }))}
-            onSelect={addCurrency2Display}
+            onSelect={addCurrency2Display} placeholder={'search and add more currency here'}
             inputSearchString={query}
           />
 
