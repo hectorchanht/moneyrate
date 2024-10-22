@@ -32,7 +32,6 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data }) => {
     modal?.showModal();
   };
 
-  console.log('data',data)
   return (
     <div>
       <button className="btn w-full h-10" onClick={openModal}>
@@ -41,7 +40,7 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data }) => {
 
 
       <dialog id="currency_list_modal" className="modal">
-        <div className="modal-box w-[50%] min-w-[200px] p-6">
+        <div className="modal-box max-w-[400px] p-6">
           <CurrencyListTable data={data} />
         </div>
         <form method="dialog" className="modal-backdrop">

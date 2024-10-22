@@ -4,7 +4,7 @@ import { ReactSearchAutocomplete } from 'react-search-autocomplete';
 import useSWR from 'swr';
 import { CurrencyRate4All, CurrencyRate4BaseCur, fetcher, getApiUrl } from './api';
 import * as _ from "lodash";
-import CurrencyListModal from './components/CurrencyListModal'
+import CurrencyListModal from './components/CurrencyListModal';
 
 type SearchItem = {
   id: string;
