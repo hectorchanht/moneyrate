@@ -115,7 +115,7 @@ export default function Home() {
         <div className='grid grid-cols-1 justify-between gap-6 gap-y-6 m-6'>
           <ReactSearchAutocomplete<SearchItem>
             items={allCurrency.filter(c => !currency2Display.includes(c)).map(c => ({ id: c, name: c }))}
-            onSelect={addCurrency2Display} placeholder={'search and add more currency here'}
+            onSelect={addCurrency2Display} placeholder={'search for more'}
             inputSearchString={query}
           />
 
