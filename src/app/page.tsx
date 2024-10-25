@@ -147,7 +147,7 @@ export default function Home() {
           <SearchBar data={data4All ?? {}} onSelect={addCurrency2Display} selected={currency2Display} />
 
           {(currencyRatesPairs2Display).map(([cur, val], i) => {
-            if ((!currency2Display.includes('cny') && baseCur !== 'cny' && cur === 'cny')) { return null }
+            // if ((!currency2Display.includes('cny') && baseCur !== 'cny' && cur === 'cny')) { return null }
             const val2Show = (val * currencyValue).toLocaleString(undefined, { minimumFractionDigits: ((val * currencyValue > 1) ? 3 : 10) }) ?? 0;
 
             return <div key={i} className='flex gap-2 h-42 items-center'>
@@ -159,7 +159,7 @@ export default function Home() {
 
               <CountryImg code={cur} />
 
-              <div className='flex w-full'>
+              <div className='flex w-full justify-between'>
                 <div className='w-1/2 sm:w-3/10 text-start'>
                   <div className="tooltip" data-tip={data4All ? data4All[cur] : ''}>
                     {cur.toUpperCase()}
@@ -168,8 +168,8 @@ export default function Home() {
 
                 {cur === baseCur
                   ? <input min={0} onChange={handleCurrencyValue} step=".01"
-                    value={currencyValue} type="number" placeholder="🔍" className="bg-black h-[2em] max-w-[50vw] sm:max-w-7/10" />
-                  : <div onClick={() => onBaseCurChange(cur)} className='w-1/2 text-start'>
+                    value={currencyValue} type="number" placeholder="🔍" className="bg-black h-[2em] max-w-[50vw] sm:max-w-7/10 text-end" />
+                  : <div onClick={() => onBaseCurChange(cur)} className='w-1/2 text-end'>
                     {val2Show}
                   </div>}
               </div>

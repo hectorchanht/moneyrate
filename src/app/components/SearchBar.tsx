@@ -72,7 +72,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data = {}, onSelect = () => { }, 
                 <CountryImg code={code} />
                 {code}
               </div>
-              <span>
+              <span className='text-right'>
                 {data[code]}
               </span>
             </div> // Call onSelect when an item is clicked

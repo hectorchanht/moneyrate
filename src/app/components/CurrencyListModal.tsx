@@ -1,5 +1,5 @@
 import React, { useState } from 'react'; // Add useState import
-import { AddSvg, CrossSvg, ListSvg } from '../svgs';
+import { AddSvg, CrossSvg, ListSvg, XSvg } from '../svgs';
 import CountryImg from './CountryImg';
 
 
@@ -64,7 +64,6 @@ const CurrencySetting: React.FC<CurrencySettingProps> = ({
           Base Value
           <input type="number" className="w-[50%] " placeholder={defaultCurrencyValue.toString()} disabled={!isDefaultCurrencyValue}
             onChange={(d) => {
-              console.log('d', d.target.value);
               setDefaultCurrencyValue(parseInt(d.target.value));
             }}
           />
@@ -121,6 +120,11 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({
     modal?.showModal();
   };
 
+  const closeModal = () => {
+    const modal = document.getElementById('currency_list_modal') as HTMLDialogElement;
+    modal?.close();
+  };
+
   return (
     <div>
       <button className="btn w-full h-10" onClick={openModal}>
@@ -128,6 +132,10 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({
       </button>
 
       <dialog id="currency_list_modal" className="modal">
+        <button className="btn rounded-full p-0 absolute bottom-[10vh] z-20" onClick={closeModal}>
+          <XSvg className="size-12" />
+        </button>
+
         <div className="modal-box max-w-[460px] p-2">
 
           <div role="tablist" className="tabs tabs-bordered">
