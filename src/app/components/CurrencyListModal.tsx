@@ -49,13 +49,13 @@ const CurrencySetting: React.FC<CurrencySettingProps> = ({
           </span>
         </label>
 
-        <div className="divider" />
+        <div className="divider m-0" />
 
         <label className="label cursor-pointer">
           <input type="checkbox" checked={isDefaultCurrencyValue} onChange={() => {
             setIsDefaultCurrencyValue(!isDefaultCurrencyValue);
           }} className="checkbox" />
-          <span className="label-text justify-between items-center flex gap-2">
+          <span className="label-text justify-between items-center flex gap-2 ml-2">
             Set Value
             <input type="number" className="w-[50%] bg-black" placeholder={defaultCurrencyValue.toString()} disabled={!isDefaultCurrencyValue}
               onChange={(d) => {
@@ -134,7 +134,7 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({
 
         <div className="modal-box max-w-[460px] p-2">
 
-          <div role="tablist" className="tabs tabs-bordered">
+          <div role="tablist" className="tabs tabs-bordered mb-2">
             <a role="tab" className={`tab ${activeTab === 1 ? 'tab-active' : ''}`} onClick={() => setActiveTab(1)}>
               <TableSvg />
             </a>
