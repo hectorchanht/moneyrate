@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { currency2country } from '../constants';
 import { QuestionMarkSvg } from '../svgs';
 
@@ -7,21 +7,19 @@ import { QuestionMarkSvg } from '../svgs';
 const CountryImg = ({ code = '', alt = '' }: { code: string, alt?: string }) => {
   const [isError, setIsError] = useState(false);
   const [isError2, setIsError2] = useState(false);
-  const [imageSrc, setImageSrc] = useState<string>('');
 
-  useEffect(() => {
-    const checkImage = () => {
+  const imageSrc = useMemo(
+    () => {
       const flagSrc = currency2country[code.toUpperCase() as keyof typeof currency2country]
         ? `/country-flags/${currency2country[code.toUpperCase() as keyof typeof currency2country]}.svg`
         : null;
 
       const cryptoSrc = `/crypto-icons/${code}.svg`;
 
-      setImageSrc(flagSrc || cryptoSrc);
-    };
-
-    checkImage();
-  }, [code]);
+      return (flagSrc || cryptoSrc);
+    },
+    [code]
+  );
 
   if (isError) {
     if (isError2) {
