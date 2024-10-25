@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DeleteSvg, SearchSvg } from '../svgs';
 import CountryImg from './CountryImg';
 
@@ -11,12 +11,9 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({ data = {}, onSelect = () => { }, selected = [] }) => {
   const [query, setQuery] = useState('');
-  const [matched, setMatched] = useState<string[]>([]);
 
-  useEffect(() => {
-    // Update matched to be an array of items that include the query
-
-    const filteredMatches = Object.entries(data).reduce((acc: string[], [code, name]) => {
+  const matched = useMemo(() => {
+    const filteredMatches = Object.entries(data).reduce((acc: string[], [code]) => {
       if (code.replace(/ /g, '').toLowerCase().includes(query.replace(/ /g, '').toLowerCase())) {
         return [...acc, code]; // Return the updated accumulator
       }
@@ -30,7 +27,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data = {}, onSelect = () => { }, 
       return acc; // Return the accumulator unchanged if no match
     }, []);
 
-    setMatched([...filteredMatches, ...filteredMatches2]);  // match code then name
+    return [...filteredMatches, ...filteredMatches2]
   }, [query, data]);
 
   const clearQuery = () => setQuery('');
