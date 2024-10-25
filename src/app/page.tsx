@@ -19,6 +19,9 @@ export default function Home() {
   const [baseCur, setBaseCur] = useState<string>('usd');
   const [currency2Display, setCurrency2Display] = useState<string[]>(['usd', 'hkd', 'cad', 'jpy', 'btc', 'eth']);
   const [currencyValue, setCurrencyValue] = useState<number>(1);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDefaultCurrencyValue, setIsDefaultCurrencyValue] = useState(false);
+  const [defaultCurrencyValue, setDefaultCurrencyValue] = useState(100);
 
   const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrl({}), fetcher,);
   const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrl({ baseCurrencyCode: baseCur }), fetcher,);
@@ -66,6 +69,21 @@ export default function Home() {
     if (storedCurrencyValue) {
       setCurrencyValue(JSON.parse(storedCurrencyValue));
     }
+
+    const storedIsDefaultCurrencyValue = localStorage.getItem("isDefaultCurrencyValue");
+    if (storedIsDefaultCurrencyValue) {
+      setIsDefaultCurrencyValue(JSON.parse(storedIsDefaultCurrencyValue));
+    }
+
+    const storedDefaultCurrencyValue = localStorage.getItem("defaultCurrencyValue");
+    if (storedDefaultCurrencyValue) {
+      setDefaultCurrencyValue(JSON.parse(storedDefaultCurrencyValue ?? 100));
+    }
+
+    const storedIsEditing = localStorage.getItem("isEditing");
+    if (storedIsEditing) {
+      setIsEditing(JSON.parse(storedIsEditing));
+    }
   }, []);
 
   useEffect(() => {
@@ -75,7 +93,7 @@ export default function Home() {
       }
     }
     inputObj.current = curObj;
-  }, [curObj]);
+  }, [curObj, currency2Display]);
 
   const addCurrency2Display = ({ name }: { name: string }) => {
     setCurrency2Display(cur => {
@@ -94,19 +112,23 @@ export default function Home() {
   }
 
   const onBaseCurChange = (cur: string) => {
-    const data = inputObj.current;
-    const dataAfter = Object.entries(data).reduce<CurrencyRates>((acc, [code, val]) => {
-      if (code === baseCur) {
-        acc[code] = val;
-      } else {
-        acc[code] = val * currencyValue;
-      }
-      return acc;
-    }, {});
-
-    setCurrencyValue(dataAfter[cur] || 0);
+    if (isDefaultCurrencyValue) {
+      setCurrencyValue(defaultCurrencyValue || 0);
+    } else {
+      const data = inputObj.current;
+      const dataAfter = Object.entries(data).reduce<CurrencyRates>((acc, [code, val]) => {
+        if (code === baseCur) {
+          acc[code] = val;
+        } else {
+          acc[code] = val * currencyValue;
+        }
+        return acc;
+      }, {});
+      setCurrencyValue(dataAfter[cur] || 0);
+    }
     setBaseCur(cur);
     localStorage.setItem("baseCur", (cur));
+    localStorage.setItem("defaultCurrencyValue", (defaultCurrencyValue.toString()));
   }
 
   const handleCurrencyValue = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,13 +147,15 @@ export default function Home() {
           <SearchBar data={data4All ?? {}} onSelect={addCurrency2Display} selected={currency2Display} />
 
           {(currencyRatesPairs2Display).map(([cur, val], i) => {
-            if ((currency2Display.includes('rmb') && cur === 'cny')) { return null }
+            if ((!currency2Display.includes('cny') && baseCur !== 'cny' && cur === 'cny')) { return null }
             const val2Show = (val * currencyValue).toLocaleString(undefined, { minimumFractionDigits: ((val * currencyValue > 1) ? 3 : 10) }) ?? 0;
 
             return <div key={i} className='flex gap-2 h-42 items-center'>
               {cur === baseCur
                 ? null
-                : <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display({ name: cur })} />}
+                : isEditing
+                  ? <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display({ name: cur })} />
+                  : null}
 
               <CountryImg code={cur} />
 
@@ -154,7 +178,11 @@ export default function Home() {
 
         </div>
       </main>
-      <CurrencyListModal data={data4All ?? {}} currency2Display={currency2Display} addCurrency2Display={addCurrency2Display} removeCurrency2Display={removeCurrency2Display} />
+      <CurrencyListModal data={data4All ?? {}} currency2Display={currency2Display} addCurrency2Display={addCurrency2Display} removeCurrency2Display={removeCurrency2Display}
+        isDefaultCurrencyValue={isDefaultCurrencyValue} setIsDefaultCurrencyValue={setIsDefaultCurrencyValue}
+        defaultCurrencyValue={defaultCurrencyValue} setDefaultCurrencyValue={setDefaultCurrencyValue}
+        isEditing={isEditing} setIsEditing={setIsEditing}
+      />
     </div>
   )
 }
