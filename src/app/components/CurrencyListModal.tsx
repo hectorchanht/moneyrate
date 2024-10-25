@@ -1,5 +1,5 @@
 import React, { useState } from 'react'; // Add useState import
-import { AddSvg, CrossSvg, ListSvg, XSvg } from '../svgs';
+import { AddSvg, CrossSvg, ListSvg, SettingSvg, TableSvg, XSvg } from '../svgs';
 import CountryImg from './CountryImg';
 
 
@@ -55,18 +55,14 @@ const CurrencySetting: React.FC<CurrencySettingProps> = ({
           <input type="checkbox" checked={isDefaultCurrencyValue} onChange={() => {
             setIsDefaultCurrencyValue(!isDefaultCurrencyValue);
           }} className="checkbox" />
-          <span className="label-text">
-            Customize Base Value
+          <span className="label-text justify-between items-center flex gap-2">
+            Set Value
+            <input type="number" className="w-[50%] bg-black" placeholder={defaultCurrencyValue.toString()} disabled={!isDefaultCurrencyValue}
+              onChange={(d) => {
+                setDefaultCurrencyValue(parseInt(d.target.value));
+              }}
+            />
           </span>
-        </label>
-
-        <label className="input flex items-center justify-between p-2 gap-2 bg-transparent">
-          Base Value
-          <input type="number" className="w-[50%] " placeholder={defaultCurrencyValue.toString()} disabled={!isDefaultCurrencyValue}
-            onChange={(d) => {
-              setDefaultCurrencyValue(parseInt(d.target.value));
-            }}
-          />
         </label>
 
       </div>
@@ -132,18 +128,18 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({
       </button>
 
       <dialog id="currency_list_modal" className="modal">
-        <button className="btn rounded-full p-0 absolute bottom-[10vh] z-20" onClick={closeModal}>
-          <XSvg className="size-12" />
+        <button className="btn rounded-full p-0 absolute bottom-[10vh] z-20 w-14 h-14" onClick={closeModal}>
+          <XSvg />
         </button>
 
         <div className="modal-box max-w-[460px] p-2">
 
           <div role="tablist" className="tabs tabs-bordered">
             <a role="tab" className={`tab ${activeTab === 1 ? 'tab-active' : ''}`} onClick={() => setActiveTab(1)}>
-              Table
+              <TableSvg />
             </a>
             <a role="tab" className={`tab ${activeTab === 2 ? 'tab-active' : ''}`} onClick={() => setActiveTab(2)}>
-              Setting
+              <SettingSvg />
             </a>
             {/* <a role="tab" className={`tab ${activeTab === 3 ? 'tab-active' : ''}`} onClick={() => setActiveTab(3)}>Tab 3</a> */}
           </div>
