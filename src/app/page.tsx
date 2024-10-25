@@ -6,8 +6,8 @@ import { CurrencyRate4All, CurrencyRate4BaseCur, fetcher, getCurrencyRateApiUrl 
 import CountryImg from './components/CountryImg';
 import CurrencyListModal from './components/CurrencyListModal';
 import SearchBar from './components/SearchBar';
+import { DefaultBaseCur, DefaultCurrency2Display, DefaultCurrencyValue } from './constants';
 import { CrossSvg } from './svgs';
-
 
 type CurrencyRates = {
   [key: string]: number;
@@ -16,12 +16,12 @@ type CurrencyRates = {
 export default function Home() {
   const inputObj = useRef<CurrencyRates>({});
 
-  const [baseCur, setBaseCur] = useState<string>('usd');
-  const [currency2Display, setCurrency2Display] = useState<string[]>(['usd', 'hkd', 'cad', 'jpy', 'btc', 'eth', 'xau', 'cny']);
-  const [currencyValue, setCurrencyValue] = useState<number>(100);
+  const [baseCur, setBaseCur] = useState<string>(DefaultBaseCur);
+  const [currency2Display, setCurrency2Display] = useState<string[]>(DefaultCurrency2Display);
+  const [currencyValue, setCurrencyValue] = useState<number>(DefaultCurrencyValue);
   const [isEditing, setIsEditing] = useState(false);
   const [isDefaultCurrencyValue, setIsDefaultCurrencyValue] = useState(true);
-  const [defaultCurrencyValue, setDefaultCurrencyValue] = useState(100);
+  const [defaultCurrencyValue, setDefaultCurrencyValue] = useState(DefaultCurrencyValue);
 
   const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrl({}), fetcher,);
   const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrl({ baseCurrencyCode: baseCur }), fetcher,);

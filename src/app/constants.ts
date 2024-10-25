@@ -1,4 +1,8 @@
-export const currency2country = {
+export const DefaultBaseCur = 'usd';
+export const DefaultCurrency2Display = ['usd', 'hkd', 'cad', 'jpy', 'btc', 'eth', 'xau', 'cny'];
+export const DefaultCurrencyValue = 100;
+
+export const Currency2country = {
   "AFN": "af",
   "ALL": "al",
   "DZD": "dz",

@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
-import { currency2country } from '../constants';
+import { Currency2country } from '../constants';
 import { QuestionMarkSvg } from '../svgs';
 
 
@@ -10,8 +10,8 @@ const CountryImg = ({ code = '', alt = '' }: { code: string, alt?: string }) => 
 
   const imageSrc = useMemo(
     () => {
-      const flagSrc = currency2country[code.toUpperCase() as keyof typeof currency2country]
-        ? `/country-flags/${currency2country[code.toUpperCase() as keyof typeof currency2country]}.svg`
+      const flagSrc = Currency2country[code.toUpperCase() as keyof typeof Currency2country]
+        ? `/country-flags/${Currency2country[code.toUpperCase() as keyof typeof Currency2country]}.svg`
         : null;
 
       const cryptoSrc = `/crypto-icons/${code}.svg`;
