@@ -23,30 +23,41 @@ export default function Home() {
   const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrl({}), fetcher,);
   const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrl({ baseCurrencyCode: baseCur }), fetcher,);
 
-  if (data4All && data4All) {
+  if (data4All) {
     data4All['rmb'] = data4All['cny'];
   }
-  if (data4BaseCur && data4BaseCur[baseCur] && (data4BaseCur[baseCur] as CurrencyRates)['cny']) {
+  if (data4BaseCur) {
     // Type assertion to ensure TypeScript recognizes the type
-    const baseCurrencyData = data4BaseCur[baseCur] as CurrencyRates;
-    baseCurrencyData['rmb'] = baseCurrencyData['cny'];
-  }
 
-  const curObj: CurrencyRates = _.pick(data4BaseCur?.[baseCur] as CurrencyRates, currency2Display)
+    if (baseCur === 'rmb') {
+      data4BaseCur['rmb'] = data4BaseCur['cny'];
+      // delete data4BaseCur['cny']
+    } else {
+      // Type assertion to ensure TypeScript recognizes the type
+      if (data4BaseCur[baseCur] && typeof data4BaseCur[baseCur] === 'object') {
+        (data4BaseCur[baseCur] as CurrencyRates)['rmb'] = (data4BaseCur[baseCur] as CurrencyRates)['cny'];
+      }
+    }
+  }
+  console.log('baseCur', baseCur, data4BaseCur)
+
+  const curObj: CurrencyRates = _.pick(data4BaseCur?.[baseCur] as CurrencyRates, currency2Display.includes('rmb') ? [...currency2Display, 'cny'] : currency2Display)
   const currencyRatesPairs2Display: [string, number][] = Object.entries(curObj) || [];
 
   useEffect(() => {
     // Initialize state from localStorage after component mounts
-    const storedBaseCur = localStorage.getItem("baseCur");
-    if (storedBaseCur) {
-      setBaseCur(storedBaseCur);
-    }
 
     const storedCurrency2Display = localStorage.getItem("currency2Display");
     if (storedCurrency2Display) {
       setCurrency2Display(JSON.parse(storedCurrency2Display));
     }
 
+    const storedBaseCur = localStorage.getItem("baseCur");
+    if (storedBaseCur) {
+      setBaseCur(storedBaseCur);
+    } else {
+      setBaseCur(currency2Display[0])
+    }
 
     const storedCurrencyValue = localStorage.getItem("currencyValue");
     if (storedCurrencyValue) {
@@ -55,7 +66,9 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    inputObj.current = curObj;
+    if (curObj)
+      inputObj.current = curObj;
+    // console.log('inputObj.current', inputObj.current)
   }, [curObj]);
 
   const addCurrency2Display = ({ name }: { name: string }) => {
@@ -84,6 +97,7 @@ export default function Home() {
       }
       return acc;
     }, {});
+    // console.log('cur', cur, dataAfter)
 
     setCurrencyValue(dataAfter[cur] || 0);
     setBaseCur(cur);
@@ -97,6 +111,8 @@ export default function Home() {
 
   if (err1 || err2) return <div className="text-center">failed to load</div>;
   if (isLoad1) return <progress className="progress w-full mt-[2px]"></progress>; //<span className="loading loading-infinity loading-lg"></span>;
+  // console.log('curObj', curObj)
+  // console.log('currencyRatesPairs2Display', currencyRatesPairs2Display)
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -106,6 +122,7 @@ export default function Home() {
           <SearchBar data={data4All ?? {}} onSelect={addCurrency2Display} selected={currency2Display} />
 
           {currencyRatesPairs2Display.map(([cur, val], i) => {
+            // if (!currency2Display.includes(cur)) { return null }
             const val2Show = (val * currencyValue).toLocaleString(undefined, { minimumFractionDigits: ((val * currencyValue > 1) ? 3 : 10) }) ?? 0;
 
             return <div key={i} className='flex gap-2 h-42 items-center'>
