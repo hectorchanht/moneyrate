@@ -39,10 +39,13 @@ export default function Home() {
       }
     }
   }
-  console.log('baseCur', baseCur, data4BaseCur)
 
   const curObj: CurrencyRates = _.pick(data4BaseCur?.[baseCur] as CurrencyRates, currency2Display.includes('rmb') ? [...currency2Display, 'cny'] : currency2Display)
   const currencyRatesPairs2Display: [string, number][] = Object.entries(curObj) || [];
+
+  if (baseCur === 'rmb' && data4BaseCur) {
+    currencyRatesPairs2Display.push(['rmb', (data4BaseCur[baseCur] as CurrencyRates)['rmb']])
+  }
 
   useEffect(() => {
     // Initialize state from localStorage after component mounts
@@ -66,9 +69,12 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (curObj)
-      inputObj.current = curObj;
-    // console.log('inputObj.current', inputObj.current)
+    if (curObj) {
+      if (curObj['cny'] && currency2Display.includes('rmb')) {
+        curObj['rmb'] = curObj['cny'];
+      }
+    }
+    inputObj.current = curObj;
   }, [curObj]);
 
   const addCurrency2Display = ({ name }: { name: string }) => {
@@ -97,7 +103,6 @@ export default function Home() {
       }
       return acc;
     }, {});
-    // console.log('cur', cur, dataAfter)
 
     setCurrencyValue(dataAfter[cur] || 0);
     setBaseCur(cur);
@@ -111,8 +116,6 @@ export default function Home() {
 
   if (err1 || err2) return <div className="text-center">failed to load</div>;
   if (isLoad1) return <progress className="progress w-full mt-[2px]"></progress>; //<span className="loading loading-infinity loading-lg"></span>;
-  // console.log('curObj', curObj)
-  // console.log('currencyRatesPairs2Display', currencyRatesPairs2Display)
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -121,8 +124,8 @@ export default function Home() {
         <div className='grid grid-cols-1 justify-between gap-6 gap-y-6 m-6'>
           <SearchBar data={data4All ?? {}} onSelect={addCurrency2Display} selected={currency2Display} />
 
-          {currencyRatesPairs2Display.map(([cur, val], i) => {
-            // if (!currency2Display.includes(cur)) { return null }
+          {(currencyRatesPairs2Display).map(([cur, val], i) => {
+            if ((currency2Display.includes('rmb') && cur === 'cny')) { return null }
             const val2Show = (val * currencyValue).toLocaleString(undefined, { minimumFractionDigits: ((val * currencyValue > 1) ? 3 : 10) }) ?? 0;
 
             return <div key={i} className='flex gap-2 h-42 items-center'>
