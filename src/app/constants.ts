@@ -26,6 +26,8 @@ export const currency2country = {
   "CHF": "ch",
   "CLP": "cl",
   "CNY": "cn",
+  "RMB": "cn",
+  "CNH": "cn",
   "COP": "co",
   "CRC": "cr",
   "CUP": "cu",

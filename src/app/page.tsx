@@ -23,6 +23,15 @@ export default function Home() {
   const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrl({}), fetcher,);
   const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrl({ baseCurrencyCode: baseCur }), fetcher,);
 
+  if (data4All && data4All) {
+    data4All['rmb'] = data4All['cny'];
+  }
+  if (data4BaseCur && data4BaseCur[baseCur] && (data4BaseCur[baseCur] as CurrencyRates)['cny']) {
+    // Type assertion to ensure TypeScript recognizes the type
+    const baseCurrencyData = data4BaseCur[baseCur] as CurrencyRates;
+    baseCurrencyData['rmb'] = baseCurrencyData['cny'];
+  }
+
   const curObj: CurrencyRates = _.pick(data4BaseCur?.[baseCur] as CurrencyRates, currency2Display)
   const currencyRatesPairs2Display: [string, number][] = Object.entries(curObj) || [];
 
