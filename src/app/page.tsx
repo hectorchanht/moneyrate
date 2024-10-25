@@ -17,7 +17,7 @@ export default function Home() {
   const inputObj = useRef<CurrencyRates>({});
 
   const [baseCur, setBaseCur] = useState<string>('usd');
-  const [currency2Display, setCurrency2Display] = useState<string[]>(['usd', 'hkd', 'cad', 'jpy', 'btc', 'eth']);
+  const [currency2Display, setCurrency2Display] = useState<string[]>(['usd', 'hkd', 'cad', 'jpy', 'btc', 'eth', 'xau', 'cny']);
   const [currencyValue, setCurrencyValue] = useState<number>(1);
   const [isEditing, setIsEditing] = useState(false);
   const [isDefaultCurrencyValue, setIsDefaultCurrencyValue] = useState(false);

@@ -21,7 +21,14 @@ const CountryImg = ({ code = '', alt = '' }: { code: string, alt?: string }) => 
     [code]
   );
 
-  if (isError) {
+  if (isError) {//commodity
+    if (imageSrc?.includes('/country-flags')) {
+      return <Image className="w-[42px] flex-shrink-0"
+        height={42} width={42}
+        alt={alt ?? code}
+        src={`/country-flags/commodity.png`}
+      />
+    }
     if (isError2) {
       return <QuestionMarkSvg className="size-8" width={42} />;
     }
