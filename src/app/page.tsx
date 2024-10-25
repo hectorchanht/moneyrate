@@ -102,7 +102,7 @@ export default function Home() {
             return <div key={i} className='flex gap-2 h-42 items-center'>
               {cur === baseCur
                 ? null
-                : <CrossSvg onClick={() => removeCurrency2Display({ name: cur })} />}
+                : <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display({ name: cur })} />}
 
               <CountryImg code={cur} />
 

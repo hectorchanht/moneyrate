@@ -1,4 +1,5 @@
 import { AddSvg, CrossSvg, ListSvg } from '../svgs';
+import CountryImg from './CountryImg';
 
 
 interface CurrencyListModalProps {
@@ -14,6 +15,7 @@ const CurrencyListTable: React.FC<CurrencyListModalProps> = ({ data, addCurrency
     <table className="table">
       <thead>
         <tr>
+          <td></td>
           <th>Code</th>
           <th>Name</th>
           <th></th>
@@ -22,13 +24,14 @@ const CurrencyListTable: React.FC<CurrencyListModalProps> = ({ data, addCurrency
       <tbody>
         {data && Object.entries(data).map(([code, name]) => {
           return <tr className="hover" key={code}>
+            <td><CountryImg code={code} /></td>
             <td>{code}</td>
             <td>{name}</td>
             <td>
               {
                 currency2Display.includes(code)
-                  ? <CrossSvg onClick={() => removeCurrency2Display({ name: code })} />
-                  : <AddSvg onClick={() => addCurrency2Display({ name: code })} />
+                  ? <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display({ name: code })} />
+                  : <AddSvg className={'cursor-pointer size-6'} onClick={() => addCurrency2Display({ name: code })} />
               }
             </td>
           </tr>
@@ -53,7 +56,7 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data, currency2Di
       </button>
 
       <dialog id="currency_list_modal" className="modal">
-        <div className="modal-box max-w-[400px] p-6">
+        <div className="modal-box max-w-[460px] p-2">
           <CurrencyListTable data={data} currency2Display={currency2Display} addCurrency2Display={addCurrency2Display} removeCurrency2Display={removeCurrency2Display} />
         </div>
         <form method="dialog" className="modal-backdrop">
