@@ -24,7 +24,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data = {}, onSelect = () => { }, 
     }, []);
 
     setMatched(filteredMatches);
-  }, [query]);
+  }, [query, data]);
 
   const clearQuery = () => setQuery('');
 
@@ -75,11 +75,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ data = {}, onSelect = () => { }, 
           )}
         </div>
         : null}
-
-
-
-
-
     </div>
   )
 };
