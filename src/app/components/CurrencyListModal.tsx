@@ -1,32 +1,45 @@
+import { AddSvg, CrossSvg, ListSvg } from '../svgs';
+
+
 interface CurrencyListModalProps {
   data: Record<string, string>;
+  currency2Display: string[];
+  removeCurrency2Display: (params: { name: string }) => void;
+  addCurrency2Display: (params: { name: string }) => void;
 }
 
-
-const CurrencyListTable: React.FC<CurrencyListModalProps> = ({ data }) => {
+const CurrencyListTable: React.FC<CurrencyListModalProps> = ({ data, addCurrency2Display, currency2Display, removeCurrency2Display }) => {
 
   return <div className="overflow-x-auto">
-  <table className="table">
-    <thead>
-      <tr>
-        <th>Code</th>
-        <th>Name</th>
-      </tr>
-    </thead>
-    <tbody>
+    <table className="table">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Name</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
         {data && Object.entries(data).map(([code, name]) => {
           return <tr className="hover" key={code}>
             <td>{code}</td>
             <td>{name}</td>
+            <td>
+              {
+                currency2Display.includes(code)
+                  ? <CrossSvg onClick={() => removeCurrency2Display({ name: code })} />
+                  : <AddSvg onClick={() => addCurrency2Display({ name: code })} />
+              }
+            </td>
           </tr>
         })}
-    </tbody>
-  </table>
-</div>
+      </tbody>
+    </table>
+  </div>
 }
 
 
-const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data }) => {
+const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data, currency2Display, removeCurrency2Display, addCurrency2Display }) => {
   const openModal = () => {
     const modal = document.getElementById('currency_list_modal') as HTMLDialogElement;
     modal?.showModal();
@@ -35,13 +48,13 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data }) => {
   return (
     <div>
       <button className="btn w-full h-10" onClick={openModal}>
-        check currencies
+        {/* check currencies */}
+        <ListSvg />
       </button>
-
 
       <dialog id="currency_list_modal" className="modal">
         <div className="modal-box max-w-[400px] p-6">
-          <CurrencyListTable data={data} />
+          <CurrencyListTable data={data} currency2Display={currency2Display} addCurrency2Display={addCurrency2Display} removeCurrency2Display={removeCurrency2Display} />
         </div>
         <form method="dialog" className="modal-backdrop">
           <button />
