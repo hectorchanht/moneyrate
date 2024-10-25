@@ -17,13 +17,20 @@ const SearchBar: React.FC<SearchBarProps> = ({ data = {}, onSelect = () => { }, 
     // Update matched to be an array of items that include the query
 
     const filteredMatches = Object.entries(data).reduce((acc: string[], [code, name]) => {
-      if (code.replace(/ /g, '').toLowerCase().includes(query.replace(/ /g, '').toLowerCase()) || name.replace(/ /g, '').toLowerCase().includes(query.replace(/ /g, '').toLowerCase())) {
+      if (code.replace(/ /g, '').toLowerCase().includes(query.replace(/ /g, '').toLowerCase())) {
         return [...acc, code]; // Return the updated accumulator
       }
       return acc; // Return the accumulator unchanged if no match
     }, []);
 
-    setMatched(filteredMatches);
+    const filteredMatches2 = Object.entries(data).reduce((acc: string[], [code, name]) => {
+      if (name.replace(/ /g, '').toLowerCase().includes(query.replace(/ /g, '').toLowerCase())) {
+        return [...acc, code]; // Return the updated accumulator
+      }
+      return acc; // Return the accumulator unchanged if no match
+    }, []);
+
+    setMatched([...filteredMatches, ...filteredMatches2]);  // match code then name
   }, [query, data]);
 
   const clearQuery = () => setQuery('');
