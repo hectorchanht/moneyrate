@@ -18,9 +18,9 @@ export default function Home() {
 
   const [baseCur, setBaseCur] = useState<string>('usd');
   const [currency2Display, setCurrency2Display] = useState<string[]>(['usd', 'hkd', 'cad', 'jpy', 'btc', 'eth', 'xau', 'cny']);
-  const [currencyValue, setCurrencyValue] = useState<number>(1);
+  const [currencyValue, setCurrencyValue] = useState<number>(100);
   const [isEditing, setIsEditing] = useState(false);
-  const [isDefaultCurrencyValue, setIsDefaultCurrencyValue] = useState(false);
+  const [isDefaultCurrencyValue, setIsDefaultCurrencyValue] = useState(true);
   const [defaultCurrencyValue, setDefaultCurrencyValue] = useState(100);
 
   const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrl({}), fetcher,);
@@ -113,7 +113,7 @@ export default function Home() {
 
   const onBaseCurChange = (cur: string) => {
     if (isDefaultCurrencyValue) {
-      setCurrencyValue(defaultCurrencyValue || 0);
+      setCurrencyValue(defaultCurrencyValue || 100);
     } else {
       const data = inputObj.current;
       const dataAfter = Object.entries(data).reduce<CurrencyRates>((acc, [code, val]) => {
@@ -124,7 +124,7 @@ export default function Home() {
         }
         return acc;
       }, {});
-      setCurrencyValue(dataAfter[cur] || 0);
+      setCurrencyValue(dataAfter[cur] || 100);
     }
     setBaseCur(cur);
     localStorage.setItem("baseCur", (cur));
