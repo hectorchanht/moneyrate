@@ -13,21 +13,22 @@ type CurrencyRates = {
   [key: string]: number;
 };
 
-const getDataFromLocalStorage = (name: string, defaultValue: any) => {
-  const lsData = localStorage.getItem(name);
-  if (lsData === null) {
-    return defaultValue;
-  }
-
-  try {
-    const lsDataParsed = JSON.parse(lsData);
-    return lsDataParsed;
-  } catch (exceptionVar) {
-    return lsData
-  }
-};
 
 export default function Home() {
+  const getDataFromLocalStorage = (name: string, defaultValue: any) => {
+    if (typeof window === "undefined" || !window || !window.localStorage) return defaultValue
+    const lsData = localStorage.getItem(name);
+    if (lsData === null) return defaultValue;
+
+    try {
+      const lsDataParsed = JSON.parse(lsData);
+      return lsDataParsed;
+    } catch {
+      return lsData
+    }
+  };
+
+
   const inputObj = useRef<CurrencyRates>({});
 
   // const [baseCur, setBaseCur] = useState<string>(DefaultBaseCur);//getDataFromLocalStorage('baseCur', DefaultBaseCur));
