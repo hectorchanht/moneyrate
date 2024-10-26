@@ -13,15 +13,30 @@ type CurrencyRates = {
   [key: string]: number;
 };
 
+const getDataFromLocalStorage = (name: string, defaultValue: any) => {
+  const lsData = localStorage.getItem(name);
+  if (lsData === null) {
+    return defaultValue;
+  }
+
+  try {
+    const lsDataParsed = JSON.parse(lsData);
+    return lsDataParsed;
+  } catch (exceptionVar) {
+    return lsData
+  }
+};
+
 export default function Home() {
   const inputObj = useRef<CurrencyRates>({});
 
-  const [baseCur, setBaseCur] = useState<string>(DefaultBaseCur);
-  const [currency2Display, setCurrency2Display] = useState<string[]>(DefaultCurrency2Display);
-  const [currencyValue, setCurrencyValue] = useState<number>(DefaultCurrencyValue);
-  const [isEditing, setIsEditing] = useState(false);
-  const [isDefaultCurrencyValue, setIsDefaultCurrencyValue] = useState(true);
-  const [defaultCurrencyValue, setDefaultCurrencyValue] = useState(DefaultCurrencyValue);
+  // const [baseCur, setBaseCur] = useState<string>(DefaultBaseCur);//getDataFromLocalStorage('baseCur', DefaultBaseCur));
+  const [baseCur, setBaseCur] = useState<string>(getDataFromLocalStorage('baseCur', DefaultBaseCur));//getDataFromLocalStorage('baseCur', DefaultBaseCur));
+  const [currency2Display, setCurrency2Display] = useState<string[]>(getDataFromLocalStorage('currency2Display', DefaultCurrency2Display));
+  const [currencyValue, setCurrencyValue] = useState<number>(getDataFromLocalStorage('currencyValue', DefaultCurrencyValue));
+  const [isEditing, setIsEditing] = useState(getDataFromLocalStorage('isEditing', false));
+  const [isDefaultCurrencyValue, setIsDefaultCurrencyValue] = useState(getDataFromLocalStorage('isDefaultCurrencyValue', true));
+  const [defaultCurrencyValue, setDefaultCurrencyValue] = useState(getDataFromLocalStorage('defaultCurrencyValue', DefaultCurrencyValue));
 
   const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrl({}), fetcher,);
   const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrl({ baseCurrencyCode: baseCur }), fetcher,);
@@ -51,40 +66,11 @@ export default function Home() {
   }
 
   useEffect(() => {
-    // Initialize state from localStorage after component mounts
+    localStorage.setItem("isDefaultCurrencyValue", (isDefaultCurrencyValue));
+    localStorage.setItem("isEditing", (isEditing));
+    localStorage.setItem("defaultCurrencyValue", (defaultCurrencyValue));
+  }, [isEditing, isDefaultCurrencyValue, defaultCurrencyValue]);
 
-    const storedCurrency2Display = localStorage.getItem("currency2Display");
-    if (storedCurrency2Display) {
-      setCurrency2Display(JSON.parse(storedCurrency2Display));
-    }
-
-    const storedBaseCur = localStorage.getItem("baseCur");
-    if (storedBaseCur) {
-      setBaseCur(storedBaseCur);
-    } else {
-      setBaseCur(currency2Display[0])
-    }
-
-    const storedCurrencyValue = localStorage.getItem("currencyValue");
-    if (storedCurrencyValue) {
-      setCurrencyValue(JSON.parse(storedCurrencyValue));
-    }
-
-    const storedIsDefaultCurrencyValue = localStorage.getItem("isDefaultCurrencyValue");
-    if (storedIsDefaultCurrencyValue) {
-      setIsDefaultCurrencyValue(JSON.parse(storedIsDefaultCurrencyValue));
-    }
-
-    const storedDefaultCurrencyValue = localStorage.getItem("defaultCurrencyValue");
-    if (storedDefaultCurrencyValue) {
-      setDefaultCurrencyValue(JSON.parse(storedDefaultCurrencyValue ?? 100));
-    }
-
-    const storedIsEditing = localStorage.getItem("isEditing");
-    if (storedIsEditing) {
-      setIsEditing(JSON.parse(storedIsEditing));
-    }
-  }, []);
 
   useEffect(() => {
     if (curObj) {
