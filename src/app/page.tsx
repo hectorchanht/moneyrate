@@ -130,36 +130,39 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow">
 
-        <div className='grid grid-cols-1 justify-between gap-6 gap-y-6 m-6'>
+        <div className='grid grid-cols-1 justify-between m-auto max-w-[800px]'>
           <SearchBar data={data4All ?? {}} onSelect={addCurrency2Display} selected={currency2Display} />
-
+          <br />
           {(currencyRatesPairs2Display).map(([cur, val], i) => {
             // if ((!currency2Display.includes('cny') && baseCur !== 'cny' && cur === 'cny')) { return null }
             const val2Show = (val * currencyValue).toLocaleString(undefined, { minimumFractionDigits: ((val * currencyValue > 1) ? 3 : 10) }) ?? 0;
 
-            return <div key={i} className='flex gap-2 h-42 items-center'>
-              {cur === baseCur
-                ? null
-                : isEditing
-                  ? <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display({ name: cur })} />
-                  : null}
-
-              <CountryImg code={cur} />
-
-              <div className='flex w-full justify-between'>
-                <div className='w-1/2 sm:w-3/10 text-start'>
-                  <div className="tooltip" data-tip={data4All ? data4All[cur] : ''}>
-                    {cur.toUpperCase()}
-                  </div>
-                </div>
-
+            return <div key={i}>
+              <div className='flex gap-2 h-42 items-center'>
                 {cur === baseCur
-                  ? <input min={0} onChange={handleCurrencyValue} step=".01"
-                    value={currencyValue} type="number" placeholder="🔍" className="bg-black h-[2em] max-w-[50vw] sm:max-w-7/10 text-end" />
-                  : <div onClick={() => onBaseCurChange(cur)} className='w-1/2 text-end'>
-                    {val2Show}
-                  </div>}
+                  ? null
+                  : isEditing
+                    ? <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display({ name: cur })} />
+                    : null}
+
+                <CountryImg code={cur} />
+
+                <div className='flex w-full justify-between'>
+                  <div className='w-1/2 sm:w-3/10 text-start'>
+                    <div className="tooltip" data-tip={data4All ? data4All[cur] : ''}>
+                      {cur.toUpperCase()}
+                    </div>
+                  </div>
+
+                  {cur === baseCur
+                    ? <input min={0} onChange={handleCurrencyValue} step=".01"
+                      value={currencyValue} type="number" placeholder="🔍" className="bg-black h-[2em] max-w-[50vw] sm:max-w-7/10 text-end" />
+                    : <div onClick={() => onBaseCurChange(cur)} className='w-1/2 text-end'>
+                      {val2Show}
+                    </div>}
+                </div>
               </div>
+              {(i < currencyRatesPairs2Display.length - 1) ? <div className="divider my-2" /> : <br />}
             </div>
           })}
 
