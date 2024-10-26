@@ -49,10 +49,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ data = {}, onSelect = () => { }, 
 
   return (
     <div>
-      <form className={'flex justify-between items-center overflow-hidden'} >
+      <form className={'flex justify-between items-center overflow-hidden relative'} >
         <input placeholder='💸(TWD) 📈(BTC) 🪙(XAG)' type={'text'} value={query} onChange={(e) => setQuery(e.target.value)} className="w-full bg-black" />
 
-        <span className={'absolute right-6 m-1 inline-flex cursor-pointer items-center'}>
+        <span className={'absolute right-2 m-1 inline-flex cursor-pointer items-center'}>
           {!query.length
             ? <SearchSvg />
             : <DeleteSvg onClick={clearQuery} />

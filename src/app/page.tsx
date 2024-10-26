@@ -130,7 +130,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow">
 
-        <div className='grid grid-cols-1 justify-between m-auto max-w-[800px]'>
+        <div className='grid grid-cols-1 justify-between m-auto max-w-[800px] p-6'>
           <SearchBar data={data4All ?? {}} onSelect={addCurrency2Display} selected={currency2Display} />
           <br />
           {(currencyRatesPairs2Display).map(([cur, val], i) => {
