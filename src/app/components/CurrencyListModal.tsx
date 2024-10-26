@@ -68,7 +68,15 @@ const CurrencySetting: React.FC<CurrencySettingProps> = ({
       </div>
     </div>
   )
-}
+};
+
+const MemoizedCurrencySetting = React.memo(CurrencySetting, (prev, next) => {
+  return prev.isDefaultCurrencyValue === next.isDefaultCurrencyValue
+    && prev.defaultCurrencyValue === next.defaultCurrencyValue
+    && prev.isEditing === next.isEditing;
+});
+
+
 const CurrencyListTable: React.FC<CurrencyListTableProps> = ({
   data, addCurrency2Display, currency2Display, removeCurrency2Display
 }) => {
@@ -101,7 +109,11 @@ const CurrencyListTable: React.FC<CurrencyListTableProps> = ({
       </tbody>
     </table>
   </div>
-}
+};
+
+const MemoizedCurrencyListTable = React.memo(CurrencyListTable, (prev, next) => {
+  return prev.currency2Display === next.currency2Display;
+});
 
 
 const CurrencyListModal: React.FC<CurrencyListModalProps> = ({
@@ -146,10 +158,10 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({
 
           {/* Tab content rendering */}
           {activeTab === 1 && <div>
-            <CurrencyListTable data={data} currency2Display={currency2Display} addCurrency2Display={addCurrency2Display} removeCurrency2Display={removeCurrency2Display} />
+            <MemoizedCurrencyListTable data={data} currency2Display={currency2Display} addCurrency2Display={addCurrency2Display} removeCurrency2Display={removeCurrency2Display} />
           </div>}
           {activeTab === 2 && <div>
-            <CurrencySetting isDefaultCurrencyValue={isDefaultCurrencyValue} defaultCurrencyValue={defaultCurrencyValue}
+            <MemoizedCurrencySetting isDefaultCurrencyValue={isDefaultCurrencyValue} defaultCurrencyValue={defaultCurrencyValue}
               setIsDefaultCurrencyValue={setIsDefaultCurrencyValue} setDefaultCurrencyValue={setDefaultCurrencyValue}
               isEditing={isEditing} setIsEditing={setIsEditing}
             />
