@@ -8,7 +8,6 @@ type GetCurrencyRateParams = {
 };
 
 export const getCurrencyRateApiUrl = ({ baseCurrencyCode = '', date = 'latest', apiVersion = 'v1' }: GetCurrencyRateParams) => {
-  if (baseCurrencyCode === 'rmb') { baseCurrencyCode = 'cny'; }
   return `https://${date}.currency-api.pages.dev/${apiVersion}/currencies${baseCurrencyCode ? '/' + baseCurrencyCode : ''}.json`;
 }
 

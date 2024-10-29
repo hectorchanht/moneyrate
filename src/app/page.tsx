@@ -1,6 +1,6 @@
 "use client";
-import * as _ from "lodash";
-import { useEffect, useRef, useState } from 'react';
+
+import {useMemo, useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { CurrencyRate4All, CurrencyRate4BaseCur, fetcher, getCurrencyRateApiUrl } from './api';
 import CountryImg from './components/CountryImg';
@@ -8,30 +8,26 @@ import CurrencyListModal from './components/CurrencyListModal';
 import SearchBar from './components/SearchBar';
 import { DefaultBaseCur, DefaultCurrency2Display, DefaultCurrencyValue } from './constants';
 import { CrossSvg } from './svgs';
+import { pick } from 'lodash';
 
 type CurrencyRates = {
   [key: string]: number;
 };
 
+const getDataFromLocalStorage = (name: string, defaultValue: any) => {
+  if (typeof window === "undefined" || !window || !window.localStorage) return defaultValue
+  const lsData = localStorage.getItem(name);
+  if (lsData === null) return defaultValue;
+
+  try {
+    const lsDataParsed = JSON.parse(lsData);
+    return lsDataParsed;
+  } catch {
+    return lsData
+  }
+};
 
 export default function Home() {
-  const getDataFromLocalStorage = (name: string, defaultValue: any) => {
-    if (typeof window === "undefined" || !window || !window.localStorage) return defaultValue
-    const lsData = localStorage.getItem(name);
-    if (lsData === null) return defaultValue;
-
-    try {
-      const lsDataParsed = JSON.parse(lsData);
-      return lsDataParsed;
-    } catch {
-      return lsData
-    }
-  };
-
-
-  const inputObj = useRef<CurrencyRates>({});
-
-  // const [baseCur, setBaseCur] = useState<string>(DefaultBaseCur);//getDataFromLocalStorage('baseCur', DefaultBaseCur));
   const [baseCur, setBaseCur] = useState<string>(getDataFromLocalStorage('baseCur', DefaultBaseCur));//getDataFromLocalStorage('baseCur', DefaultBaseCur));
   const [currency2Display, setCurrency2Display] = useState<string[]>(getDataFromLocalStorage('currency2Display', DefaultCurrency2Display));
   const [currencyValue, setCurrencyValue] = useState<number>(getDataFromLocalStorage('currencyValue', DefaultCurrencyValue));
@@ -39,40 +35,16 @@ export default function Home() {
   const [isDefaultCurrencyValue, setIsDefaultCurrencyValue] = useState(getDataFromLocalStorage('isDefaultCurrencyValue', true));
   const [defaultCurrencyValue, setDefaultCurrencyValue] = useState(getDataFromLocalStorage('defaultCurrencyValue', DefaultCurrencyValue));
 
-  const [cachedData4BaseCur, setCachedData4BaseCur] = useState<CurrencyRate4BaseCur | null>(null);
-  const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrl({ baseCurrencyCode: baseCur }), fetcher, {
-    onSuccess: (data) => {
-      setCachedData4BaseCur(data); // Update cached data on successful fetch
-    },
-  });
-
-  const effectiveData4BaseCur = data4BaseCur || cachedData4BaseCur; // Use cached data if new data is not yet available
-
+  const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrl({ baseCurrencyCode: baseCur }), fetcher, {});
   const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrl({}), fetcher,);
 
-  if (data4All && currency2Display.includes('rmb')) {
-    data4All['rmb'] = data4All['cny'];
-  }
-  if (effectiveData4BaseCur) {
-    // Type assertion to ensure TypeScript recognizes the type
+  const curObj: CurrencyRates = useMemo(() => {
+    return pick(data4BaseCur?.[baseCur] as CurrencyRates, currency2Display);
+  }, [data4BaseCur, baseCur, currency2Display]);
 
-    if (baseCur === 'rmb') {
-      effectiveData4BaseCur['rmb'] = effectiveData4BaseCur['cny'];
-    } else {
-      // Type assertion to ensure TypeScript recognizes the type
-      if (effectiveData4BaseCur[baseCur] && typeof effectiveData4BaseCur[baseCur] === 'object') {
-        (effectiveData4BaseCur[baseCur] as CurrencyRates)['rmb'] = (effectiveData4BaseCur[baseCur] as CurrencyRates)['cny'];
-      }
-    }
-  }
-
-  const curObj: CurrencyRates = _.pick(effectiveData4BaseCur?.[baseCur] as CurrencyRates, currency2Display.includes('rmb') ? [...currency2Display, 'cny'] : currency2Display)
-  const currencyRatesPairs2Display: [string, number][] = Object.entries(curObj) || [];
-
-  if (baseCur === 'rmb' && effectiveData4BaseCur) {
-    console.log('effectiveData4BaseCur[baseCur]',effectiveData4BaseCur[baseCur])
-    currencyRatesPairs2Display.push(['rmb', (effectiveData4BaseCur[baseCur] as CurrencyRates)['rmb']])
-  }
+  const currencyRatesPairs2Display: [string, number][] = useMemo(() => {
+    return Object.entries(curObj) || [];;
+  }, [curObj]);
 
   useEffect(() => {
     localStorage.setItem("isDefaultCurrencyValue", (isDefaultCurrencyValue));
@@ -80,15 +52,6 @@ export default function Home() {
     localStorage.setItem("defaultCurrencyValue", (defaultCurrencyValue));
   }, [isEditing, isDefaultCurrencyValue, defaultCurrencyValue]);
 
-
-  useEffect(() => {
-    if (curObj) {
-      if (curObj['cny'] && currency2Display.includes('rmb')) {
-        curObj['rmb'] = curObj['cny'];
-      }
-    }
-    inputObj.current = curObj;
-  }, [curObj, currency2Display]);
 
   const addCurrency2Display = ({ name }: { name: string }) => {
     setCurrency2Display(cur => {
@@ -110,8 +73,7 @@ export default function Home() {
     if (isDefaultCurrencyValue) {
       setCurrencyValue(defaultCurrencyValue || 100);
     } else {
-      const data = inputObj.current;
-      const dataAfter = Object.entries(data).reduce<CurrencyRates>((acc, [code, val]) => {
+      const dataAfter = Object.entries(curObj).reduce<CurrencyRates>((acc, [code, val]) => {
         if (code === baseCur) {
           acc[code] = val;
         } else {
@@ -142,9 +104,6 @@ export default function Home() {
           <SearchBar data={data4All ?? {}} onSelect={addCurrency2Display} selected={currency2Display} />
           <br />
           {(currencyRatesPairs2Display).map(([cur, val], i) => {
-            if ((!currency2Display.includes('cny') && baseCur !== 'cny' && cur === 'cny')) { return null }
-            if ((currencyRatesPairs2Display[i-1]?.[0] === 'cny' && cur === 'rmb')) { return null }
-
             const val2Show = (val * currencyValue).toLocaleString(undefined, { minimumFractionDigits: ((val * currencyValue > 1) ? 3 : 10) }) ?? 0;
 
             return <div key={i}>
