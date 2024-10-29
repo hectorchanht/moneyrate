@@ -39,31 +39,39 @@ export default function Home() {
   const [isDefaultCurrencyValue, setIsDefaultCurrencyValue] = useState(getDataFromLocalStorage('isDefaultCurrencyValue', true));
   const [defaultCurrencyValue, setDefaultCurrencyValue] = useState(getDataFromLocalStorage('defaultCurrencyValue', DefaultCurrencyValue));
 
-  const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrl({}), fetcher,);
-  const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrl({ baseCurrencyCode: baseCur }), fetcher,);
+  const [cachedData4BaseCur, setCachedData4BaseCur] = useState<CurrencyRate4BaseCur | null>(null);
+  const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrl({ baseCurrencyCode: baseCur }), fetcher, {
+    onSuccess: (data) => {
+      setCachedData4BaseCur(data); // Update cached data on successful fetch
+    },
+  });
 
-  if (data4All) {
+  const effectiveData4BaseCur = data4BaseCur || cachedData4BaseCur; // Use cached data if new data is not yet available
+
+  const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrl({}), fetcher,);
+
+  if (data4All && currency2Display.includes('rmb')) {
     data4All['rmb'] = data4All['cny'];
   }
-  if (data4BaseCur) {
+  if (effectiveData4BaseCur) {
     // Type assertion to ensure TypeScript recognizes the type
 
     if (baseCur === 'rmb') {
-      data4BaseCur['rmb'] = data4BaseCur['cny'];
-      // delete data4BaseCur['cny']
+      effectiveData4BaseCur['rmb'] = effectiveData4BaseCur['cny'];
     } else {
       // Type assertion to ensure TypeScript recognizes the type
-      if (data4BaseCur[baseCur] && typeof data4BaseCur[baseCur] === 'object') {
-        (data4BaseCur[baseCur] as CurrencyRates)['rmb'] = (data4BaseCur[baseCur] as CurrencyRates)['cny'];
+      if (effectiveData4BaseCur[baseCur] && typeof effectiveData4BaseCur[baseCur] === 'object') {
+        (effectiveData4BaseCur[baseCur] as CurrencyRates)['rmb'] = (effectiveData4BaseCur[baseCur] as CurrencyRates)['cny'];
       }
     }
   }
 
-  const curObj: CurrencyRates = _.pick(data4BaseCur?.[baseCur] as CurrencyRates, currency2Display.includes('rmb') ? [...currency2Display, 'cny'] : currency2Display)
+  const curObj: CurrencyRates = _.pick(effectiveData4BaseCur?.[baseCur] as CurrencyRates, currency2Display.includes('rmb') ? [...currency2Display, 'cny'] : currency2Display)
   const currencyRatesPairs2Display: [string, number][] = Object.entries(curObj) || [];
 
-  if (baseCur === 'rmb' && data4BaseCur) {
-    currencyRatesPairs2Display.push(['rmb', (data4BaseCur[baseCur] as CurrencyRates)['rmb']])
+  if (baseCur === 'rmb' && effectiveData4BaseCur) {
+    console.log('effectiveData4BaseCur[baseCur]',effectiveData4BaseCur[baseCur])
+    currencyRatesPairs2Display.push(['rmb', (effectiveData4BaseCur[baseCur] as CurrencyRates)['rmb']])
   }
 
   useEffect(() => {
@@ -134,7 +142,9 @@ export default function Home() {
           <SearchBar data={data4All ?? {}} onSelect={addCurrency2Display} selected={currency2Display} />
           <br />
           {(currencyRatesPairs2Display).map(([cur, val], i) => {
-            // if ((!currency2Display.includes('cny') && baseCur !== 'cny' && cur === 'cny')) { return null }
+            if ((!currency2Display.includes('cny') && baseCur !== 'cny' && cur === 'cny')) { return null }
+            if ((currencyRatesPairs2Display[i-1]?.[0] === 'cny' && cur === 'rmb')) { return null }
+
             const val2Show = (val * currencyValue).toLocaleString(undefined, { minimumFractionDigits: ((val * currencyValue > 1) ? 3 : 10) }) ?? 0;
 
             return <div key={i}>
@@ -147,7 +157,7 @@ export default function Home() {
 
                 <CountryImg code={cur} />
 
-                <div className='flex w-full justify-between'>
+                <div className='flex w-full justify-between items-center'>
                   <div className='w-1/2 sm:w-3/10 text-start'>
                     <div className="tooltip" data-tip={data4All ? data4All[cur] : ''}>
                       {cur.toUpperCase()}
