@@ -116,8 +116,8 @@ export default function Home() {
 
                 <CountryImg code={cur} />
 
-                <div className='flex w-full justify-between items-center'>
-                  <div className='w-1/2 sm:w-3/10 text-start'>
+                <div className='flex w-full justify-between items-center gap-4'>
+                  <div className='text-start'>
                     <div className="tooltip" data-tip={data4All ? data4All[cur] : ''}>
                       {cur.toUpperCase()}
                     </div>
@@ -125,8 +125,8 @@ export default function Home() {
 
                   {cur === baseCur
                     ? <input min={0} onChange={handleCurrencyValue} step=".01"
-                      value={currencyValue} type="number" placeholder="🔍" className="bg-black h-[2em] max-w-[50vw] sm:max-w-7/10 text-end" />
-                    : <div onClick={() => onBaseCurChange(cur)} className='w-1/2 text-end'>
+                      value={currencyValue} type="number" placeholder="🔍" className="bg-black h-[2em] max-w-[50vw] text-end" />
+                    : <div onClick={() => onBaseCurChange(cur)} className=' text-end'>
                       {val2Show}
                     </div>}
                 </div>
