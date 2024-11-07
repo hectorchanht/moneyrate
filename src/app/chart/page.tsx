@@ -18,18 +18,18 @@ const CurrencyChart = () => {
 
   if (!data) return <progress className="progress w-full mt-[2px]"></progress>;
   if (error || !q) return <div className="text-center">Error loading data</div>;
-  
+
   return (
-    <div className="w-full h-[100vh] overflow-auto p-[12px] bg-[black] container mx-auto">
+    <div className="w-full h-[100vh] overflow-auto pt-[20px] bg-[black] container mx-auto">
       <div className="flex justify-center">{q}</div>
       <div className="flex justify-center mb-4">
-        <button onClick={() => setTimeframe('Daily')} className="m-4 border p-4 rounded-full">Daily</button>
-        <button onClick={() => setTimeframe('Weekly')} className="m-4 border p-4 rounded-full">Weekly</button>
-        <button onClick={() => setTimeframe('All')} className="m-4 border p-4 rounded-full">All</button>
+        <button onClick={() => setTimeframe('Daily')} className="m-4 border p-2  ">Daily</button>
+        <button onClick={() => setTimeframe('Weekly')} className="m-4 border p-2  ">Weekly</button>
+        <button onClick={() => setTimeframe('All')} className="m-4 border p-2  ">All</button>
       </div>
       <ResponsiveContainer width="100%" height="70%" >
         <LineChart data={data[timeframe]} >
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid strokeDasharray="4 2 0" />
           <XAxis dataKey="time" orientation='top' />
           <YAxis />
           <Tooltip />
