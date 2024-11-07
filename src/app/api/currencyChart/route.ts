@@ -23,9 +23,9 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: `Please provide a query parameter 'q' (e.g., /currencyChart/q=USD-CAD) to get the currency chart data.` }); // User-friendly error message
   }
 
-  let
-    targetCur = ratepair?.split('-')[0].toUpperCase(),
-    baseCur = ratepair?.split('-')[1].toUpperCase(),
+  const
+    targetCur = ratepair?.split('-')[0].toUpperCase();
+  let baseCur = ratepair?.split('-')[1].toUpperCase(),
     data,
     is_flip = false;
 
