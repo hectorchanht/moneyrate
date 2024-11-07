@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   }
 
 
-  // // mtfxgroup
+  // // mtfxgroup have less data point
   // const response = await fetch(`https://www.mtfxgroup.com/api/rates/getHistoricalData/?ratepair=${ratepair}`);
   // const data = await response.json();
   // const parse = (data: [number, number][]) => data.map(([timestamp, value]) => ({
@@ -21,8 +21,19 @@ export async function GET(request: Request) {
   // data.Weekly = parse(data?.WeeklyData);
   // data.All = parse(data?.AllData);
 
-  const response = await fetch(`https://query2.finance.yahoo.com/v8/finance/chart/${ratepair}=X?period1=0&period2=${+ new Date()}&interval=1wk&includePrePost=true`);
-  const data = await response.json();
+  let data, response;
+
+  response = await fetch(`https://query2.finance.yahoo.com/v8/finance/chart/${ratepair.replace('-', '')}=X?period1=0&period2=${+ new Date()}&interval=1wk&includePrePost=true`);
+
+  data = await response.json();
+
+
+  if (!data?.chart?.result) {
+    response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${ratepair}?period1=0&period2=${+ new Date()}&interval=1wk&includePrePost=true`);
+
+    data = await response.json();
+  }
+
 
   const { timestamp, indicators } = data?.chart?.result?.[0];
   const { close } = indicators?.quote?.[0];
