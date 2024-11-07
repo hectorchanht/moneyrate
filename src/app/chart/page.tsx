@@ -23,18 +23,18 @@ const CurrencyChart = () => {
     <div className="w-full h-[100vh] overflow-auto pt-[20px] bg-[black] container mx-auto">
       <div className="flex justify-center">{q}</div>
       <div className="flex justify-center mb-4">
-        <button 
-          onClick={() => setTimeframe('Daily')} 
+        <button
+          onClick={() => setTimeframe('Daily')}
           className={`m-4 border p-2 ${timeframe === 'Daily' ? 'bg-gray-500 text-white' : 'bg-white text-black'}`}>
           Daily
         </button>
-        <button 
-          onClick={() => setTimeframe('Weekly')} 
+        <button
+          onClick={() => setTimeframe('Weekly')}
           className={`m-4 border p-2 ${timeframe === 'Weekly' ? 'bg-gray-500 text-white' : 'bg-white text-black'}`}>
           Weekly
         </button>
-        <button 
-          onClick={() => setTimeframe('All')} 
+        <button
+          onClick={() => setTimeframe('All')}
           className={`m-4 border p-2 ${timeframe === 'All' ? 'bg-gray-500 text-white' : 'bg-white text-black'}`}>
           All
         </button>
@@ -44,7 +44,7 @@ const CurrencyChart = () => {
           <CartesianGrid strokeDasharray="4 2 0" />
           <XAxis dataKey="time" orientation='top' />
           <YAxis />
-          <Tooltip />
+          <Tooltip labelStyle={{ color: 'black' }} contentStyle={{ background: 'white' }} itemStyle={{ fontWeight: '700' }} formatter={(value) => [value]} />
           <Line type="natural" dataKey="value" stroke="" />
         </LineChart>
       </ResponsiveContainer>
