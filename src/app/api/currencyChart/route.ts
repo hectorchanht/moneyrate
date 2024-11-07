@@ -23,13 +23,12 @@ export async function GET(request: Request) {
 
   let data, response;
 
-  response = await fetch(`https://query2.finance.yahoo.com/v8/finance/chart/${ratepair.replace('-', '')}=X?period1=0&period2=${+ new Date()}&interval=1wk&includePrePost=true`);
+  response = await fetch(`https://query2.finance.yahoo.com/v8/finance/chart/${ratepair.replace('-', '')}=X?period1=0&period2=${+ new Date()}&interval=1mo&includePrePost=true`);
 
   data = await response.json();
 
-
   if (!data?.chart?.result) {
-    response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${ratepair}?period1=0&period2=${+ new Date()}&interval=1wk&includePrePost=true`);
+    response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${ratepair}?period1=0&period2=${+ new Date()}&interval=1mo&includePrePost=true`);
 
     data = await response.json();
   }
