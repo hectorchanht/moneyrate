@@ -6,7 +6,7 @@ import useSWR from 'swr';
 import { fetcher } from '../api';
 
 const CurrencyChart = () => {
-  const [timeframe, setTimeframe] = useState<'Daily' | 'Weekly' | 'All'>('Daily');
+  const [timeframe, setTimeframe] = useState<'Daily' | 'Weekly' | 'All'>('All');
   const [q, setQ] = useState<string | null>(null);
 
   useEffect(() => {
