@@ -14,14 +14,14 @@ const CurrencyChart = () => {
     setQ(params.get('q')?.toUpperCase() || null);
   }, []);
 
-  const { data, error } = useSWR(q ? `/api/currencyChart?q=${q}` : null, fetcher, { keepPreviousData: true });
+  const { data, error } = useSWR(q ? `/api/currencyChart?q=${q.replace('|', '')}` : null, fetcher, { keepPreviousData: true });
 
   if (!!error) return <div className="text-center">Error loading data</div>;
   if (!data || !q) return <progress className="progress w-full mt-[2px]"></progress>;
 
   return (
     <div className="w-full h-[100vh] overflow-auto pt-[20px] bg-[black] container mx-auto">
-      <div className="flex justify-center text-[40px]">{q}</div>
+      <div className="flex justify-center text-[40px]">1 {q?.split('|')[0]} = ? {q?.split('|')[1]}</div>
       <div className="flex justify-center mb-4">
         <button
           onClick={() => setTimeframe('Daily')}
