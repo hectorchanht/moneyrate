@@ -86,17 +86,14 @@ const CurrencyListTable: React.FC<CurrencyListTableProps> = ({
       <thead>
         <tr>
           <td></td>
+          <th></th>
           <th>Code</th>
           <th>Name</th>
-          <th></th>
         </tr>
       </thead>
       <tbody>
         {data && Object.entries(data).map(([code, name]) => {
           return <tr className="hover" key={code}>
-            <td className='p-0'><CountryImg code={code} /></td>
-            <td className='px-0 text-center'>{code}</td>
-            <td className='px-0 truncate' title={name}>{name}</td>
             <td className='p-0 '>
               {
                 currency2Display.includes(code)
@@ -104,6 +101,9 @@ const CurrencyListTable: React.FC<CurrencyListTableProps> = ({
                   : <AddSvg className={'cursor-pointer size-6'} onClick={() => addCurrency2Display({ name: code })} />
               }
             </td>
+            <td className='p-0'><CountryImg code={code} /></td>
+            <td className='px-0 text-center'>{code}</td>
+            <td className='px-0 truncate' title={name}>{name}</td>
           </tr>
         })}
       </tbody>
