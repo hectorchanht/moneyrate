@@ -1,6 +1,7 @@
 "use client";
 
-import {useMemo, useEffect, useState } from 'react';
+import { pick } from 'lodash';
+import { useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import { CurrencyRate4All, CurrencyRate4BaseCur, fetcher, getCurrencyRateApiUrl } from './api';
 import CountryImg from './components/CountryImg';
@@ -8,7 +9,6 @@ import CurrencyListModal from './components/CurrencyListModal';
 import SearchBar from './components/SearchBar';
 import { DefaultBaseCur, DefaultCurrency2Display, DefaultCurrencyValue } from './constants';
 import { CrossSvg } from './svgs';
-import { pick } from 'lodash';
 
 type CurrencyRates = {
   [key: string]: number;
@@ -35,8 +35,8 @@ export default function Home() {
   const [isDefaultCurrencyValue, setIsDefaultCurrencyValue] = useState(getDataFromLocalStorage('isDefaultCurrencyValue', true));
   const [defaultCurrencyValue, setDefaultCurrencyValue] = useState(getDataFromLocalStorage('defaultCurrencyValue', DefaultCurrencyValue));
 
-  const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrl({ baseCurrencyCode: baseCur }), fetcher, {keepPreviousData: true});
-  const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrl({}), fetcher,{keepPreviousData: true});
+  const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrl({ baseCurrencyCode: baseCur }), fetcher, { keepPreviousData: true });
+  const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrl({}), fetcher, { keepPreviousData: true });
 
   const curObj: CurrencyRates = useMemo(() => {
     return pick(data4BaseCur?.[baseCur] as CurrencyRates, currency2Display);
@@ -117,11 +117,9 @@ export default function Home() {
                 <CountryImg code={cur} />
 
                 <div className='flex w-full justify-between items-center gap-4'>
-                  <div className='text-start'>
-                    <div className="tooltip" data-tip={data4All ? data4All[cur] : ''}>
-                      {cur.toUpperCase()}
-                    </div>
-                  </div>
+                  <a href={`/chart?q=${(cur + baseCur).toUpperCase()}`} className="text-start tooltip" data-tip={data4All ? data4All[cur] : ''}>
+                    {cur.toUpperCase()}
+                  </a>
 
                   {cur === baseCur
                     ? <input min={0} onChange={handleCurrencyValue} step=".01"
