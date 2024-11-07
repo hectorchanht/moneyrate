@@ -114,10 +114,10 @@ export default function Home() {
                     ? <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display({ name: cur })} />
                     : null}
 
-                <CountryImg code={cur} />
 
                 <div className='flex w-full justify-between items-center gap-4'>
-                  <a href={`/chart?q=${(cur + '-' + baseCur).toUpperCase()}`} className="text-start tooltip" data-tip={data4All ? data4All[cur] : ''}>
+                  <a href={`/chart?q=${(cur + '-' + baseCur).toUpperCase()}`} className="text-start tooltip flex items-center gap-2" data-tip={data4All ? data4All[cur] : ''}>
+                    <CountryImg code={cur} />
                     {cur.toUpperCase()}
                   </a>
 

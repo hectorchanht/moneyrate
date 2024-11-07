@@ -94,7 +94,7 @@ const CurrencyListTable: React.FC<CurrencyListTableProps> = ({
       <tbody>
         {data && Object.entries(data).map(([code, name]) => {
           return <tr className="hover" key={code}>
-            <td><CountryImg code={code} /></td>
+            <td className='p-0'><CountryImg code={code} /></td>
             <td>{code}</td>
             <td>{name}</td>
             <td>

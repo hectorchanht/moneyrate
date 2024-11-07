@@ -23,24 +23,36 @@ const CountryImg = ({ code = '', alt = '' }: { code: string, alt?: string }) => 
 
   if (isError) {//commodity
     if (imageSrc?.includes('/country-flags')) {
-      return <Image className="w-[42px] flex-shrink-0"
+      return <Image 
         height={42} width={42}
         alt={alt ?? code}
         src={`/country-flags/commodity.png`}
+        placeholder='blur' blurDataURL='/img/q.svg'
       />
     }
     if (isError2) {
-      return <QuestionMarkSvg className="size-8" width={42} />;
+      return <Image 
+        height={42} width={42}
+        alt={alt ?? code}
+        src={'/img/q.svg'}
+        placeholder='blur' blurDataURL='/img/q.svg'
+      />;
     }
     if (imageSrc?.includes('/crypto-icons')) {  // if not found as crypto
-      return <Image className="w-[42px] flex-shrink-0"
+      return <Image 
         height={42} width={42}
         alt={alt ?? code}
         src={`https://assets.coincap.io/assets/icons/${code}@2x.png`}
         onError={() => setIsError2(true)}
+        placeholder='blur' blurDataURL='/img/q.svg'
       />
     }
-    return <QuestionMarkSvg className="size-8" width={42} />;
+    return <Image 
+      height={42} width={42}
+      alt={alt ?? code}
+      src={'/img/q.svg'}
+      placeholder='blur' blurDataURL='/img/q.svg'
+    />;
   }
 
   if (imageSrc === '' || !imageSrc) {
@@ -48,11 +60,13 @@ const CountryImg = ({ code = '', alt = '' }: { code: string, alt?: string }) => 
   }
 
   return (
-    <Image className="w-[42px] flex-shrink-0"
+    <Image 
       height={42} width={42}
       alt={alt ?? code}
       src={imageSrc}
       onError={() => setIsError(true)}
+      placeholder='blur'
+      blurDataURL='/img/q.svg'
     />
   );
 };
