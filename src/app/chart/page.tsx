@@ -25,17 +25,17 @@ const CurrencyChart = () => {
       <div className="flex justify-center mb-4">
         <button
           onClick={() => setTimeframe('Daily')}
-          className={`m-4 border p-2 ${timeframe === 'Daily' ? 'bg-gray-500 text-white' : 'bg-white text-black'}`}>
+          className={`m-4 border p-2 ${timeframe === 'Daily' ? 'bg-black border border-white text-white' : 'bg-white text-black'}`}>
           Daily
         </button>
         <button
           onClick={() => setTimeframe('Weekly')}
-          className={`m-4 border p-2 ${timeframe === 'Weekly' ? 'bg-gray-500 text-white' : 'bg-white text-black'}`}>
+          className={`m-4 border p-2 ${timeframe === 'Weekly' ? 'bg-black border border-white text-white' : 'bg-white text-black'}`}>
           Weekly
         </button>
         <button
           onClick={() => setTimeframe('All')}
-          className={`m-4 border p-2 ${timeframe === 'All' ? 'bg-gray-500 text-white' : 'bg-white text-black'}`}>
+          className={`m-4 border p-2 ${timeframe === 'All' ? 'bg-black border border-white text-white' : 'bg-white text-black'}`}>
           All
         </button>
       </div>
