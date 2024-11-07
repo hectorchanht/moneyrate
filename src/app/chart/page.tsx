@@ -35,8 +35,8 @@ const CurrencyChart = () => {
 
   // Filter the data based on the selected timestamps
   const filteredData = useMemo(
-    () => data.data.filter((item: DataItem) => item.timestamp >= startTimestamp && item.timestamp <= endTimestamp)
-    , [data, startTimestamp, endTimestamp]
+    () => data?.data.filter((item: DataItem) => item?.timestamp >= startTimestamp && item?.timestamp <= endTimestamp)
+    , [data?.data, startTimestamp, endTimestamp]
   );
 
   return (
