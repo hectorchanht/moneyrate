@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import useSWR from 'swr';
 import { fetcher } from '../api';
@@ -34,7 +34,10 @@ const CurrencyChart = () => {
   }
 
   // Filter the data based on the selected timestamps
-  const filteredData = data.data.filter((item: DataItem) => item.timestamp >= startTimestamp && item.timestamp <= endTimestamp);
+  const filteredData = useMemo(
+    () => data.data.filter((item: DataItem) => item.timestamp >= startTimestamp && item.timestamp <= endTimestamp)
+    , [data, startTimestamp, endTimestamp]
+  );
 
   return (
     <div className="w-full h-[100vh] overflow-auto pt-[20px] container mx-auto">
