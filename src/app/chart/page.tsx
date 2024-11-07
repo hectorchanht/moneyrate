@@ -21,7 +21,7 @@ const CurrencyChart = () => {
 
   return (
     <div className="w-full h-[100vh] overflow-auto pt-[20px] bg-[black] container mx-auto">
-      <div className="flex justify-center">{q}</div>
+      <div className="flex justify-center text-[40px]">{q}</div>
       <div className="flex justify-center mb-4">
         <button
           onClick={() => setTimeframe('Daily')}
