@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import useSWR from 'swr';
 import { fetcher } from '../api';
@@ -28,15 +28,14 @@ const CurrencyChart = () => {
   if (!data || !q) return <progress className="progress w-full mt-[2px]"></progress>;
 
   // Set default start and end timestamps based on fetched data
-  if (startTimestamp === 0 && data.data.length > 0) {
-    setStartTimestamp(data.data[0].timestamp);
-    setEndTimestamp(data.data[data.data.length - 1].timestamp);
+  if (startTimestamp === 0 && data?.data.length > 0) {
+    setStartTimestamp(data?.data[0].timestamp);
+    setEndTimestamp(data?.data[data?.data.length - 1].timestamp);
   }
 
   // Filter the data based on the selected timestamps
-  const filteredData = useMemo(
-    () => data?.data.filter((item: DataItem) => item?.timestamp >= startTimestamp && item?.timestamp <= endTimestamp)
-    , [data?.data, startTimestamp, endTimestamp]
+  const filteredData = data?.data.filter((item: DataItem) => 
+    item?.timestamp >= startTimestamp && item?.timestamp <= endTimestamp
   );
 
   return (
@@ -47,7 +46,7 @@ const CurrencyChart = () => {
       <div className="flex justify-center mb-4">
         <input
           type="range"
-          min={data.data[0]?.timestamp}
+          min={data?.data[0]?.timestamp}
           max={endTimestamp}
           value={startTimestamp}
           onChange={(e) => setStartTimestamp(Number(e.target.value))}
@@ -56,7 +55,7 @@ const CurrencyChart = () => {
         <input
           type="range"
           min={startTimestamp}
-          max={data.data[data.data.length - 1]?.timestamp}
+          max={data?.data[data?.data.length - 1]?.timestamp}
           value={endTimestamp}
           onChange={(e) => setEndTimestamp(Number(e.target.value))}
           className="slider"
