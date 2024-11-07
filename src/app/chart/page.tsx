@@ -23,9 +23,21 @@ const CurrencyChart = () => {
     <div className="w-full h-[100vh] overflow-auto pt-[20px] bg-[black] container mx-auto">
       <div className="flex justify-center">{q}</div>
       <div className="flex justify-center mb-4">
-        <button onClick={() => setTimeframe('Daily')} className="m-4 border p-2  ">Daily</button>
-        <button onClick={() => setTimeframe('Weekly')} className="m-4 border p-2  ">Weekly</button>
-        <button onClick={() => setTimeframe('All')} className="m-4 border p-2  ">All</button>
+        <button 
+          onClick={() => setTimeframe('Daily')} 
+          className={`m-4 border p-2 ${timeframe === 'Daily' ? 'bg-gray-500 text-white' : 'bg-white text-black'}`}>
+          Daily
+        </button>
+        <button 
+          onClick={() => setTimeframe('Weekly')} 
+          className={`m-4 border p-2 ${timeframe === 'Weekly' ? 'bg-gray-500 text-white' : 'bg-white text-black'}`}>
+          Weekly
+        </button>
+        <button 
+          onClick={() => setTimeframe('All')} 
+          className={`m-4 border p-2 ${timeframe === 'All' ? 'bg-gray-500 text-white' : 'bg-white text-black'}`}>
+          All
+        </button>
       </div>
       <ResponsiveContainer width="100%" height="70%" >
         <LineChart data={data[timeframe]} >
