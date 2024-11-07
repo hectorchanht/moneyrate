@@ -116,7 +116,7 @@ export default function Home() {
 
 
                 <div className='flex w-full justify-between items-center gap-4'>
-                  <a href={`/chart?q=${(cur + '-' + baseCur).toUpperCase()}`} className="text-start tooltip flex items-center gap-2" data-tip={data4All ? data4All[cur] : ''}>
+                  <a href={cur === baseCur ? undefined : `/chart?q=${(cur + '-' + baseCur).toUpperCase()}`} className="text-start tooltip flex items-center gap-2" data-tip={data4All ? data4All[cur] : ''}>
                     <CountryImg code={cur} />
                     {cur.toUpperCase()}
                   </a>
