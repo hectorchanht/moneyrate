@@ -16,9 +16,9 @@ const CurrencyChart = () => {
 
   const { data, error } = useSWR(q ? `/api/currencyChart?q=${q}` : null, fetcher, { keepPreviousData: true });
 
-  if (error || !q) return <div className="text-center">Error loading data</div>;
   if (!data) return <progress className="progress w-full mt-[2px]"></progress>;
-
+  if (error || !q) return <div className="text-center">Error loading data</div>;
+  
   return (
     <div className="w-full h-[100vh] overflow-auto p-[12px] bg-[black] container mx-auto">
       <div className="flex justify-center">{q}</div>
