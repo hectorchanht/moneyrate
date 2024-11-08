@@ -6,9 +6,10 @@ import useSWR from 'swr';
 import { CurrencyRate4All, CurrencyRate4BaseCur, fetcher, getCurrencyRateApiUrl } from './api';
 import CountryImg from './components/CountryImg';
 import CurrencyListModal from './components/CurrencyListModal';
+import DragHandle from './components/DragHandle';
 import SearchBar from './components/SearchBar';
 import { DefaultBaseCur, DefaultCurrency2Display, DefaultCurrencyValue } from './constants';
-import { CrossSvg } from './svgs';
+import { CrossSvg, EmptySvg } from './svgs';
 
 type CurrencyRates = {
   [key: string]: number;
@@ -134,14 +135,14 @@ export default function Home() {
             {(currencyRatesPairs2Display).map(([cur, val], i) => {
               const val2Show = (val * currencyValue).toLocaleString(undefined, { minimumFractionDigits: ((val * currencyValue > 1) ? 3 : 10) }) ?? 0;
 
-              return <div key={cur} id='currencyItem' draggable onDragStart={() => currencyItemOnDrag.current = cur}>
+              return <div key={cur} id='currencyItem'>
                 <div className='flex gap-2 h-42 items-center'>
                   {cur === baseCur
-                    ? null
+                    ? <EmptySvg />
                     : isEditing
                       ? <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display({ name: cur })} />
                       : null}
-
+                  {isEditing && <DragHandle onDragStart={() => currencyItemOnDrag.current = cur} />}
                   <div className='flex w-full justify-between items-center gap-4'>
                     <a href={cur === baseCur ? undefined : `/chart?q=${(cur + '-' + baseCur).toUpperCase()}`} className="text-start tooltip flex items-center gap-2" data-tip={data4All ? data4All[cur] : ''}>
                       <CountryImg code={cur} />
