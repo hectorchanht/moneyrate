@@ -138,10 +138,10 @@ export default function Home() {
               return <div key={cur} id='currencyItem'>
                 <div className='flex gap-2 h-42 items-center'>
                   {cur === baseCur
-                    ? <EmptySvg />
-                    : isEditing
+                    ? (isEditing ? <EmptySvg /> : null)
+                    : (isEditing
                       ? <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display({ name: cur })} />
-                      : null}
+                      : null)}
                   {isEditing && <DragHandle onDragStart={() => currencyItemOnDrag.current = cur} />}
                   <div className='flex w-full justify-between items-center gap-4'>
                     <a href={cur === baseCur ? undefined : `/chart?q=${(cur + '-' + baseCur).toUpperCase()}`} className="text-start tooltip flex items-center gap-2" data-tip={data4All ? data4All[cur] : ''}>
