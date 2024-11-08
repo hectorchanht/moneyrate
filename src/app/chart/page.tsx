@@ -59,7 +59,11 @@ const CurrencyChart = () => {
 
   // Function to format numbers in scientific notation
   const scientificFormat = (number: number) => {
+    const parts = number.toString().split('.');
     if (number === 0) return '0';
+    if (parts.length > 1 && parts[1].length > 3) {
+      return parseFloat(number.toFixed(3));
+    }
     if (number > 0.001 && number < 1000) return number;
     return new Intl.NumberFormat('en-US', { notation: 'scientific' }).format(number);
   }
