@@ -145,6 +145,7 @@ export default function Home() {
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    if (!isEditing) return;
     const dropZone = e.currentTarget; // The drop zone element
     const dropZoneRect = dropZone.getBoundingClientRect(); // Get the bounding rectangle of the drop zone
 
