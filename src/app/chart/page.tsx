@@ -44,7 +44,7 @@ const CurrencyChart = () => {
   };
 
   return (
-    <div className="w-dvw h-dvh overflow-auto pt-[20px] mx-auto px-4">
+    <div className="w-dvw h-dvh overflow-auto pt-[20px] mx-auto px-4 sm:px-1 md:px-2">
       <div className="flex justify-center text-[40px]">{data?.title}</div>
 
       {/* Range slider for selecting start and end timestamps */}
