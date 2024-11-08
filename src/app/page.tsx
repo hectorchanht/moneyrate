@@ -11,6 +11,42 @@ import SearchBar from './components/SearchBar';
 import { DefaultBaseCur, DefaultCurrency2Display, DefaultCurrencyValue } from './constants';
 import { CrossSvg, EmptySvg } from './svgs';
 
+
+
+
+declare global {
+  interface Window {
+    enableDragDropTouch?: () => void;
+  }
+}
+
+const useDragDropTouch = () => {
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://drag-drop-touch-js.github.io/dragdroptouch/dist/drag-drop-touch.esm.min.js';
+    script.type = 'module';
+    script.onload = () => {
+      if (typeof window.enableDragDropTouch === 'function') {
+        window.enableDragDropTouch();
+        console.log('drag-drop-touch initialized via custom hook.');
+      } else {
+        console.error('enableDragDropTouch is not available on window.');
+      }
+    };
+    script.onerror = () => {
+      console.error('Failed to load drag-drop-touch script.');
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+}
+
+
+
+
 type CurrencyRates = {
   [key: string]: number;
 };
@@ -48,13 +84,8 @@ export default function Home() {
     return Object.entries(curObj) || [];;
   }, [curObj]);
 
-  useEffect(() => {
-    {/* Initialize drag-drop-touch */ }
-    if (typeof (window as any).enableDragDropTouch === 'function') {
-      (window as any).enableDragDropTouch();
-      console.log('drag-drop-touch initialized in useEffect.');
-    }
-  }, []);
+  useDragDropTouch();
+
 
   useEffect(() => {
     localStorage.setItem("isDefaultCurrencyValue", (isDefaultCurrencyValue));

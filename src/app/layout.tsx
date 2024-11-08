@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 // import Head from 'next/head';
-import Script from 'next/script';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,12 +27,6 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="dark">
       <head>
-      <Script
-          src="https://drag-drop-touch-js.github.io/dragdroptouch/dist/drag-drop-touch.esm.min.js"
-          type="module"
-          strategy="afterInteractive" // Load after the page is interactive
-        />
-
         <link rel="icon" type="image/png" href="/favicon-48x48.png" sizes="48x48" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="shortcut icon" href="/favicon.ico" />
