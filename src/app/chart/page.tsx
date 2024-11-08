@@ -40,7 +40,11 @@ const CurrencyChart = () => {
 
   // Function to format numbers in scientific notation
   const scientificFormat = (number: number) => {
-    return (0.01 <= number && number <= 1e3) ? number : new Intl.NumberFormat('en-US', { notation: 'scientific' }).format(number);
+    if (number === 0) return '0';
+    if (0.01 <= number && number <= 1e3) return number;
+    if (number > 1e6) return new Intl.NumberFormat('en-US', { notation: 'scientific' }).format(number);
+    if (number < 0.01) return new Intl.NumberFormat('en-US', { notation: 'scientific' }).format(number);
+    return number;
   };
 
   return (
