@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import useSWR from 'swr';
 import { fetcher } from '../api';
-import { DownloadSvg } from '../svgs';
+import { DownloadSvg, ReverseSvg } from '../svgs';
 
 // Define the type for the data items
 interface DataItem {
@@ -38,14 +38,15 @@ const CurrencyChart = () => {
   if (!!error) return <div className="text-center">No data for {q}</div>;
   if (!data || !q) {
     return (
-      <div className="flex flex-col items-center justify-center h-full pt-[40px]">
+      <div className="flex flex-col items-center justify-center h-full pt-[20px]">
         <div className='flex gap-4 items-center mb-[20px]'>
+          <div className="skeleton h-[24px] w-[24px] shrink-0 rounded-full" />
           <div className="skeleton h-[32px] w-[266px] rounded-none"></div>
-          <div className="skeleton h-[32px] w-[32px] shrink-0 rounded-full" />
+          <div className="skeleton h-[24px] w-[24px] shrink-0 rounded-full" />
         </div>
 
         <div className="skeleton h-[20px] w-[266px] mb-[20px] rounded-none"></div>
-        <div className="skeleton h-[70vh] w-[90vw] rounded-none"></div>
+        <div style={{ height: 'calc( 70vh - 120px )' }} className="skeleton w-[90vw] rounded-none"></div>
       </div>
     );
   }
@@ -87,9 +88,15 @@ const CurrencyChart = () => {
   return (
     <div className="w-dvw h-dvh overflow-auto pt-[20px] mx-auto px-4 sm:px-1 md:px-2">
       <div className="flex justify-center text-[32px] gap-4 items-center">
+
+        <ReverseSvg className='cursor-pointer w-[24px] h-[24px]' onClick={() => {
+          // redirect to /chart?base-target
+          window.location.href = `/chart?q=${q.split('-')[1]}-${q.split('-')[0]}`;
+        }} />
+
         {data?.title}
 
-        <DownloadSvg className='cursor-pointer w-[30px] h-[30px]' onClick={exportToCSV} />
+        <DownloadSvg className='cursor-pointer w-[24px] h-[24px]' onClick={exportToCSV} />
       </div>
 
       {/* Range slider for selecting start and end timestamps */}
