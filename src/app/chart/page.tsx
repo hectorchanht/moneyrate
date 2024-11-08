@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import useSWR from 'swr';
 import { fetcher } from '../api';
@@ -31,6 +31,10 @@ const CurrencyChart = () => {
 
   const { data, error } = useSWR<ResponseData>(q ? `/api/currencyChart?q=${q}` : null, fetcher, { keepPreviousData: true });
 
+  const filteredData = useMemo(() => {
+    return data?.data.filter((item: DataItem) => item.timestamp >= startTimestamp && item.timestamp <= endTimestamp) || [];
+  }, [data?.data, startTimestamp, endTimestamp]);
+
   if (!!error) return <div className="text-center">No data for {q}</div>;
   if (!data || !q) {
     return (
@@ -51,11 +55,6 @@ const CurrencyChart = () => {
     setStartTimestamp(data?.data[0].timestamp);
     setEndTimestamp(data?.data[data?.data.length - 1].timestamp);
   }
-
-  // Filter the data based on the selected timestamps
-  const filteredData = data?.data.filter((item: DataItem) =>
-    item?.timestamp >= startTimestamp && item?.timestamp <= endTimestamp
-  );
 
   // Function to format numbers in scientific notation
   const scientificFormat = (number: number) => {
