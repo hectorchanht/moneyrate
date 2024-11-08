@@ -60,8 +60,7 @@ const CurrencyChart = () => {
   // Function to format numbers in scientific notation
   const scientificFormat = (number: number) => {
     if (number === 0) return '0';
-    if (0.01 <= number) return number;
-    if (number <= 100) return number;
+    if (num > 0.01 && num < 100) return number;
     return new Intl.NumberFormat('en-US', { notation: 'scientific' }).format(number);
   }
 
