@@ -1,5 +1,6 @@
 "use client";
 
+import 'drag-drop-touch';
 import { pick } from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';

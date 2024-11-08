@@ -97,3 +97,33 @@ input[type="range"]::-ms-thumb {
   border: 1px solid white;
   cursor: pointer;
 }
+
+/* Add these styles to your global CSS or appropriate CSS module */
+
+.drag-handle {
+  /* Indicate draggable area */
+  cursor: grab;
+  user-select: none;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.currency-list {
+  /* Prevent text selection during drag */
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+}
+
+.hide {
+  display: none;
+}
+
+/* Optional: Add smooth transitions for better UX */
+.currency-item {
+  transition: transform 0.2s ease;
+}
