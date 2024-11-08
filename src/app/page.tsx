@@ -1,7 +1,7 @@
 "use client";
 
 import { pick } from 'lodash';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
 import { CurrencyRate4All, CurrencyRate4BaseCur, fetcher, getCurrencyRateApiUrl } from './api';
 import CountryImg from './components/CountryImg';
@@ -28,6 +28,7 @@ const getDataFromLocalStorage = (name: string, defaultValue: any) => {
 };
 
 export default function Home() {
+  const currencyItemOnDrag = useRef<string>('');
   const [baseCur, setBaseCur] = useState<string>(getDataFromLocalStorage('baseCur', DefaultBaseCur));//getDataFromLocalStorage('baseCur', DefaultBaseCur));
   const [currency2Display, setCurrency2Display] = useState<string[]>(getDataFromLocalStorage('currency2Display', DefaultCurrency2Display));
   const [currencyValue, setCurrencyValue] = useState<number>(getDataFromLocalStorage('currencyValue', DefaultCurrencyValue));
@@ -93,8 +94,32 @@ export default function Home() {
     localStorage.setItem("currencyValue", (e.target.value));
   }
 
-  if (err1 || err2) return <div className="text-center">failed to load</div>;
-  if (isLoad1) return <progress className="progress w-full mt-[2px]"></progress>; //<span className="loading loading-infinity loading-lg"></span>;
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const dropZone = e.currentTarget; // The drop zone element
+    const dropZoneRect = dropZone.getBoundingClientRect(); // Get the bounding rectangle of the drop zone
+
+    // Get the mouse coordinates relative to the drop zone
+    const dropY = e.clientY - dropZoneRect.top;
+
+    // Calculate the index of the item where it was dropped
+    const itemHeight = 72; // Assuming each currency item has a fixed height
+    const itemIndex = Math.floor(dropY / itemHeight); // Calculate the index based on the Y coordinate
+
+    // Now you can use itemIndex to determine where to place the dropped item
+    // console.log(`Item dropped at index: ${itemIndex}`);
+
+    const newCurrency2Display = [...currency2Display];
+    const draggedIndex = newCurrency2Display.indexOf(currencyItemOnDrag.current);
+
+    const [movedItem] = newCurrency2Display.splice(draggedIndex, 1);
+    newCurrency2Display.splice(itemIndex, 0, movedItem);
+    setCurrency2Display(newCurrency2Display);
+    localStorage.setItem("currency2Display", JSON.stringify(newCurrency2Display));
+  };
+
+  if (err1 || err2) return <div className="text-center">Error fetching data. Please try again later.</div>;
+  if (isLoad1) return <progress className="progress w-full mt-[2px]" />;
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -102,36 +127,39 @@ export default function Home() {
 
         <div className='grid grid-cols-1 justify-between m-auto max-w-[800px] p-4'>
           <SearchBar data={data4All ?? {}} onSelect={addCurrency2Display} selected={currency2Display} />
+
           <br />
-          {(currencyRatesPairs2Display).map(([cur, val], i) => {
-            const val2Show = (val * currencyValue).toLocaleString(undefined, { minimumFractionDigits: ((val * currencyValue > 1) ? 3 : 10) }) ?? 0;
 
-            return <div key={i}>
-              <div className='flex gap-2 h-42 items-center'>
-                {cur === baseCur
-                  ? null
-                  : isEditing
-                    ? <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display({ name: cur })} />
-                    : null}
+          <div className='' id='currencyList' onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
+            {(currencyRatesPairs2Display).map(([cur, val], i) => {
+              const val2Show = (val * currencyValue).toLocaleString(undefined, { minimumFractionDigits: ((val * currencyValue > 1) ? 3 : 10) }) ?? 0;
 
-
-                <div className='flex w-full justify-between items-center gap-4'>
-                  <a href={cur === baseCur ? undefined : `/chart?q=${(cur + '-' + baseCur).toUpperCase()}`} className="text-start tooltip flex items-center gap-2" data-tip={data4All ? data4All[cur] : ''}>
-                    <CountryImg code={cur} />
-                    {cur.toUpperCase()}
-                  </a>
-
+              return <div key={cur} id='currencyItem' draggable onDragStart={() => currencyItemOnDrag.current = cur}>
+                <div className='flex gap-2 h-42 items-center'>
                   {cur === baseCur
-                    ? <input min={0} onChange={handleCurrencyValue} step=".01"
-                      value={currencyValue} type="number" placeholder="🔍" className="bg-black h-[2em] max-w-[50vw] text-end" />
-                    : <div onClick={() => onBaseCurChange(cur)} className=' text-end'>
-                      {val2Show}
-                    </div>}
+                    ? null
+                    : isEditing
+                      ? <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display({ name: cur })} />
+                      : null}
+
+                  <div className='flex w-full justify-between items-center gap-4'>
+                    <a href={cur === baseCur ? undefined : `/chart?q=${(cur + '-' + baseCur).toUpperCase()}`} className="text-start tooltip flex items-center gap-2" data-tip={data4All ? data4All[cur] : ''}>
+                      <CountryImg code={cur} />
+                      {cur.toUpperCase()}
+                    </a>
+
+                    {cur === baseCur
+                      ? <input min={0} onChange={handleCurrencyValue} step=".01"
+                        value={currencyValue} type="number" placeholder="🔍" className="bg-black h-[2em] max-w-[50vw] text-end" />
+                      : <div onClick={() => onBaseCurChange(cur)} className=' text-end'>
+                        {val2Show}
+                      </div>}
+                  </div>
                 </div>
+                {(i < currencyRatesPairs2Display.length - 1) ? <div className="divider my-2" /> : <br />}
               </div>
-              {(i < currencyRatesPairs2Display.length - 1) ? <div className="divider my-2" /> : <br />}
-            </div>
-          })}
+            })}
+          </div>
 
         </div>
       </main>

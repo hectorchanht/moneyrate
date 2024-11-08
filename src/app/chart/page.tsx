@@ -24,7 +24,7 @@ const CurrencyChart = () => {
 
   const { data, error } = useSWR(q ? `/api/currencyChart?q=${q}` : null, fetcher, { keepPreviousData: true });
 
-  if (!!error) return <div className="text-center">Error loading data</div>;
+  if (!!error) return <div className="text-center">No data for {q}</div>;
   if (!data || !q) return <progress className="progress w-full mt-[2px]"></progress>;
 
   // Set default start and end timestamps based on fetched data
@@ -34,7 +34,7 @@ const CurrencyChart = () => {
   }
 
   // Filter the data based on the selected timestamps
-  const filteredData = data?.data.filter((item: DataItem) => 
+  const filteredData = data?.data.filter((item: DataItem) =>
     item?.timestamp >= startTimestamp && item?.timestamp <= endTimestamp
   );
 
