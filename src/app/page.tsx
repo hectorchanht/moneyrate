@@ -167,16 +167,16 @@ export default function Home() {
   };
 
   if (err1 || err2) return <div className="text-center">Error fetching data. Please try again later.</div>;
-  if (isLoad1) return <div className="flex flex-col items-center justify-center h-full p-4">
-    <div className="skeleton h-[51px] w-full"></div>
+  if (isLoad1) return <div className="h-full p-4 grid grid-cols-1 justify-between m-auto max-w-[800px]">
+    <div className="skeleton h-[51px] w-full rounded-none"></div>
     <br />
     {Array.from({ length: 12 }, (_, index) => <div className='flex items-center justify-between w-full mb-[50px]' key={index}>
       <div className='flex items-center justify-center gap-2'>
-        <div className="skeleton h-[42px] w-[42px] shrink-0 rounded-full" />
-        <div className="skeleton h-[42px] w-[94px]"></div>
+        <div className="skeleton h-[42px] w-[42px] shrink-0 rounded-none" />
+        <div className="skeleton h-[42px] w-[94px] rounded-none"></div>
       </div>
 
-      <div className="skeleton h-[42px] w-[200px]"></div>
+      <div className="skeleton h-[42px] w-[200px] rounded-none"></div>
     </div>)}
   </div>;
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import useSWR from 'swr';
 import { fetcher } from '../api';
+import { DownloadSvg } from '../svgs';
 
 // Define the type for the data items
 interface DataItem {
@@ -34,10 +35,13 @@ const CurrencyChart = () => {
   if (!data || !q) {
     return (
       <div className="flex flex-col items-center justify-center h-full pt-[40px]">
-        <div className="skeleton h-[40px] w-[266px] mb-[20px]"></div>
-        <div className="skeleton h-[20px] w-[266px] mb-[20px]"></div>
-        <div className="skeleton h-[70vh] w-[90vw]"></div>
-        <div className="skeleton h-[30px] w-[106px] mt-[20px]"></div>
+        <div className='flex gap-4 items-center mb-[20px]'>
+          <div className="skeleton h-[42px] w-[266px] rounded-none"></div>
+          <div className="skeleton h-[32px] w-[32px] shrink-0 rounded-full" />
+        </div>
+
+        <div className="skeleton h-[20px] w-[266px] mb-[20px] rounded-none"></div>
+        <div className="skeleton h-[70vh] w-[90vw] rounded-none"></div>
       </div>
     );
   }
@@ -83,7 +87,11 @@ const CurrencyChart = () => {
 
   return (
     <div className="w-dvw h-dvh overflow-auto pt-[20px] mx-auto px-4 sm:px-1 md:px-2">
-      <div className="flex justify-center text-[40px]">{data?.title}</div>
+      <div className="flex justify-center text-[42px] gap-4 items-center">
+        {data?.title}
+
+        <DownloadSvg className='cursor-pointer w-[30px] h-[30px]' onClick={exportToCSV} />
+      </div>
 
       {/* Range slider for selecting start and end timestamps */}
       <div className="flex justify-center mb-4">
@@ -114,13 +122,6 @@ const CurrencyChart = () => {
           <Line type="monotone" dataKey="value" stroke="white" />
         </LineChart>
       </ResponsiveContainer>
-
-      <div className="flex justify-center">
-
-        <button onClick={exportToCSV} className="btn-export w-fit">
-          Export Data
-        </button>
-      </div>
     </div>
   );
 };

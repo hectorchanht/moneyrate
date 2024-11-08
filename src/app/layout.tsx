@@ -24,6 +24,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // const fullScreen = 'w-dvw h-dvh overflow-auto mx-auto p-4 md:px-2 sm:px-1';
+  // const main = 'grid grid-cols-1 justify-between m-auto max-w-[800px] p-4 md:px-2 sm:px-1';
   return (
     <html lang="en" data-theme="dark">
       <head>
