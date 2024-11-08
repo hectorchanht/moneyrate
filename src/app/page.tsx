@@ -15,15 +15,23 @@ import { CrossSvg, EmptySvg } from './svgs';
 
 
 declare global {
+  interface DragDropTouch {
+    enable: () => void;
+    // Add other methods or properties if needed
+  }
+
   interface Window {
+    DragDropTouch?: DragDropTouch;
     enableDragDropTouch?: () => void;
   }
 }
 
+
+
 const useDragDropTouch = () => {
   useEffect(() => {
     const script = document.createElement('script');
-    script.src = 'https://drag-drop-touch-js.github.io/dragdroptouch/dist/drag-drop-touch.esm.min.js';
+    script.src = 'https://drag-drop-touch-js.github.io/dragdroptouch/dist/drag-drop-touch.esm.min.js?autoload';
     script.type = 'module';
     script.onload = () => {
       if (typeof window.enableDragDropTouch === 'function') {
@@ -32,6 +40,8 @@ const useDragDropTouch = () => {
       } else {
         console.error('enableDragDropTouch is not available on window.');
       }
+
+      window.DragDropTouch?.enable();
     };
     script.onerror = () => {
       console.error('Failed to load drag-drop-touch script.');
@@ -42,7 +52,7 @@ const useDragDropTouch = () => {
       document.body.removeChild(script);
     };
   }, []);
-}
+};
 
 
 
@@ -65,6 +75,8 @@ const getDataFromLocalStorage = (name: string, defaultValue: any) => {
 };
 
 export default function Home() {
+  useDragDropTouch();
+
   const currencyItemOnDrag = useRef<string>('');
   const [baseCur, setBaseCur] = useState<string>(getDataFromLocalStorage('baseCur', DefaultBaseCur));//getDataFromLocalStorage('baseCur', DefaultBaseCur));
   const [currency2Display, setCurrency2Display] = useState<string[]>(getDataFromLocalStorage('currency2Display', DefaultCurrency2Display));
@@ -83,9 +95,6 @@ export default function Home() {
   const currencyRatesPairs2Display: [string, number][] = useMemo(() => {
     return Object.entries(curObj) || [];;
   }, [curObj]);
-
-  useDragDropTouch();
-
 
   useEffect(() => {
     localStorage.setItem("isDefaultCurrencyValue", (isDefaultCurrencyValue));
