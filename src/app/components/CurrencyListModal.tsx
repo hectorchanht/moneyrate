@@ -65,6 +65,13 @@ const CurrencySetting: React.FC<CurrencySettingProps> = ({
           </span>
         </label>
 
+        <button className="btn btn-primary w-full mt-2" onClick={() => {
+          localStorage.clear(); // Clear all local storage
+          window.location.reload(); // Refresh the page
+        }}>
+          RESET
+        </button>
+
       </div>
     </div>
   )
