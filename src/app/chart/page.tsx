@@ -38,6 +38,11 @@ const CurrencyChart = () => {
     item?.timestamp >= startTimestamp && item?.timestamp <= endTimestamp
   );
 
+  // Function to format numbers in scientific notation
+  const scientificFormat = (number: number) => {
+    return (0.01 <= number && number <= 1e3) ? number : new Intl.NumberFormat('en-US', { notation: 'scientific' }).format(number);
+  };
+
   return (
     <div className="w-dvw h-dvh overflow-auto pt-[20px] mx-auto px-4">
       <div className="flex justify-center text-[40px]">{data?.title}</div>
@@ -66,7 +71,7 @@ const CurrencyChart = () => {
         <LineChart data={filteredData}>
           <CartesianGrid strokeDasharray="4 2 0" />
           <XAxis dataKey="date" domain={['dataMin', 'dataMax']} />
-          <YAxis />
+          <YAxis tickFormatter={(value) => scientificFormat(value).toString()} />
           <Tooltip labelStyle={{ color: 'black' }} contentStyle={{ background: 'white' }} itemStyle={{ fontWeight: '700', color: 'black' }} formatter={(value) => [value]} />
           <Line type="monotone" dataKey="value" stroke="white" />
         </LineChart>
