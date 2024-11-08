@@ -1,6 +1,5 @@
 "use client";
 
-import 'drag-drop-touch';
 import { pick } from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
@@ -48,6 +47,14 @@ export default function Home() {
   const currencyRatesPairs2Display: [string, number][] = useMemo(() => {
     return Object.entries(curObj) || [];;
   }, [curObj]);
+
+  useEffect(() => {
+    {/* Initialize drag-drop-touch */ }
+    if (typeof (window as any).enableDragDropTouch === 'function') {
+      (window as any).enableDragDropTouch();
+      console.log('drag-drop-touch initialized in useEffect.');
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("isDefaultCurrencyValue", (isDefaultCurrencyValue));
