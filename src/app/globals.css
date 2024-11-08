@@ -98,8 +98,6 @@ input[type="range"]::-ms-thumb {
   cursor: pointer;
 }
 
-/* Add these styles to your global CSS or appropriate CSS module */
-
 .drag-handle {
   /* Indicate draggable area */
   cursor: grab;
@@ -124,6 +122,6 @@ input[type="range"]::-ms-thumb {
 }
 
 /* Optional: Add smooth transitions for better UX */
-.currency-item {
+.drag-handle {
   transition: transform 0.2s ease;
 }
