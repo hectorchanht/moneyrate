@@ -40,7 +40,7 @@ const CurrencyChart = () => {
     return (
       <div className="flex flex-col items-center justify-center h-full pt-[40px]">
         <div className='flex gap-4 items-center mb-[20px]'>
-          <div className="skeleton h-[42px] w-[266px] rounded-none"></div>
+          <div className="skeleton h-[32px] w-[266px] rounded-none"></div>
           <div className="skeleton h-[32px] w-[32px] shrink-0 rounded-full" />
         </div>
 
@@ -86,7 +86,7 @@ const CurrencyChart = () => {
 
   return (
     <div className="w-dvw h-dvh overflow-auto pt-[20px] mx-auto px-4 sm:px-1 md:px-2">
-      <div className="flex justify-center text-[42px] gap-4 items-center">
+      <div className="flex justify-center text-[32px] gap-4 items-center">
         {data?.title}
 
         <DownloadSvg className='cursor-pointer w-[30px] h-[30px]' onClick={exportToCSV} />
