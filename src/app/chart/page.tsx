@@ -98,7 +98,7 @@ const CurrencyChart = () => {
       </div>
 
       {/* Range slider for selecting start and end timestamps */}
-      <div className="flex justify-center mb-4">
+      <div className="flex justify-center my-4">
         <input
           type="range"
           min={data?.data[0]?.timestamp}
