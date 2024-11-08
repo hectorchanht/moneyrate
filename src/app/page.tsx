@@ -167,7 +167,18 @@ export default function Home() {
   };
 
   if (err1 || err2) return <div className="text-center">Error fetching data. Please try again later.</div>;
-  if (isLoad1) return <progress className="progress w-full mt-[2px]" />;
+  if (isLoad1) return <div className="flex flex-col items-center justify-center h-full p-4">
+    <div className="skeleton h-[51px] w-full"></div>
+    <br />
+    {Array.from({ length: 12 }, (_, index) => <div className='flex items-center justify-between w-full mb-[50px]' key={index}>
+      <div className='flex items-center justify-center gap-2'>
+        <div className="skeleton h-[42px] w-[42px] shrink-0 rounded-full" />
+        <div className="skeleton h-[42px] w-[94px]"></div>
+      </div>
+
+      <div className="skeleton h-[42px] w-[200px]"></div>
+    </div>)}
+  </div>;
 
   return (
     <div className="flex flex-col min-h-screen">

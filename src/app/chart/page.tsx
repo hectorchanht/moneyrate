@@ -12,6 +12,12 @@ interface DataItem {
   value: number; // Add other properties as needed
 }
 
+// Define the type for the response data
+interface ResponseData {
+  title: string; // Add title property
+  data: DataItem[]; // Existing data property
+}
+
 const CurrencyChart = () => {
   const [q, setQ] = useState<string | null>(null);
   const [startTimestamp, setStartTimestamp] = useState<number>(0);
@@ -22,10 +28,19 @@ const CurrencyChart = () => {
     setQ(params.get('q')?.toUpperCase() || null);
   }, []);
 
-  const { data, error } = useSWR(q ? `/api/currencyChart?q=${q}` : null, fetcher, { keepPreviousData: true });
+  const { data, error } = useSWR<ResponseData>(q ? `/api/currencyChart?q=${q}` : null, fetcher, { keepPreviousData: true });
 
   if (!!error) return <div className="text-center">No data for {q}</div>;
-  if (!data || !q) return <progress className="progress w-full mt-[2px]"></progress>;
+  if (!data || !q) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full pt-[40px]">
+        <div className="skeleton h-[40px] w-[266px] mb-[20px]"></div>
+        <div className="skeleton h-[20px] w-[266px] mb-[20px]"></div>
+        <div className="skeleton h-[70vh] w-[90vw]"></div>
+        <div className="skeleton h-[30px] w-[106px] mt-[20px]"></div>
+      </div>
+    );
+  }
 
   // Set default start and end timestamps based on fetched data
   if (startTimestamp === 0 && data?.data.length > 0) {
@@ -45,6 +60,25 @@ const CurrencyChart = () => {
     if (number > 1e6) return new Intl.NumberFormat('en-US', { notation: 'scientific' }).format(number);
     if (number < 0.01) return new Intl.NumberFormat('en-US', { notation: 'scientific' }).format(number);
     return number;
+  };
+
+  const exportToCSV = () => {
+    const csvRows = [
+      ['Date', 'Timestamp', 'Value'], // Header row
+      ...data?.data.map(item => [item?.date, item?.timestamp, item?.value]) // Data rows
+    ];
+
+    const csvString = csvRows.map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvString], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = data?.title + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
   };
 
   return (
@@ -80,6 +114,13 @@ const CurrencyChart = () => {
           <Line type="monotone" dataKey="value" stroke="white" />
         </LineChart>
       </ResponsiveContainer>
+
+      <div className="flex justify-center">
+
+        <button onClick={exportToCSV} className="btn-export w-fit">
+          Export Data
+        </button>
+      </div>
     </div>
   );
 };
