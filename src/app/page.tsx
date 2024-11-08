@@ -26,8 +26,6 @@ declare global {
   }
 }
 
-
-
 const useDragDropTouch = () => {
   useEffect(() => {
     const script = document.createElement('script');
@@ -35,7 +33,7 @@ const useDragDropTouch = () => {
     script.type = 'module';
     script.onload = () => {
       if (typeof window.enableDragDropTouch === 'function') {
-        window.enableDragDropTouch();
+        window.enableDragDropTouch(); // Initialize the polyfill
         console.log('drag-drop-touch initialized via custom hook.');
       } else {
         console.error('enableDragDropTouch is not available on window.');
@@ -180,7 +178,12 @@ export default function Home() {
 
           <br />
 
-          <div className='' id='currencyList' onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
+          <div
+            id='currencyList'
+            onDrop={handleDrop}
+            onDragOver={(e) => e.preventDefault()}
+            className="relative"
+          >
             {(currencyRatesPairs2Display).map(([cur, val], i) => {
               const val2Show = (val * currencyValue).toLocaleString(undefined, { minimumFractionDigits: ((val * currencyValue > 1) ? 3 : 10) }) ?? 0;
 

@@ -8,7 +8,7 @@ type DragHandleProps = {
 const DragHandle: React.FC<DragHandleProps> = ({ onDragStart }) => {
   return (
     <div
-      className="drag-handle cursor-grab px-2"
+      className="drag-handle cursor-move px-2"
       onDragStart={onDragStart}
       draggable
       aria-label="Drag handle"
