@@ -24,9 +24,9 @@ export async function GET(request: Request) {
   }
 
   const
-    targetCur = ratepair?.split('-')[0].toUpperCase();
-  let baseCur = ratepair?.split('-')[1].toUpperCase(),
-    data,
+    targetCur = ratepair?.split('-')[0].toUpperCase(),
+    baseCur = ratepair?.split('-')[1].toUpperCase();
+  let data,
     is_flip = false;
 
   const getApiUri = (ratepair: string) => {
