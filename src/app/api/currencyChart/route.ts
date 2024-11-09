@@ -26,17 +26,16 @@ export async function GET(request: Request) {
   const
     targetCur = ratepair?.split('-')[0].toUpperCase(),
     baseCur = ratepair?.split('-')[1].toUpperCase();
-  let data,
-    is_flip = false;
+  let data, is_flip = false;
 
   const getApiUri = (ratepair: string) => {
-    return `https://query1.finance.yahoo.com/v8/finance/chart/${ratepair}?period1=0&period2=${+ new Date()}&interval=1mo&includePrePost=true`;
+    return `https://query1.finance.yahoo.com/v8/finance/chart/${ratepair}?period1=0&period2=${+new Date()}&interval=1mo&includePrePost=true`;
   }
 
   const [r_fiat, r_crypto, r_crypto_flip] = await Promise.all([
     fetch(getApiUri(ratepair.replace('-', '') + '=X')),
-    fetch(ratepair),
-    fetch(baseCur + '-' + targetCur),
+    fetch(getApiUri(ratepair)),
+    fetch(getApiUri(baseCur + '-' + targetCur)),
   ]);
 
   const [data_fiat, data_crypto, data_crypto_flip] = await Promise.all([
