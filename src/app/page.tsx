@@ -170,13 +170,16 @@ export default function Home() {
   if (isLoad1) return <div className="h-full p-4 grid grid-cols-1 justify-between m-auto max-w-[800px]">
     <div className="skeleton h-[51px] w-full rounded-none"></div>
     <br />
-    {Array.from({ length: 12 }, (_, index) => <div className='flex items-center justify-between w-full mb-[50px]' key={index}>
-      <div className='flex items-center justify-center gap-2'>
-        <div className="skeleton h-[42px] w-[42px] shrink-0 rounded-none" />
-        <div className="skeleton h-[42px] w-[94px] rounded-none"></div>
-      </div>
+    {Array.from({ length: 12 }, (_, index) => <div className="flex flex-col" key={index}>
+      <div className='flex items-center justify-between w-full ' >
+        <div className='flex items-center justify-center gap-2'>
+          <div className="skeleton h-[42px] w-[42px] shrink-0 rounded-none" />
+          <div className="skeleton h-[42px] w-[94px] rounded-none"></div>
+        </div>
 
-      <div className="skeleton h-[42px] w-[200px] rounded-none"></div>
+        <div className="skeleton h-[42px] w-[200px] rounded-none"></div>
+      </div>
+      {index < 11 ? <div className="divider my-2" /> : <br />}
     </div>)}
   </div>;
 
