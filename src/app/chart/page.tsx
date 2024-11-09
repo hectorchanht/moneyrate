@@ -38,15 +38,15 @@ const CurrencyChart = () => {
   if (!!error) return <div className="text-center">No data for {q}</div>;
   if (!data || !q) {
     return (
-      <div className="flex flex-col items-center justify-center h-full pt-[20px]">
-        <div className='flex gap-4 items-center mb-[20px]'>
+      <div className="flex flex-col items-center justify-flex-start h-dvh pt-[30px]">
+        <div className='flex gap-4 items-center mb-[20px] h-[32px]'>
           <div className="skeleton h-[24px] w-[24px] shrink-0 rounded-full" />
-          <div className="skeleton h-[32px] w-[266px] rounded-none"></div>
+          <div className="skeleton h-[32px] w-[240px] rounded-none"></div>
           <div className="skeleton h-[24px] w-[24px] shrink-0 rounded-full" />
         </div>
 
-        <div className="skeleton h-[20px] w-[266px] mb-[20px] rounded-none"></div>
-        <div style={{ height: 'calc( 70vh - 120px )' }} className="skeleton w-[90vw] rounded-none"></div>
+        <div className="skeleton h-[20px] w-[258px] mb-[30px] rounded-none"></div>
+        <div style={{ width: 'calc( 100vw - 40px )' }} className="skeleton rounded-none h-[70%]"></div>
       </div>
     );
   }
