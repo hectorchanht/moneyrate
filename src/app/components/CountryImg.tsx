@@ -4,7 +4,13 @@ import { Currency2country } from '../constants';
 import { QuestionMarkSvg } from '../svgs';
 
 
-const CountryImg = ({ code = '', alt = '' }: { code: string, alt?: string }) => {
+// Define the props interface
+interface CountryImgProps {
+  code: string; // Replace with the actual type of 'code' if different
+  alt?: string:
+}
+
+const CountryImg: React.FC<CountryImgProps> = ({ code = '', alt = '' }) => {
   const [isError, setIsError] = useState(false);
   const [isError2, setIsError2] = useState(false);
 
@@ -72,8 +78,9 @@ const CountryImg = ({ code = '', alt = '' }: { code: string, alt?: string }) => 
 };
 
 // Custom comparison function to only re-render when 'code' changes
-function areEqual(prevProps, nextProps) {
+function areEqual(prevProps: CountryImgProps, nextProps: CountryImgProps) {
   return prevProps.code === nextProps.code;
 }
+
 
 export default memo(CountryImg, areEqual);
