@@ -15,7 +15,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Fiat Crypto Conversion",
+  title: "Money Rate - Fiat Crypto Conversion",
   description: "Instantly fiat and crypto conversion for you and me.",
 };
 
@@ -26,6 +26,7 @@ export default function RootLayout({
 }>) {
   // const fullScreen = 'w-dvw h-dvh overflow-auto mx-auto p-4 md:px-2 sm:px-1';
   // const main = 'grid grid-cols-1 justify-between m-auto max-w-[800px] p-4 md:px-2 sm:px-1';
+
   return (
     <html lang="en" data-theme="dark">
       <head>
@@ -33,7 +34,7 @@ export default function RootLayout({
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <meta name="apple-mobile-web-app-title" content="Fiat Crypto Conversion" />
+        <meta name="apple-mobile-web-app-title" content="Money Rate - Fiat Crypto Conversion" />
         <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body

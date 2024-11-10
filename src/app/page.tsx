@@ -9,6 +9,7 @@ import CurrencyListModal from './components/CurrencyListModal';
 import DragHandle from './components/DragHandle';
 import SearchBar from './components/SearchBar';
 import { DefaultBaseCur, DefaultCurrency2Display, DefaultCurrencyValue } from './constants';
+import { showASCIIArt } from './fns';
 import { CrossSvg, EmptySvg } from './svgs';
 
 
@@ -45,6 +46,8 @@ const useDragDropTouch = () => {
       console.error('Failed to load drag-drop-touch script.');
     };
     document.body.appendChild(script);
+
+    showASCIIArt();
 
     return () => {
       document.body.removeChild(script);

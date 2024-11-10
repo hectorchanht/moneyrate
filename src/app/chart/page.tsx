@@ -5,6 +5,7 @@ import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YA
 import useSWR from 'swr';
 import { fetcher } from '../api';
 import { DownloadSvg, ReverseSvg } from '../svgs';
+import { showASCIIArt } from '../fns';
 
 // Define the type for the data items
 interface DataItem {
@@ -27,6 +28,8 @@ const CurrencyChart = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setQ(params.get('q')?.toUpperCase() || null);
+
+    showASCIIArt();
   }, []);
 
   const { data, error } = useSWR<ResponseData>(q ? `/api/currencyChart?q=${q}` : null, fetcher, { keepPreviousData: true });
