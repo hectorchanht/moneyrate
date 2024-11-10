@@ -4,7 +4,7 @@ import { Currency2country } from '../constants';
 import { QuestionMarkSvg } from '../svgs';
 
 
-const MCountryImg = memo(function CountryImg({ code = '', alt = '' }: { code: string, alt?: string }) {
+const CountryImg = ({ code = '', alt = '' }: { code: string, alt?: string }) => {
   const [isError, setIsError] = useState(false);
   const [isError2, setIsError2] = useState(false);
 
@@ -69,6 +69,11 @@ const MCountryImg = memo(function CountryImg({ code = '', alt = '' }: { code: st
       blurDataURL='/img/q.svg'
     />
   );
-});
+};
 
-export default MCountryImg;
+// Custom comparison function to only re-render when 'code' changes
+function areEqual(prevProps, nextProps) {
+  return prevProps.code === nextProps.code;
+}
+
+export default memo(CountryImg, areEqual);
