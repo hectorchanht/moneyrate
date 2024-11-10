@@ -7,7 +7,7 @@ import { QuestionMarkSvg } from '../svgs';
 // Define the props interface
 interface CountryImgProps {
   code: string; // Replace with the actual type of 'code' if different
-  alt?: string:
+  alt?: string;
 }
 
 const CountryImg: React.FC<CountryImgProps> = ({ code = '', alt = '' }) => {
