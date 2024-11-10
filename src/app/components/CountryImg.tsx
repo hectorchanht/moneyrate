@@ -1,10 +1,10 @@
 import Image from 'next/image';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, memo } from 'react';
 import { Currency2country } from '../constants';
 import { QuestionMarkSvg } from '../svgs';
 
 
-const CountryImg = ({ code = '', alt = '' }: { code: string, alt?: string }) => {
+const CountryImg = memo(({ code = '', alt = '' }: { code: string, alt?: string }) => {
   const [isError, setIsError] = useState(false);
   const [isError2, setIsError2] = useState(false);
 
@@ -69,6 +69,6 @@ const CountryImg = ({ code = '', alt = '' }: { code: string, alt?: string }) => 
       blurDataURL='/img/q.svg'
     />
   );
-};
+});
 
 export default CountryImg;
