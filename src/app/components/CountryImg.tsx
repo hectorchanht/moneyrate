@@ -4,7 +4,7 @@ import { Currency2country } from '../constants';
 import { QuestionMarkSvg } from '../svgs';
 
 
-const CountryImg = memo(({ code = '', alt = '' }: { code: string, alt?: string }) => {
+const MCountryImg = memo(function CountryImg({ code = '', alt = '' }: { code: string, alt?: string }) {
   const [isError, setIsError] = useState(false);
   const [isError2, setIsError2] = useState(false);
 
@@ -71,4 +71,4 @@ const CountryImg = memo(({ code = '', alt = '' }: { code: string, alt?: string }
   );
 });
 
-export default CountryImg;
+export default MCountryImg;
