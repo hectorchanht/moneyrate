@@ -36,6 +36,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <meta name="apple-mobile-web-app-title" content="Money Rate - Fiat Crypto Conversion" />
         <link rel="manifest" href="/site.webmanifest" />
+        <script src="/clarity.js" async />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
