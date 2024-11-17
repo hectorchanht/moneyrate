@@ -48,7 +48,7 @@ const CountryImg: React.FC<CountryImgProps> = ({ code = '', alt = '' }) => {
       return <Image 
         height={42} width={42}
         alt={alt ?? code}
-        src={`https://assets.coincap.io/assets/icons/${code}@2x.png`}
+        src={`/crypto-icons/${code}.png`}
         onError={() => setIsError2(true)}
         placeholder='blur' blurDataURL='/img/q.svg'
       />
