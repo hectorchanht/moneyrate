@@ -101,7 +101,7 @@ const CurrencyListTable: React.FC<CurrencyListTableProps> = ({
       <tbody>
         {data && Object.entries(data).map(([code, name]) => {
           return <tr className="hover" key={code}>
-            <td className='py-0 '>
+            <td className='py-0 pl-0'>
               {
                 currency2Display.includes(code)
                   ? <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display({ name: code })} />
