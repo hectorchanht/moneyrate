@@ -1,14 +1,16 @@
-import Image from 'next/image';
+import Image, { ImageProps } from 'next/image';
 import { memo, useMemo, useState } from 'react';
 import { Currency2country } from '../constants';
 
-export const ImageWithFallback = ({ src, fallbackSrc, ...rest }: { src: string, fallbackSrc: string[] | string, [key: string]: any }) => {
+interface ImageWithFallbackProps extends ImageProps {
+  fallbackSrc: string[];
+
+}
+export const ImageWithFallback = (props: ImageWithFallbackProps) => {
+  const { src, fallbackSrc, ...rest } = props;
   const [imgSrc, setImgSrc] = useState(src);
   const [imgIndex, setImgIndex] = useState(0);
 
-  if (typeof fallbackSrc === 'string') {
-    fallbackSrc = [fallbackSrc];
-  }
 
   return (
     <Image
