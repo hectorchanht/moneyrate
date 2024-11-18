@@ -1,7 +1,27 @@
 import Image from 'next/image';
-import { useMemo, useState, memo } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { Currency2country } from '../constants';
-import { QuestionMarkSvg } from '../svgs';
+
+export const ImageWithFallback = ({ src, fallbackSrc, ...rest }: { src: string, fallbackSrc: string[] | string, [key: string]: any }) => {
+  const [imgSrc, setImgSrc] = useState(src);
+  const [imgIndex, setImgIndex] = useState(0);
+
+  if (typeof fallbackSrc === 'string') {
+    fallbackSrc = [fallbackSrc];
+  }
+
+  return (
+    <Image
+      {...rest}
+      src={imgSrc}
+      alt={rest.alt ?? imgSrc}
+      onError={() => {
+        setImgSrc(fallbackSrc?.[imgIndex]);
+        setImgIndex(imgIndex + 1);
+      }}
+    />
+  );
+};
 
 
 // Define the props interface
@@ -11,66 +31,20 @@ interface CountryImgProps {
 }
 
 const CountryImg: React.FC<CountryImgProps> = ({ code = '', alt = '' }) => {
-  const [isError, setIsError] = useState(false);
-  const [isError2, setIsError2] = useState(false);
+  const imageSrc = useMemo(() => {
+    const flagSrc = Currency2country[code.toUpperCase() as keyof typeof Currency2country]
+      ? `/country-flags/${Currency2country[code.toUpperCase() as keyof typeof Currency2country]}.svg`
+      : `/crypto-icons/${code}.svg`;
 
-  const imageSrc = useMemo(
-    () => {
-      const flagSrc = Currency2country[code.toUpperCase() as keyof typeof Currency2country]
-        ? `/country-flags/${Currency2country[code.toUpperCase() as keyof typeof Currency2country]}.svg`
-        : null;
-
-      const cryptoSrc = `/crypto-icons/${code}.svg`;
-
-      return (flagSrc || cryptoSrc);
-    },
-    [code]
-  );
-
-  if (isError) {//commodity
-    if (imageSrc?.includes('/country-flags')) {
-      return <Image 
-        height={42} width={42}
-        alt={alt ?? code}
-        src={`/country-flags/commodity.png`}
-        placeholder='blur' blurDataURL='/img/q.svg'
-      />
-    }
-    if (isError2) {
-      return <Image 
-        height={42} width={42}
-        alt={alt ?? code}
-        src={'/img/q.svg'}
-        placeholder='blur' blurDataURL='/img/q.svg'
-      />;
-    }
-    if (imageSrc?.includes('/crypto-icons')) {  // if not found as crypto
-      return <Image 
-        height={42} width={42}
-        alt={alt ?? code}
-        src={`/crypto-icons/${code}.png`}
-        onError={() => setIsError2(true)}
-        placeholder='blur' blurDataURL='/img/q.svg'
-      />
-    }
-    return <Image 
-      height={42} width={42}
-      alt={alt ?? code}
-      src={'/img/q.svg'}
-      placeholder='blur' blurDataURL='/img/q.svg'
-    />;
-  }
-
-  if (imageSrc === '' || !imageSrc) {
-    return <QuestionMarkSvg className="size-8" width={42} />;
-  }
+    return (flagSrc);
+  }, [code]);
 
   return (
-    <Image 
+    <ImageWithFallback
       height={42} width={42}
       alt={alt ?? code}
       src={imageSrc}
-      onError={() => setIsError(true)}
+      fallbackSrc={[`/crypto-icons/${code}.png`, '/img/q.svg']}
       placeholder='blur'
       blurDataURL='/img/q.svg'
     />
