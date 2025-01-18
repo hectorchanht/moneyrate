@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { DeleteSvg, SearchSvg } from '@/lib/svgs';
 import CountryImg from '@/components/CountryImg';
+import { useTranslation } from '@/hooks/useTranslation';
+import { DeleteSvg, SearchSvg } from '@/lib/svgs';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 interface SearchBarProps {
   data: { [key: string]: string }; // Updated to reflect the structure of dataList
@@ -11,6 +12,7 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({ data = {}, onSelect = () => { }, selected = [] }) => {
   const [query, setQuery] = useState('');
+  const t = useTranslation();
 
   const matched = useMemo(() => {
     const filteredMatches = Object.entries(data).reduce((acc: string[], [code]) => {
@@ -50,7 +52,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data = {}, onSelect = () => { }, 
   return (
     <div>
       <form className={'flex justify-between items-center overflow-hidden relative'} >
-        <input placeholder='fiat💸(usd) | crypto📈(btc) | commodity🪙(xau)' type={'text'} value={query} onChange={(e) => setQuery(e.target.value)} className="w-full bg-black" />
+        <input placeholder={t.home.searchPlaceholder} type={'text'} value={query} onChange={(e) => setQuery(e.target.value)} className="w-full bg-black" />
 
         <span className={'absolute right-1 m-1 inline-flex cursor-pointer items-center'}>
           {!query.length

@@ -1,6 +1,9 @@
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useTranslation } from '@/hooks/useTranslation';
 import { DefaultCurrency2Display } from '@/lib/constants';
 import { getDataFromLocalStorage } from '@/lib/fns';
 import { AddSvg, CrossSvg, ListSvg, SettingSvg, TableSvg, XSvg } from '@/lib/svgs';
+import { Language } from '@/lib/types';
 import React, { useState } from 'react'; // Add useState import
 import CountryImg from './CountryImg';
 
@@ -35,10 +38,45 @@ interface CurrencySettingProps {
   setIsEditing: (params: boolean) => void;
 }
 
+const languageOptions = [
+  { value: 'en', label: 'English' },
+  { value: 'zh-TW', label: '繁體中文' },
+  { value: 'zh-CN', label: '简体中文' },
+  { value: 'ja', label: '日本語' },
+  { value: 'ko', label: '한국어' },
+  { value: 'fr', label: 'Français' },
+  { value: 'de', label: 'Deutsch' },
+  { value: 'es', label: 'Español' },
+  { value: 'it', label: 'Italiano' },
+  { value: 'pt', label: 'Português' },
+  { value: 'ru', label: 'Русский' },
+  { value: 'ar', label: 'العربية' },
+  { value: 'hi', label: 'हिन्दी' },
+  { value: 'bn', label: 'বাংলা' },
+  { value: 'pa', label: 'ਪੰਜਾਬੀ' },
+  { value: 'ur', label: 'اردو' },
+  { value: 'vi', label: 'Tiếng Việt' },
+  { value: 'th', label: 'ไทย' },
+  { value: 'id', label: 'Bahasa Indonesia' },
+  { value: 'ms', label: 'Bahasa Melayu' },
+  { value: 'nl', label: 'Nederlands' },
+  { value: 'sv', label: 'Svenska' },
+  { value: 'no', label: 'Norsk' },
+  { value: 'da', label: 'Dansk' },
+  { value: 'fi', label: 'Suomi' },
+  { value: 'pl', label: 'Polski' },
+  { value: 'ro', label: 'Română' },
+  { value: 'sk', label: 'Slovenčina' },
+  { value: 'sl', label: 'Slovenščina' },
+  { value: 'tr', label: 'Türkçe' },
+]
+
 const CurrencySetting: React.FC<CurrencySettingProps> = ({
   isDefaultCurrencyValue, defaultCurrencyValue, setIsDefaultCurrencyValue, setDefaultCurrencyValue, isEditing, setIsEditing
 }) => {
   const [currency2Display, setCurrency2Display] = useState<string[]>(getDataFromLocalStorage('currency2Display', DefaultCurrency2Display));
+  const { language, setLanguage } = useLanguage();
+  const t = useTranslation();
 
   return (
     <div>
@@ -47,8 +85,8 @@ const CurrencySetting: React.FC<CurrencySettingProps> = ({
           <input type="checkbox" checked={isEditing} onChange={() => {
             setIsEditing(!isEditing);
           }} className="checkbox" />
-          <span className="label-text">
-            Enable Delete & Drag and Drop 🔧
+          <span className="label-text px-2">
+            {t.settings.enableDeleteDragAndDrop}
           </span>
         </label>
 
@@ -58,8 +96,8 @@ const CurrencySetting: React.FC<CurrencySettingProps> = ({
           <input type="checkbox" checked={isDefaultCurrencyValue} onChange={() => {
             setIsDefaultCurrencyValue(!isDefaultCurrencyValue);
           }} className="checkbox" />
-          <span className="label-text justify-between items-center flex gap-2 ml-2">
-            Reset Value 🔄
+          <span className="label-text pl-2 justify-between items-center flex gap-2">
+            {t.settings.resetValue}
             <input type="number" className="w-[50%] bg-black" placeholder={defaultCurrencyValue.toString()} disabled={!isDefaultCurrencyValue}
               onChange={(d) => {
                 setDefaultCurrencyValue(parseInt(d.target.value));
@@ -71,9 +109,24 @@ const CurrencySetting: React.FC<CurrencySettingProps> = ({
         <div className="divider m-0" />
 
         <label className="label">
-          <span className="label-text">Currencies to display</span>
+          <span className="label-text">{t.settings.changeLanguage}</span>
         </label>
-        <input type="text" className="input input-bordered rounded-none w-full mt-2" placeholder="currencies to display separated by comma(,)"
+        <select
+          className="select select-bordered w-full mt-2"
+          value={language}
+          onChange={(e) => setLanguage(e.target.value as Language)}
+        >
+          {languageOptions.map(({ value, label }) => (
+            <option value={value} key={value}>{label}</option>
+          ))}
+        </select>
+
+        <div className="divider m-0" />
+
+        <label className="label">
+          <span className="label-text">{t.settings.currenciesToDisplay}</span>
+        </label>
+        <input type="text" className="input input-bordered rounded-none w-full mt-2" placeholder={t.settings.currenciesToDisplaySeparatedByComma}
           value={currency2Display.filter(Boolean).join(',')}
           onChange={(d) => {
             setCurrency2Display(d.target.value.split(',').map(c => c.trim()).filter(Boolean));
@@ -82,9 +135,10 @@ const CurrencySetting: React.FC<CurrencySettingProps> = ({
         <button className="btn btn-primary w-full mt-2" onClick={() => {
           localStorage.clear(); // Clear all local storage
           localStorage.setItem('currency2Display', JSON.stringify(currency2Display.length > 0 ? currency2Display : DefaultCurrency2Display));
+          localStorage.setItem('language', language);
           window.location.reload(); // Refresh the page
         }}>
-          RESET
+          {t.settings.reset}
         </button>
 
       </div>
@@ -102,15 +156,15 @@ const MemoizedCurrencySetting = React.memo(CurrencySetting, (prev, next) => {
 const CurrencyListTable: React.FC<CurrencyListTableProps> = ({
   data, addCurrency2Display, currency2Display, removeCurrency2Display
 }) => {
-
+  const t = useTranslation();
   return <div className="overflow-x-auto">
     <table className="table">
       <thead>
         <tr>
           <td></td>
-          <th></th>
-          <th>Code</th>
-          <th>Name</th>
+          <td></td>
+          <th>{t.settings.code}</th>
+          <th>{t.settings.name}</th>
         </tr>
       </thead>
       <tbody>
