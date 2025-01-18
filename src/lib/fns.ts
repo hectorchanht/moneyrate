@@ -41,4 +41,17 @@ export const showASCIIArt = () => {
              ▀                    ▀                                            
 https://github.com/hectorchanht/moneyrate`;
   console.log(art);
-};  
+};
+
+export const getDataFromLocalStorage = (name: string, defaultValue: any) => {
+  if (typeof window === "undefined" || !window || !window.localStorage) return defaultValue
+  const lsData = localStorage.getItem(name);
+  if (lsData === null) return defaultValue;
+
+  try {
+    const lsDataParsed = JSON.parse(lsData);
+    return lsDataParsed;
+  } catch {
+    return lsData
+  }
+};

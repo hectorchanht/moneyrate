@@ -1,5 +1,5 @@
 export const DefaultBaseCur = 'usd';
-export const DefaultCurrency2Display = ['usd', 'hkd', 'cad', 'jpy', 'cny', 'gbp', 'chf', 'btc', 'eur', 'aud', 'nzd', 'eth', 'xau'];
+export const DefaultCurrency2Display = ['usd', 'btc', 'cad', 'hkd', 'jpy', 'cny', 'eur', 'eth', 'xau', 'gbp', 'chf', 'aud', 'nzd'];
 export const DefaultCurrencyValue = 100;
 
 export const Currency2country = {

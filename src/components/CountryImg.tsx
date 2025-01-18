@@ -1,6 +1,6 @@
 import Image, { ImageProps } from 'next/image';
 import { memo, useMemo, useState } from 'react';
-import { Currency2country } from '../constants';
+import { Currency2country } from '@/lib/constants';
 
 interface ImageWithFallbackProps extends ImageProps {
   fallbackSrc: string[];

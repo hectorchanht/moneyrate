@@ -1,5 +1,7 @@
+import { DefaultCurrency2Display } from '@/lib/constants';
+import { getDataFromLocalStorage } from '@/lib/fns';
+import { AddSvg, CrossSvg, ListSvg, SettingSvg, TableSvg, XSvg } from '@/lib/svgs';
 import React, { useState } from 'react'; // Add useState import
-import { AddSvg, CrossSvg, ListSvg, SettingSvg, TableSvg, XSvg } from '../svgs';
 import CountryImg from './CountryImg';
 
 
@@ -36,6 +38,7 @@ interface CurrencySettingProps {
 const CurrencySetting: React.FC<CurrencySettingProps> = ({
   isDefaultCurrencyValue, defaultCurrencyValue, setIsDefaultCurrencyValue, setDefaultCurrencyValue, isEditing, setIsEditing
 }) => {
+  const [currency2Display, setCurrency2Display] = useState<string[]>(getDataFromLocalStorage('currency2Display', DefaultCurrency2Display));
 
   return (
     <div>
@@ -45,7 +48,7 @@ const CurrencySetting: React.FC<CurrencySettingProps> = ({
             setIsEditing(!isEditing);
           }} className="checkbox" />
           <span className="label-text">
-            Enable Editing
+            Enable Delete & Drag and Drop 🔧
           </span>
         </label>
 
@@ -56,7 +59,7 @@ const CurrencySetting: React.FC<CurrencySettingProps> = ({
             setIsDefaultCurrencyValue(!isDefaultCurrencyValue);
           }} className="checkbox" />
           <span className="label-text justify-between items-center flex gap-2 ml-2">
-            Set Value
+            Reset Value 🔄
             <input type="number" className="w-[50%] bg-black" placeholder={defaultCurrencyValue.toString()} disabled={!isDefaultCurrencyValue}
               onChange={(d) => {
                 setDefaultCurrencyValue(parseInt(d.target.value));
@@ -65,8 +68,20 @@ const CurrencySetting: React.FC<CurrencySettingProps> = ({
           </span>
         </label>
 
+        <div className="divider m-0" />
+
+        <label className="label">
+          <span className="label-text">Currencies to display</span>
+        </label>
+        <input type="text" className="input input-bordered rounded-none w-full mt-2" placeholder="currencies to display separated by comma(,)"
+          value={currency2Display.filter(Boolean).join(',')}
+          onChange={(d) => {
+            setCurrency2Display(d.target.value.split(',').map(c => c.trim()).filter(Boolean));
+          }} />
+
         <button className="btn btn-primary w-full mt-2" onClick={() => {
           localStorage.clear(); // Clear all local storage
+          localStorage.setItem('currency2Display', JSON.stringify(currency2Display.length > 0 ? currency2Display : DefaultCurrency2Display));
           window.location.reload(); // Refresh the page
         }}>
           RESET
@@ -118,9 +133,9 @@ const CurrencyListTable: React.FC<CurrencyListTableProps> = ({
   </div>
 };
 
-const MemoizedCurrencyListTable = React.memo(CurrencyListTable, (prev, next) => {
-  return prev.currency2Display === next.currency2Display;
-});
+// const MemoizedCurrencyListTable = React.memo(CurrencyListTable, (prev, next) => {
+//   return prev.currency2Display === next.currency2Display;
+// });
 
 
 const CurrencyListModal: React.FC<CurrencyListModalProps> = ({
@@ -165,7 +180,7 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({
 
           {/* Tab content rendering */}
           {activeTab === 1 && <div>
-            <MemoizedCurrencyListTable data={data} currency2Display={currency2Display} addCurrency2Display={addCurrency2Display} removeCurrency2Display={removeCurrency2Display} />
+            <CurrencyListTable data={data} currency2Display={currency2Display} addCurrency2Display={addCurrency2Display} removeCurrency2Display={removeCurrency2Display} />
           </div>}
           {activeTab === 2 && <div>
             <MemoizedCurrencySetting isDefaultCurrencyValue={isDefaultCurrencyValue} defaultCurrencyValue={defaultCurrencyValue}

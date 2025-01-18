@@ -3,9 +3,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import useSWR from 'swr';
-import { fetcher } from '../api';
-import { DownloadSvg, ReverseSvg } from '../svgs';
-import { showASCIIArt } from '../fns';
+import { showASCIIArt } from '@/lib/fns';
+import { DownloadSvg, ReverseSvg } from '@/lib/svgs';
+import { fetcher } from '@/lib/api';
 
 // Define the type for the data items
 interface DataItem {

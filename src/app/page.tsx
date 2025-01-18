@@ -1,17 +1,16 @@
 "use client";
 
+import CountryImg from '@/components/CountryImg';
+import CurrencyListModal from '@/components/CurrencyListModal';
+import DragHandle from '@/components/DragHandle';
+import SearchBar from '@/components/SearchBar';
+import { CurrencyRate4All, CurrencyRate4BaseCur, fetcher, getCurrencyRateApiUrl } from '@/lib/api';
+import { DefaultBaseCur, DefaultCurrency2Display, DefaultCurrencyValue } from '@/lib/constants';
+import { getDataFromLocalStorage, showASCIIArt } from '@/lib/fns';
+import { CrossSvg, EmptySvg } from '@/lib/svgs';
 import { pick } from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
-import { CurrencyRate4All, CurrencyRate4BaseCur, fetcher, getCurrencyRateApiUrl } from './api';
-import CountryImg from './components/CountryImg';
-import CurrencyListModal from './components/CurrencyListModal';
-import DragHandle from './components/DragHandle';
-import SearchBar from './components/SearchBar';
-import { DefaultBaseCur, DefaultCurrency2Display, DefaultCurrencyValue } from './constants';
-import { showASCIIArt } from './fns';
-import { CrossSvg, EmptySvg } from './svgs';
-
 
 
 
@@ -62,18 +61,6 @@ type CurrencyRates = {
   [key: string]: number;
 };
 
-const getDataFromLocalStorage = (name: string, defaultValue: any) => {
-  if (typeof window === "undefined" || !window || !window.localStorage) return defaultValue
-  const lsData = localStorage.getItem(name);
-  if (lsData === null) return defaultValue;
-
-  try {
-    const lsDataParsed = JSON.parse(lsData);
-    return lsDataParsed;
-  } catch {
-    return lsData
-  }
-};
 
 export default function Home() {
   useDragDropTouch();
@@ -206,11 +193,7 @@ export default function Home() {
 
               return <div key={cur} id='currencyItem'>
                 <div className='flex gap-2 h-42 items-center'>
-                  {cur === baseCur
-                    ? (isEditing ? <EmptySvg /> : null)
-                    : (isEditing
-                      ? <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display({ name: cur })} />
-                      : null)}
+
                   {isEditing && <DragHandle onDragStart={() => currencyItemOnDrag.current = cur} />}
                   <div className='flex w-full justify-between items-center gap-4'>
                     <a href={cur === baseCur ? undefined : `/chart?q=${(cur + '-' + baseCur).toUpperCase()}`} className="text-start tooltip flex items-center gap-2" data-tip={data4All ? data4All[cur] : ''}>
@@ -224,6 +207,12 @@ export default function Home() {
                       : <div onClick={() => onBaseCurChange(cur)} className=' text-end'>
                         {val2Show}
                       </div>}
+
+                    {cur === baseCur
+                      ? (isEditing ? <EmptySvg /> : null)
+                      : (isEditing
+                        ? <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display({ name: cur })} />
+                        : null)}
                   </div>
                 </div>
                 {(i < currencyRatesPairs2Display.length - 1) ? <div className="divider my-2" /> : <br />}

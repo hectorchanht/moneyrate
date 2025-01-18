@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarSvg } from '../svgs';
+import { BarSvg } from '@/lib/svgs';
 
 type DragHandleProps = {
   onDragStart: (e: React.DragEvent<HTMLDivElement>) => void;
