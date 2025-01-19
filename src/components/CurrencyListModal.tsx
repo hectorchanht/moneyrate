@@ -216,9 +216,6 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({
       </button>
 
       <dialog id="currency_list_modal" className="modal">
-        <button className="btn rounded-full p-0 absolute bottom-[10vh] z-20 w-14 h-14" onClick={closeModal}>
-          <XSvg />
-        </button>
 
         <div className="modal-box max-w-[460px] p-2">
 
@@ -229,7 +226,9 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({
             <a role="tab" className={`tab ${activeTab === 2 ? 'tab-active' : ''}`} onClick={() => setActiveTab(2)}>
               <SettingSvg />
             </a>
-            {/* <a role="tab" className={`tab ${activeTab === 3 ? 'tab-active' : ''}`} onClick={() => setActiveTab(3)}>Tab 3</a> */}
+            <a role="tab" className={`tab`} onClick={closeModal}>
+              <XSvg />
+            </a>
           </div>
 
           {/* Tab content rendering */}
