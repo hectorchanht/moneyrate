@@ -1,6 +1,6 @@
+import { Currency2country } from '@/lib/constants';
 import Image, { ImageProps } from 'next/image';
 import { memo, useMemo, useState } from 'react';
-import { Currency2country } from '@/lib/constants';
 
 interface ImageWithFallbackProps extends ImageProps {
   fallbackSrc: string[];
@@ -43,6 +43,7 @@ const CountryImg: React.FC<CountryImgProps> = ({ code = '', alt = '' }) => {
 
   return (
     <ImageWithFallback
+      className='h-[42px] w-[42px]'
       height={42} width={42}
       alt={alt ?? code}
       src={imageSrc}
