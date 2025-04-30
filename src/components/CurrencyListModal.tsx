@@ -205,13 +205,13 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data }) => {
 
   return (
     <div className=''>
-      <button className="btn w-full h-10  " onClick={openModal}>
+      <button className="p-2  " onClick={openModal}>
         <ListSvg />
       </button>
 
-      <dialog id="currency_list_modal" className="modal">
+      <dialog id="currency_list_modal" className="modal"  >
 
-        <div className="modal-box max-w-[460px] p-2">
+        <div className="modal-box max-w-[460px] p-2" >
 
           <div role="tablist" className="tabs tabs-bordered mb-2">
             <a role="tab" className={`tab ${activeTab === 1 ? 'tab-active' : ''}`} onClick={() => setActiveTab(1)}>
@@ -236,6 +236,9 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data }) => {
 
         </div>
 
+        <form method="dialog" className="modal-backdrop">
+          <button onClick={closeModal}>close</button>
+        </form>
       </dialog>
     </div>
   );
