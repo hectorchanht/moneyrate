@@ -189,6 +189,9 @@ export default function Home() {
                   cryptoDp = 6;
                 }
               }
+              if (windowWidth < 300) {
+                cryptoDp = 6;
+              }
 
               const dp2Show = ((currencyValue === 0) || (valMultiplied > 1))
                 ? defaultCurrencyValueDp
@@ -201,14 +204,14 @@ export default function Home() {
 
                   <div className='flex w-full justify-between items-center gap-4'>
                     {isEditing && <DragHandle onDragStart={() => currencyItemOnDrag.current = cur} />}
-                    <a href={cur === baseCur ? undefined : `/chart?q=${(cur + '-' + baseCur).toUpperCase()}`} className="text-start tooltip flex items-center gap-2 h-[42px] w-[42px]" data-tip={data4All ? data4All[cur] : ''}>
+                    <a href={cur === baseCur ? undefined : `/chart?q=${(cur + '-' + baseCur).toUpperCase()}`} className="text-start tooltip flex items-center gap-2 h-[42px] w-fit" data-tip={data4All ? data4All[cur] : ''}>
                       <CountryImg code={cur} />
                       {cur.toUpperCase()}
                     </a>
 
                     {cur === baseCur
                       ? <input min={0} onChange={handleCurrencyValue} step="1"
-                        value={currencyValue === 0 ? 0 : currencyValue.toFixed(dp2Show)} type="number" placeholder="0" className="bg-black h-[2em] max-w-[50vw] text-end" />
+                        value={currencyValue === 0 ? 0 : currencyValue.toFixed(dp2Show)} type="number" placeholder="0" className={`bg-black h-[2em] w-30 md:w-50 text-end`} />
                       : <div onClick={() => onBaseCurChange(cur)} className='w-[240px] text-end'>
                         {val2Show}
                       </div>}
