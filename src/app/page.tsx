@@ -5,14 +5,21 @@ import CurrencyListModal from '@/components/CurrencyListModal';
 import DragHandle from '@/components/DragHandle';
 import SearchBar from '@/components/SearchBar';
 import { CurrencyRate4All, CurrencyRate4BaseCur, fetcher, getCurrencyRateApiUrl } from '@/lib/api';
-import { DefaultBaseCur, DefaultCurrency2Display, DefaultCurrencyValue } from '@/lib/constants';
-import { getDataFromLocalStorage, showASCIIArt } from '@/lib/fns';
+import {
+  baseCurAtom,
+  currency2DisplayAtom,
+  currencyValueAtom,
+  defaultCurrencyValueAtom,
+  defaultCurrencyValueDpAtom,
+  isDefaultCurrencyValueAtom,
+  isEditingAtom
+} from '@/lib/atoms';
+import { showASCIIArt } from '@/lib/fns';
 import { CrossSvg, EmptySvg } from '@/lib/svgs';
+import { useAtom } from 'jotai';
 import { pick } from 'lodash';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import useSWR from 'swr';
-
-
 
 declare global {
   interface DragDropTouch {
@@ -54,24 +61,21 @@ const useDragDropTouch = () => {
   }, []);
 };
 
-
-
-
 type CurrencyRates = {
   [key: string]: number;
 };
-
 
 export default function Home() {
   useDragDropTouch();
 
   const currencyItemOnDrag = useRef<string>('');
-  const [baseCur, setBaseCur] = useState<string>(getDataFromLocalStorage('baseCur', DefaultBaseCur));//getDataFromLocalStorage('baseCur', DefaultBaseCur));
-  const [currency2Display, setCurrency2Display] = useState<string[]>(getDataFromLocalStorage('currency2Display', DefaultCurrency2Display));
-  const [currencyValue, setCurrencyValue] = useState<number>(getDataFromLocalStorage('currencyValue', DefaultCurrencyValue));
-  const [isEditing, setIsEditing] = useState(getDataFromLocalStorage('isEditing', false));
-  const [isDefaultCurrencyValue, setIsDefaultCurrencyValue] = useState(getDataFromLocalStorage('isDefaultCurrencyValue', true));
-  const [defaultCurrencyValue, setDefaultCurrencyValue] = useState(getDataFromLocalStorage('defaultCurrencyValue', DefaultCurrencyValue));
+  const [baseCur, setBaseCur] = useAtom(baseCurAtom);
+  const [currency2Display, setCurrency2Display] = useAtom(currency2DisplayAtom);
+  const [currencyValue, setCurrencyValue] = useAtom(currencyValueAtom);
+  const [isEditing] = useAtom(isEditingAtom);
+  const [isDefaultCurrencyValue] = useAtom(isDefaultCurrencyValueAtom);
+  const [defaultCurrencyValue] = useAtom(defaultCurrencyValueAtom);
+  const [defaultCurrencyValueDp] = useAtom(defaultCurrencyValueDpAtom);
 
   const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrl({ baseCurrencyCode: baseCur }), fetcher, { keepPreviousData: true });
   const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrl({}), fetcher, { keepPreviousData: true });
@@ -83,13 +87,6 @@ export default function Home() {
   const currencyRatesPairs2Display: [string, number][] = useMemo(() => {
     return Object.entries(curObj) || [];;
   }, [curObj]);
-
-  useEffect(() => {
-    localStorage.setItem("isDefaultCurrencyValue", (isDefaultCurrencyValue));
-    localStorage.setItem("isEditing", (isEditing));
-    localStorage.setItem("defaultCurrencyValue", (defaultCurrencyValue));
-  }, [isEditing, isDefaultCurrencyValue, defaultCurrencyValue]);
-
 
   const addCurrency2Display = ({ name }: { name: string }) => {
     setCurrency2Display(cur => {
@@ -179,12 +176,8 @@ export default function Home() {
 
         <div className='grid grid-cols-1 justify-between m-auto max-w-[800px] p-4'>
           <span className='flex gap-2 w-full'>
-            <CurrencyListModal data={data4All ?? {}} currency2Display={currency2Display} addCurrency2Display={addCurrency2Display} removeCurrency2Display={removeCurrency2Display}
-              isDefaultCurrencyValue={isDefaultCurrencyValue} setIsDefaultCurrencyValue={setIsDefaultCurrencyValue}
-              defaultCurrencyValue={defaultCurrencyValue} setDefaultCurrencyValue={setDefaultCurrencyValue}
-              isEditing={isEditing} setIsEditing={setIsEditing}
-            />
-            <SearchBar data={data4All ?? {}} onSelect={addCurrency2Display} selected={currency2Display} />
+            <CurrencyListModal data={data4All ?? {}} />
+            <SearchBar data={data4All ?? {}} />
           </span>
 
           <br />
@@ -196,7 +189,13 @@ export default function Home() {
             className="relative"
           >
             {(currencyRatesPairs2Display).map(([cur, val], i) => {
-              const val2Show = (val * currencyValue).toLocaleString(undefined, { minimumFractionDigits: ((val * currencyValue > 1) ? 3 : 10) }) ?? 0;
+              const valMultiplied = val * currencyValue;
+              const dp2Show = ((currencyValue === 0) || (valMultiplied > 1))
+                ? defaultCurrencyValueDp
+                : defaultCurrencyValueDp > 10 ? defaultCurrencyValueDp : 10;
+              console.log(` page.tsx --- defaultCurrencyValueDp:`, defaultCurrencyValueDp)
+
+              const val2Show = (valMultiplied).toLocaleString(undefined, { minimumFractionDigits: dp2Show, maximumFractionDigits: dp2Show }) ?? 0;
 
               return <div key={cur} id='currencyItem'>
                 <div className='flex gap-2 h-42 items-center'>
@@ -209,9 +208,9 @@ export default function Home() {
                     </a>
 
                     {cur === baseCur
-                      ? <input min={0} onChange={handleCurrencyValue} step=".01"
-                        value={currencyValue} type="number" placeholder="🔍" className="bg-black h-[2em] max-w-[50vw] text-end" />
-                      : <div onClick={() => onBaseCurChange(cur)} className=' text-end'>
+                      ? <input min={0} onChange={handleCurrencyValue} step="1"
+                        value={currencyValue === 0 ? 0 : currencyValue.toFixed(dp2Show)} type="number" placeholder="0" className="bg-black h-[2em] max-w-[50vw] text-end" />
+                      : <div onClick={() => onBaseCurChange(cur)} className='w-[240px] text-end'>
                         {val2Show}
                       </div>}
 

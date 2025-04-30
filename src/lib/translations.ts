@@ -14,6 +14,7 @@ export const translations = {
       name: 'Name',
       currenciesToDisplaySeparatedByComma: 'Currencies to display separated by comma(,)',
       changeLanguage: 'Change Language 🌐',
+      setDp: 'Set value decimal places'
     }
   },
   'zh-TW': {
@@ -31,6 +32,7 @@ export const translations = {
       name: '名稱',
       currenciesToDisplaySeparatedByComma: '要顯示的貨幣以逗號分隔(,)',
       changeLanguage: '更改語言 🌐',
+      setDp: '設定數值小數位數'
     }
   },
   'zh-CN': {
@@ -48,6 +50,7 @@ export const translations = {
       name: '名稱',
       currenciesToDisplaySeparatedByComma: '要显示的货币以逗号分隔(,)',
       changeLanguage: '更改语言 🌐',
+      setDp: '设定数值小数位数'
     }
   },
   'ja': {
@@ -65,6 +68,7 @@ export const translations = {
       name: '名前',
       currenciesToDisplaySeparatedByComma: '表示する通貨をカンマで区切る(,)',
       changeLanguage: '言語を変更する 🌐',
+      setDp: '小数点以下の桁数を設定'
     }
   },
   'ko': {
@@ -82,6 +86,7 @@ export const translations = {
       name: '이름',
       currenciesToDisplaySeparatedByComma: '표시할 통화를 쉼표로 구분(,)',
       changeLanguage: '언어 변경 🌐',
+      setDp: '소수점 자릿수 설정'
     }
   },
   'fr': {
@@ -99,6 +104,7 @@ export const translations = {
       name: 'Nom',
       currenciesToDisplaySeparatedByComma: 'Devises à afficher séparées par une virgule(,)',
       changeLanguage: 'Changer de langue 🌐',
+      setDp: 'Définir les décimales'
     }
   },
   'de': {
@@ -116,6 +122,7 @@ export const translations = {
       name: 'Name',
       currenciesToDisplaySeparatedByComma: 'Anzuzeigende Währungen durch Komma getrennt(,)',
       changeLanguage: 'Sprache ändern 🌐',
+      setDp: 'Dezimalstellen festlegen'
     }
   },
   'es': {
@@ -133,6 +140,7 @@ export const translations = {
       name: 'Nombre',
       currenciesToDisplaySeparatedByComma: 'Monedas a mostrar separadas por coma(,)',
       changeLanguage: 'Cambiar idioma 🌐',
+      setDp: 'Establecer decimales'
     }
   },
   'it': {
@@ -150,6 +158,7 @@ export const translations = {
       name: 'Nome',
       currenciesToDisplaySeparatedByComma: 'Valute da mostrare separate da virgola(,)',
       changeLanguage: 'Cambia lingua 🌐',
+      setDp: 'Imposta decimali'
     }
   },
   'pt': {
@@ -167,6 +176,7 @@ export const translations = {
       name: 'Nome',
       currenciesToDisplaySeparatedByComma: 'Moedas a exibir separadas por vírgula(,)',
       changeLanguage: 'Mudar idioma 🌐',
+      setDp: 'Definir casas decimais'
     }
   },
   'ru': {
@@ -184,6 +194,7 @@ export const translations = {
       name: 'Имя',
       currenciesToDisplaySeparatedByComma: 'Валюта для отображения, разделенная запятой(,)',
       changeLanguage: 'Изменить язык 🌐',
+      setDp: 'Установить десятичные знаки'
     }
   },
   'ar': {
@@ -201,6 +212,7 @@ export const translations = {
       name: 'الاسم',
       currenciesToDisplaySeparatedByComma: 'العملات المعروضة مفصولة بالفاصلة(,)',
       changeLanguage: 'تغيير اللغة 🌐',
+      setDp: 'تعيين المنازل العشرية'
     }
   },
   'hi': {
@@ -218,6 +230,7 @@ export const translations = {
       name: 'नाम',
       currenciesToDisplaySeparatedByComma: 'प्रदर्शित करने वाली मुद्राएं, विराम चिह्न से अलग की गई(,)',
       changeLanguage: 'भाषा बदलें 🌐',
+      setDp: 'दशमलव स्थान सेट करें'
     }
   },
   'bn': {
@@ -235,6 +248,7 @@ export const translations = {
       name: 'নাম',
       currenciesToDisplaySeparatedByComma: 'প্রদর্শন করার মুদ্রা, কমা দ্বারা বিভক্ত(,)',
       changeLanguage: 'ভাষা পরিবর্তন করুন 🌐',
+      setDp: 'দশমিক স্থান সেট করুন'
     }
   },
   'pa': {
@@ -252,12 +266,13 @@ export const translations = {
       name: 'ਨਾਮ',
       currenciesToDisplaySeparatedByComma: 'ਪ੍ਰਦਰਸ਼ਿਤ ਕਰਨ ਵਾਲੀਆਂ ਮੁਦਰਾਵਾਂ, ਵਿਰਾਮ ਚਿੰਨ੍ਹ ਨਾਲ ਵੱਖ ਕੀਤੀਆਂ(,)',
       changeLanguage: 'ਭਾਸ਼ਾ ਬਦਲੋ 🌐',
+      setDp: 'ਦਸ਼ਮਲਵ ਸਥਾਨ ਸੈੱਟ ਕਰੋ'
     }
   },
   'ur': {
     home: {
       title: 'پیسے کی شرح - فیت کپٹو کرنسی تبدیل',
-      description: 'آپ اور میرے لیے فوری فیت اور کپٹو کرنسی تبدیل।',
+      description: 'آپ اور میرے لیے فوری فیت اور کپٹو کرنسی تبدیل۔',
       searchPlaceholder: 'فیت 💸 (usd) | کپٹو کرنسی 📈 (btc)'
     },
     settings: {
@@ -269,6 +284,7 @@ export const translations = {
       name: 'نام',
       currenciesToDisplaySeparatedByComma: 'پیش کئے جانے والے کرنسی, کوما سے الگ کئے گئے(,)',
       changeLanguage: 'زبان تبدیل کریں 🌐',
+      setDp: 'اعشاریہ مقامات سیٹ کریں'
     }
   },
   'vi': {
@@ -286,6 +302,7 @@ export const translations = {
       name: 'Tên',
       currenciesToDisplaySeparatedByComma: 'Tiền tệ để hiển thị, phân tách bằng dấu phẩy(,)',
       changeLanguage: 'Thay đổi ngôn ngữ 🌐',
+      setDp: 'Đặt số thập phân'
     }
   },
   'th': {
@@ -303,6 +320,7 @@ export const translations = {
       name: 'ชื่อ',
       currenciesToDisplaySeparatedByComma: 'สกุลเงินที่จะแสดง, แยกด้วยคอมม่า(,)',
       changeLanguage: 'เปลี่ยนภาษา 🌐',
+      setDp: 'ตั้งค่าทศนิยม'
     }
   },
   'id': {
@@ -320,6 +338,7 @@ export const translations = {
       name: 'Nama',
       currenciesToDisplaySeparatedByComma: 'Mata Uang untuk Ditampilkan, dipisahkan dengan koma(,)',
       changeLanguage: 'Ubah Bahasa 🌐',
+      setDp: 'Atur desimal'
     }
   },
   'ms': {
@@ -337,6 +356,7 @@ export const translations = {
       name: 'Nama',
       currenciesToDisplaySeparatedByComma: 'Mata Wang untuk Ditampilkan, dipisahkan dengan koma(,)',
       changeLanguage: 'Tukar Bahasa 🌐',
+      setDp: 'Tetapkan tempat perpuluhan'
     }
   },
   'nl': {
@@ -354,6 +374,7 @@ export const translations = {
       name: 'Naam',
       currenciesToDisplaySeparatedByComma: 'Valuta\'s om te tonen, gescheiden door een komma(,)',
       changeLanguage: 'Verander taal 🌐',
+      setDp: 'Decimale plaatsen instellen'
     }
   },
   'pl': {
@@ -371,6 +392,7 @@ export const translations = {
       name: 'Nazwa',
       currenciesToDisplaySeparatedByComma: 'Waluty do wyświetlenia, oddzielone średnikiem(,)',
       changeLanguage: 'Zmień język 🌐',
+      setDp: 'Ustaw miejsca dziesiętne'
     }
   },
   'ro': {
@@ -388,6 +410,7 @@ export const translations = {
       name: 'Nume',
       currenciesToDisplaySeparatedByComma: 'Valute pentru a fi afișate, separate de virgulă(,)',
       changeLanguage: 'Schimba limba 🌐',
+      setDp: 'Setați zecimale'
     }
   },
   'sv': {
@@ -405,6 +428,7 @@ export const translations = {
       name: 'Namn',
       currenciesToDisplaySeparatedByComma: 'Valutor att visa, separerade med komma(,)',
       changeLanguage: 'Ändra språk 🌐',
+      setDp: 'Ställ in decimaler'
     }
   },
   'no': {
@@ -422,6 +446,7 @@ export const translations = {
       name: 'Navn',
       currenciesToDisplaySeparatedByComma: 'Valutaer å vise, separert med komma(,)',
       changeLanguage: 'Endre språk 🌐',
+      setDp: 'Sett desimaler'
     }
   },
   'da': {
@@ -439,6 +464,7 @@ export const translations = {
       name: 'Navn',
       currenciesToDisplaySeparatedByComma: 'Valutaer at vise, adskilt med komma(,)',
       changeLanguage: 'Skift sprog 🌐',
+      setDp: 'Indstil decimaler'
     }
   },
   'fi': {
@@ -456,6 +482,7 @@ export const translations = {
       name: 'Nimi',
       currenciesToDisplaySeparatedByComma: 'Näytettävät Valuutat, erotettu pilkulla(,)',
       changeLanguage: 'Vaihda kieli 🌐',
+      setDp: 'Aseta desimaalit'
     }
   },
   'sk': {
@@ -473,6 +500,7 @@ export const translations = {
       name: 'Názov',
       currenciesToDisplaySeparatedByComma: 'Mena na zobrazenie, oddelené čiarkou(,)',
       changeLanguage: 'Zmień język 🌐',
+      setDp: 'Nastaviť desatinné miesta'
     }
   },
   'sl': {
@@ -490,6 +518,7 @@ export const translations = {
       name: 'Ime',
       currenciesToDisplaySeparatedByComma: 'Valute za prikaz, ločene z vejico(,)',
       changeLanguage: 'Spremenite jezik 🌐',
+      setDp: 'Nastavite decimalna mesta'
     }
   },
   'tr': {
@@ -507,9 +536,9 @@ export const translations = {
       name: 'Ad',
       currenciesToDisplaySeparatedByComma: 'Gösterilecek Para Birimleri, virgülle ayrılmış(,)',
       changeLanguage: 'Değiştir Dili 🌐',
+      setDp: 'Ondalık basamakları ayarla'
     }
-  },
-
+  }
 } as const;
 
 export type TranslationKey = keyof typeof translations.en; 

@@ -1,18 +1,14 @@
 'use client';
 
-import { getDataFromLocalStorage } from '@/lib/fns';
-import { Language, LanguageContextType } from '@/lib/types';
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { languageAtom } from '@/lib/atoms';
+import { LanguageContextType } from '@/lib/types';
+import { useAtom } from 'jotai';
+import { ReactNode, createContext, useContext } from 'react';
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>(getDataFromLocalStorage('language', 'en'));
-
-  useEffect(() => {
-    localStorage.setItem('language', language);
-    document.documentElement.lang = language;
-  }, [language]);
+  const [language, setLanguage] = useAtom(languageAtom);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage }}>

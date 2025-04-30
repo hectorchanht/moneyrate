@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 // import Head from 'next/head';
 import { LanguageProvider } from '@/contexts/LanguageContext';
+import { Provider } from 'jotai';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -42,9 +43,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <LanguageProvider>
-          {children}
-        </LanguageProvider>
+        <Provider>
+          <LanguageProvider>
+            {children}
+          </LanguageProvider>
+        </Provider>
       </body>
     </html>
   );

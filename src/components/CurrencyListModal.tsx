@@ -1,42 +1,18 @@
-import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/hooks/useTranslation';
+import {
+  currency2DisplayAtom,
+  defaultCurrencyValueAtom,
+  defaultCurrencyValueDpAtom,
+  isDefaultCurrencyValueAtom,
+  isEditingAtom,
+  languageAtom
+} from '@/lib/atoms';
 import { DefaultCurrency2Display } from '@/lib/constants';
-import { getDataFromLocalStorage } from '@/lib/fns';
 import { AddSvg, CrossSvg, ListSvg, SettingSvg, TableSvg, XSvg } from '@/lib/svgs';
 import { Language } from '@/lib/types';
-import React, { useState } from 'react'; // Add useState import
+import { useAtom } from 'jotai';
+import React, { useState } from 'react';
 import CountryImg from './CountryImg';
-
-
-interface CurrencyListModalProps {
-  data: Record<string, string>;
-  currency2Display: string[];
-  removeCurrency2Display: (params: { name: string }) => void;
-  addCurrency2Display: (params: { name: string }) => void;
-
-  isDefaultCurrencyValue: boolean;
-  setIsDefaultCurrencyValue: (params: boolean) => void;
-  defaultCurrencyValue: number;
-  setDefaultCurrencyValue: (params: number) => void;
-  isEditing: boolean;
-  setIsEditing: (params: boolean) => void;
-}
-
-interface CurrencyListTableProps {
-  data: Record<string, string>;
-  currency2Display: string[];
-  removeCurrency2Display: (params: { name: string }) => void;
-  addCurrency2Display: (params: { name: string }) => void;
-}
-
-interface CurrencySettingProps {
-  isDefaultCurrencyValue: boolean;
-  setIsDefaultCurrencyValue: (params: boolean) => void;
-  defaultCurrencyValue: number;
-  setDefaultCurrencyValue: (params: number) => void;
-  isEditing: boolean;
-  setIsEditing: (params: boolean) => void;
-}
 
 const languageOptions = [
   { value: 'en', label: 'English' },
@@ -71,11 +47,22 @@ const languageOptions = [
   { value: 'tr', label: 'Türkçe' },
 ]
 
-const CurrencySetting: React.FC<CurrencySettingProps> = ({
-  isDefaultCurrencyValue, defaultCurrencyValue, setIsDefaultCurrencyValue, setDefaultCurrencyValue, isEditing, setIsEditing
-}) => {
-  const [currency2Display, setCurrency2Display] = useState<string[]>(getDataFromLocalStorage('currency2Display', DefaultCurrency2Display));
-  const { language, setLanguage } = useLanguage();
+
+interface CurrencyListModalProps {
+  data: Record<string, string>;
+}
+
+interface CurrencyListTableProps {
+  data: Record<string, string>;
+}
+
+const CurrencySetting: React.FC = () => {
+  const [isDefaultCurrencyValue, setIsDefaultCurrencyValue] = useAtom(isDefaultCurrencyValueAtom);
+  const [defaultCurrencyValue, setDefaultCurrencyValue] = useAtom(defaultCurrencyValueAtom);
+  const [defaultCurrencyValueDp, setDefaultCurrencyValueDp] = useAtom(defaultCurrencyValueDpAtom);
+  const [isEditing, setIsEditing] = useAtom(isEditingAtom);
+  const [currency2Display, setCurrency2Display] = useAtom(currency2DisplayAtom);
+  const [language, setLanguage] = useAtom(languageAtom);
   const t = useTranslation();
 
   return (
@@ -108,6 +95,20 @@ const CurrencySetting: React.FC<CurrencySettingProps> = ({
 
         <div className="divider m-0" />
 
+        <label className="label cursor-pointer">
+
+          <span className="label-text pl-2 justify-between items-center flex gap-2">
+            {t.settings.setDp}
+            <input type="number" className="w-[50%] bg-black" placeholder={defaultCurrencyValueDp?.toString() ?? 0}
+              onChange={(d) => {
+                setDefaultCurrencyValueDp(isNaN(parseInt(d.target.value)) ? 0 : parseInt(d.target.value ?? 0)) ?? 0;
+              }}
+            />
+          </span>
+        </label>
+
+        <div className="divider m-0" />
+
         <label className="label">
           <span className="label-text">{t.settings.changeLanguage}</span>
         </label>
@@ -133,30 +134,32 @@ const CurrencySetting: React.FC<CurrencySettingProps> = ({
           }} />
 
         <button className="btn btn-primary w-full mt-2" onClick={() => {
-          localStorage.clear(); // Clear all local storage
-          localStorage.setItem('currency2Display', JSON.stringify(currency2Display.length > 0 ? currency2Display : DefaultCurrency2Display));
-          localStorage.setItem('language', language);
-          window.location.reload(); // Refresh the page
+          localStorage.clear();
+          setCurrency2Display(DefaultCurrency2Display);
+          setLanguage('en');
+          window.location.reload();
         }}>
           {t.settings.reset}
         </button>
 
       </div>
     </div>
-  )
+  );
 };
 
-const MemoizedCurrencySetting = React.memo(CurrencySetting, (prev, next) => {
-  return prev.isDefaultCurrencyValue === next.isDefaultCurrencyValue
-    && prev.defaultCurrencyValue === next.defaultCurrencyValue
-    && prev.isEditing === next.isEditing;
-});
 
-
-const CurrencyListTable: React.FC<CurrencyListTableProps> = ({
-  data, addCurrency2Display, currency2Display, removeCurrency2Display
-}) => {
+const CurrencyListTable: React.FC<CurrencyListTableProps> = ({ data }) => {
+  const [currency2Display, setCurrency2Display] = useAtom(currency2DisplayAtom);
   const t = useTranslation();
+
+  const addCurrency2Display = (name: string) => {
+    setCurrency2Display(prev => [...prev, name]);
+  };
+
+  const removeCurrency2Display = (name: string) => {
+    setCurrency2Display(prev => prev.filter(c => c !== name));
+  };
+
   return <div className="overflow-x-auto">
     <table className="table">
       <thead>
@@ -173,8 +176,8 @@ const CurrencyListTable: React.FC<CurrencyListTableProps> = ({
             <td className='py-0 pl-0'>
               {
                 currency2Display.includes(code)
-                  ? <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display({ name: code })} />
-                  : <AddSvg className={'cursor-pointer size-6'} onClick={() => addCurrency2Display({ name: code })} />
+                  ? <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display(code)} />
+                  : <AddSvg className={'cursor-pointer size-6'} onClick={() => addCurrency2Display(code)} />
               }
             </td>
             <td className='p-0'><CountryImg code={code} /></td>
@@ -187,17 +190,8 @@ const CurrencyListTable: React.FC<CurrencyListTableProps> = ({
   </div>
 };
 
-// const MemoizedCurrencyListTable = React.memo(CurrencyListTable, (prev, next) => {
-//   return prev.currency2Display === next.currency2Display;
-// });
-
-
-const CurrencyListModal: React.FC<CurrencyListModalProps> = ({
-  data, currency2Display, removeCurrency2Display, addCurrency2Display,
-  isDefaultCurrencyValue, defaultCurrencyValue, setIsDefaultCurrencyValue, setDefaultCurrencyValue,
-  isEditing, setIsEditing
-}) => {
-  const [activeTab, setActiveTab] = useState(1); // Add state for active tab
+const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data }) => {
+  const [activeTab, setActiveTab] = useState(2);
 
   const openModal = () => {
     const modal = document.getElementById('currency_list_modal') as HTMLDialogElement;
@@ -233,20 +227,15 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({
 
           {/* Tab content rendering */}
           {activeTab === 1 && <div>
-            <CurrencyListTable data={data} currency2Display={currency2Display} addCurrency2Display={addCurrency2Display} removeCurrency2Display={removeCurrency2Display} />
+            <CurrencyListTable data={data} />
           </div>}
           {activeTab === 2 && <div>
-            <MemoizedCurrencySetting isDefaultCurrencyValue={isDefaultCurrencyValue} defaultCurrencyValue={defaultCurrencyValue}
-              setIsDefaultCurrencyValue={setIsDefaultCurrencyValue} setDefaultCurrencyValue={setDefaultCurrencyValue}
-              isEditing={isEditing} setIsEditing={setIsEditing}
-            />
+            <CurrencySetting />
           </div>}
           {/* {activeTab === 3 && <div>Content for Tab 3</div>} */}
 
         </div>
-        <form method="dialog" className="modal-backdrop">
-          <button />
-        </form>
+
       </dialog>
     </div>
   );

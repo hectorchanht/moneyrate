@@ -1,16 +1,16 @@
 import CountryImg from '@/components/CountryImg';
 import { useTranslation } from '@/hooks/useTranslation';
+import { currency2DisplayAtom } from '@/lib/atoms';
 import { DeleteSvg, SearchSvg } from '@/lib/svgs';
+import { useAtom } from 'jotai';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 interface SearchBarProps {
-  data: { [key: string]: string }; // Updated to reflect the structure of dataList
-  onSelect: (params: { name: string }) => void;
-  selected: string[];
+  data: Record<string, string>;
 }
 
-
-const SearchBar: React.FC<SearchBarProps> = ({ data = {}, onSelect = () => { }, selected = [] }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ data }) => {
+  const [currency2Display, setCurrency2Display] = useAtom(currency2DisplayAtom);
   const [query, setQuery] = useState('');
   const t = useTranslation();
 
@@ -49,6 +49,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ data = {}, onSelect = () => { }, 
     };
   }, [escFunction]);
 
+  const onSelect = (name: string) => {
+    setCurrency2Display(prev => [...prev, name]);
+  };
+
   return (
     <>
       <form className={'w-full flex justify-between items-center overflow-hidden relative'} >
@@ -64,10 +68,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ data = {}, onSelect = () => { }, 
 
       {matched.length && query.length
         ? <div className={'overflow-hidden bg-black'}>
-          {matched.filter(m => !selected.includes(m)).slice(0, 10).map((code: string) =>
+          {matched.filter(m => !currency2Display.includes(m)).slice(0, 10).map((code: string) =>
             <div key={code} className='p-3 cursor-pointer flex justify-between items-center'
               onClick={() => {
-                onSelect({ name: code });
+                onSelect(code);
                 clearQuery();
               }}>
               <div className='flex gap-2 items-center'>
