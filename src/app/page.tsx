@@ -211,7 +211,7 @@ export default function Home() {
 
                     {cur === baseCur
                       ? <input min={0} onChange={handleCurrencyValue} step="1"
-                        value={currencyValue === 0 ? 0 : currencyValue.toFixed(dp2Show)} type="number" placeholder="0" className={`bg-black h-[2em] text-end`} />
+                        value={currencyValue === 0 ? 0 : currencyValue.toFixed(dp2Show)} type="number" placeholder="0" className={`bg-black h-[2em] max-w-40 text-end`} />
                       : <div onClick={() => onBaseCurChange(cur)} className='w-[240px] text-end'>
                         {val2Show}
                       </div>}
