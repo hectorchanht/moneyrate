@@ -210,7 +210,7 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({
   };
 
   return (
-    <div className='mx-auto container max-w-[800px]'>
+    <div className=''>
       <button className="btn w-full h-10  " onClick={openModal}>
         <ListSvg />
       </button>

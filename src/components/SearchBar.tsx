@@ -50,8 +50,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ data = {}, onSelect = () => { }, 
   }, [escFunction]);
 
   return (
-    <div>
-      <form className={'flex justify-between items-center overflow-hidden relative'} >
+    <>
+      <form className={'w-full flex justify-between items-center overflow-hidden relative'} >
         <input placeholder={t.home.searchPlaceholder} type={'text'} value={query} onChange={(e) => setQuery(e.target.value)} className="w-full bg-black" />
 
         <span className={'absolute right-1 m-1 inline-flex cursor-pointer items-center'}>
@@ -81,7 +81,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data = {}, onSelect = () => { }, 
           )}
         </div>
         : null}
-    </div>
+    </>
   )
 };
 

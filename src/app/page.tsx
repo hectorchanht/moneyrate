@@ -178,7 +178,14 @@ export default function Home() {
       <main className="flex-grow">
 
         <div className='grid grid-cols-1 justify-between m-auto max-w-[800px] p-4'>
-          <SearchBar data={data4All ?? {}} onSelect={addCurrency2Display} selected={currency2Display} />
+          <span className='flex gap-2 w-full'>
+            <CurrencyListModal data={data4All ?? {}} currency2Display={currency2Display} addCurrency2Display={addCurrency2Display} removeCurrency2Display={removeCurrency2Display}
+              isDefaultCurrencyValue={isDefaultCurrencyValue} setIsDefaultCurrencyValue={setIsDefaultCurrencyValue}
+              defaultCurrencyValue={defaultCurrencyValue} setDefaultCurrencyValue={setDefaultCurrencyValue}
+              isEditing={isEditing} setIsEditing={setIsEditing}
+            />
+            <SearchBar data={data4All ?? {}} onSelect={addCurrency2Display} selected={currency2Display} />
+          </span>
 
           <br />
 
@@ -222,11 +229,6 @@ export default function Home() {
 
         </div>
       </main>
-      <CurrencyListModal data={data4All ?? {}} currency2Display={currency2Display} addCurrency2Display={addCurrency2Display} removeCurrency2Display={removeCurrency2Display}
-        isDefaultCurrencyValue={isDefaultCurrencyValue} setIsDefaultCurrencyValue={setIsDefaultCurrencyValue}
-        defaultCurrencyValue={defaultCurrencyValue} setDefaultCurrencyValue={setDefaultCurrencyValue}
-        isEditing={isEditing} setIsEditing={setIsEditing}
-      />
     </div>
   )
 }
