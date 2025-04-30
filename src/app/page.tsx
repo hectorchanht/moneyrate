@@ -180,8 +180,7 @@ export default function Home() {
               const valMultiplied = val * currencyValue;
               const dp2Show = ((currencyValue === 0) || (valMultiplied > 1))
                 ? defaultCurrencyValueDp
-                : defaultCurrencyValueDp > 10 ? defaultCurrencyValueDp : 10;
-              console.log(` page.tsx --- defaultCurrencyValueDp:`, defaultCurrencyValueDp)
+                : defaultCurrencyValueDp > 12 ? defaultCurrencyValueDp : 12;
 
               const val2Show = (valMultiplied).toLocaleString(undefined, { minimumFractionDigits: dp2Show, maximumFractionDigits: dp2Show }) ?? 0;
 
