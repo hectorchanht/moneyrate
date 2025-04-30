@@ -181,11 +181,13 @@ export default function Home() {
             {(currencyRatesPairs2Display).map(([cur, val], i) => {
               const valMultiplied = val * currencyValue;
               let cryptoDp = 12;
-              if (windowWidth < 410) {
-                cryptoDp = 10;
-              }
-              if (windowWidth < 370) {
-                cryptoDp = 6;
+              if (isEditing) {
+                if (windowWidth < 410) {
+                  cryptoDp = 10;
+                }
+                if (windowWidth < 370) {
+                  cryptoDp = 6;
+                }
               }
 
               const dp2Show = ((currencyValue === 0) || (valMultiplied > 1))
