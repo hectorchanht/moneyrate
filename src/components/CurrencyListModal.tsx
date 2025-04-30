@@ -204,7 +204,7 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data }) => {
   };
 
   return (
-    <div className='h-[30px]'>
+    <div className='h-[52px] w-[30px] flex items-center justify-center'>
       <button className="" onClick={openModal}>
         <ListSvg />
       </button>

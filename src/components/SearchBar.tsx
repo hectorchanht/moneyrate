@@ -54,7 +54,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data }) => {
   };
 
   return (
-    <>
+    <div className='w-full'>
       <form className={'w-full flex justify-between items-center overflow-hidden relative'} >
         <input placeholder={t.home.searchPlaceholder} type={'text'} value={query} onChange={(e) => setQuery(e.target.value)} className="w-full bg-black" />
 
@@ -85,7 +85,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data }) => {
           )}
         </div>
         : null}
-    </>
+    </div>
   )
 };
 
