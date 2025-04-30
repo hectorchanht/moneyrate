@@ -163,7 +163,7 @@ export default function Home() {
       <main className="flex-grow">
 
         <div className='grid grid-cols-1 justify-between m-auto max-w-[800px] p-4'>
-          <span className='flex gap-2 w-full'>
+          <span className='flex gap-2 w-full items-center'>
             <CurrencyListModal data={data4All ?? {}} />
             <SearchBar data={data4All ?? {}} />
           </span>
