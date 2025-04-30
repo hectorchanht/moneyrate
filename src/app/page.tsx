@@ -4,6 +4,7 @@ import CountryImg from '@/components/CountryImg';
 import CurrencyListModal from '@/components/CurrencyListModal';
 import DragHandle from '@/components/DragHandle';
 import SearchBar from '@/components/SearchBar';
+import useWindowWidth from '@/hooks/useWindowWidth';
 import { CurrencyRate4All, CurrencyRate4BaseCur, fetcher, getCurrencyRateApiUrl } from '@/lib/api';
 import {
   baseCurAtom,
@@ -69,6 +70,7 @@ export default function Home() {
   useDragDropTouch();
 
   const currencyItemOnDrag = useRef<string>('');
+  const windowWidth = useWindowWidth();
   const [baseCur, setBaseCur] = useAtom(baseCurAtom);
   const [currency2Display, setCurrency2Display] = useAtom(currency2DisplayAtom);
   const [currencyValue, setCurrencyValue] = useAtom(currencyValueAtom);
@@ -178,17 +180,25 @@ export default function Home() {
           >
             {(currencyRatesPairs2Display).map(([cur, val], i) => {
               const valMultiplied = val * currencyValue;
+              let cryptoDp = 12;
+              if (windowWidth < 410) {
+                cryptoDp = 10;
+              }
+              if (windowWidth < 370) {
+                cryptoDp = 6;
+              }
+
               const dp2Show = ((currencyValue === 0) || (valMultiplied > 1))
                 ? defaultCurrencyValueDp
-                : defaultCurrencyValueDp > 12 ? defaultCurrencyValueDp : 12;
+                : defaultCurrencyValueDp > cryptoDp ? defaultCurrencyValueDp : cryptoDp;
 
               const val2Show = (valMultiplied).toLocaleString(undefined, { minimumFractionDigits: dp2Show, maximumFractionDigits: dp2Show }) ?? 0;
 
               return <div key={cur} id='currencyItem'>
                 <div className='flex gap-2 h-42 items-center'>
 
-                  {isEditing && <DragHandle onDragStart={() => currencyItemOnDrag.current = cur} />}
                   <div className='flex w-full justify-between items-center gap-4'>
+                    {isEditing && <DragHandle onDragStart={() => currencyItemOnDrag.current = cur} />}
                     <a href={cur === baseCur ? undefined : `/chart?q=${(cur + '-' + baseCur).toUpperCase()}`} className="text-start tooltip flex items-center gap-2 h-[42px] w-[42px]" data-tip={data4All ? data4All[cur] : ''}>
                       <CountryImg code={cur} />
                       {cur.toUpperCase()}
@@ -204,7 +214,7 @@ export default function Home() {
                     {cur === baseCur
                       ? (isEditing ? <EmptySvg /> : null)
                       : (isEditing
-                        ? <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display(cur)} />
+                        ? <CrossSvg className={'cursor-pointer size-6 shrink-0'} onClick={() => removeCurrency2Display(cur)} />
                         : null)}
                   </div>
                 </div>
