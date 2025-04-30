@@ -88,21 +88,9 @@ export default function Home() {
     return Object.entries(curObj) || [];;
   }, [curObj]);
 
-  const addCurrency2Display = ({ name }: { name: string }) => {
-    setCurrency2Display(cur => {
-      const newCurrency2Display = [...cur, name];
-      localStorage.setItem("currency2Display", JSON.stringify(newCurrency2Display));
-      return newCurrency2Display;
-    });
-  }
-
-  const removeCurrency2Display = ({ name }: { name: string }) => {
-    setCurrency2Display(cur => {
-      const newCurrency2Display = cur.filter(c => c !== name);
-      localStorage.setItem("currency2Display", JSON.stringify(newCurrency2Display));
-      return newCurrency2Display;
-    });
-  }
+  const removeCurrency2Display = (name: string) => {
+    setCurrency2Display(prev => prev.filter(c => c !== name));
+  };
 
   const onBaseCurChange = (cur: string) => {
     if (isDefaultCurrencyValue) {
@@ -217,7 +205,7 @@ export default function Home() {
                     {cur === baseCur
                       ? (isEditing ? <EmptySvg /> : null)
                       : (isEditing
-                        ? <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display({ name: cur })} />
+                        ? <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display(cur)} />
                         : null)}
                   </div>
                 </div>

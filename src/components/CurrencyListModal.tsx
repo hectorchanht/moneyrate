@@ -101,7 +101,7 @@ const CurrencySetting: React.FC = () => {
             {t.settings.setDp}
             <input type="number" className="w-[50%] bg-black" placeholder={defaultCurrencyValueDp?.toString() ?? 0}
               onChange={(d) => {
-                setDefaultCurrencyValueDp(isNaN(parseInt(d.target.value)) ? 0 : parseInt(d.target.value ?? 0)) ?? 0;
+                setDefaultCurrencyValueDp(isNaN(parseInt(d.target.value)) ? 0 : parseInt(d.target.value ?? 0));
               }}
             />
           </span>
