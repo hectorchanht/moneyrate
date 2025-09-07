@@ -114,8 +114,13 @@ export default function Home() {
   }
 
   const handleCurrencyValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrencyValue(parseFloat(e.target.value));
-    localStorage.setItem("currencyValue", (e.target.value));
+    const value = e.target.value;
+    // Only update if the input is a valid number or empty string
+    if (value === '' || /^\d*\.?\d*$/.test(value)) {
+      const numValue = value === '' ? 0 : parseFloat(value);
+      setCurrencyValue(numValue);
+      localStorage.setItem("currencyValue", numValue.toString());
+    }
   }
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -210,8 +215,15 @@ export default function Home() {
                     </a>
 
                     {cur === baseCur
-                      ? <input min={0} onChange={handleCurrencyValue} step="1"
-                        value={currencyValue === 0 ? 0 : currencyValue.toFixed(dp2Show)} type="number" placeholder="0" className={`bg-black h-[2em] max-w-40 text-end`} />
+                      ? <input
+                        min={0}
+                        step="any"
+                        onChange={handleCurrencyValue}
+                        value={currencyValue === 0 ? '' : currencyValue.toString()}
+                        type="number"
+                        placeholder="100"
+                        className={`bg-black h-[2em] max-w-40 text-end`}
+                      />
                       : <div onClick={() => onBaseCurChange(cur)} className='w-[240px] text-end'>
                         {val2Show}
                       </div>}
