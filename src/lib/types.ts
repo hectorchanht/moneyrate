@@ -16,3 +16,7 @@ export interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
 }
+
+export type CurrencyCode = string & { readonly __brand: 'CurrencyCode' };
+
+export type LanguageCode = string & { readonly __brand: 'LanguageCode' };

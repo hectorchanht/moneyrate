@@ -17,9 +17,10 @@ import {
 } from '@/lib/atoms';
 import { showASCIIArt } from '@/lib/fns';
 import { CrossSvg, EmptySvg } from '@/lib/svgs';
+import { CurrencyCode } from '@/lib/types';
 import { useAtom } from 'jotai';
 import { pick } from 'lodash';
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import useSWR from 'swr';
 
 declare global {
@@ -108,20 +109,15 @@ export default function Home() {
       }, {});
       setCurrencyValue(dataAfter[cur] || 100);
     }
-    setBaseCur(cur);
-    localStorage.setItem("baseCur", (cur));
-    localStorage.setItem("defaultCurrencyValue", (defaultCurrencyValue.toString()));
+    setBaseCur(cur as CurrencyCode);
   }
 
-  const handleCurrencyValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Only update if the input is a valid number or empty string
-    if (value === '' || /^\d*\.?\d*$/.test(value)) {
-      const numValue = value === '' ? 0 : parseFloat(value);
-      setCurrencyValue(numValue);
-      localStorage.setItem("currencyValue", numValue.toString());
-    }
-  }
+  // No need for manual localStorage handling as Jotai's atomWithStorage handles it
+
+  // Handle currency value changes
+  const handleCurrencyValueChange = useCallback((value: number) => {
+    setCurrencyValue(value);
+  }, [setCurrencyValue]);
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -145,7 +141,6 @@ export default function Home() {
     const [movedItem] = newCurrency2Display.splice(draggedIndex, 1);
     newCurrency2Display.splice(itemIndex, 0, movedItem);
     setCurrency2Display(newCurrency2Display);
-    localStorage.setItem("currency2Display", JSON.stringify(newCurrency2Display));
   };
 
   if (err1 || err2) return <div className="text-center">Error fetching data. Please try again later.</div>;
@@ -170,6 +165,25 @@ export default function Home() {
       <main className="flex-grow">
 
         <div className='grid grid-cols-1 justify-between m-auto max-w-[800px] p-4'>
+          {/* AI Stock Banner */}
+          <a
+            href="https://aimystock.moneyrate.lol/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-3 rounded-lg my-4 text-center hover:from-blue-600 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg group"
+          >
+            <div className="flex items-center justify-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <span className="font-semibold">Check AI Stock Predictions</span>
+              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+            <p className="text-xs mt-1 opacity-90">Visit aimystock.moneyrate.lol for AI-powered stock market insights</p>
+          </a>
+
           <span className='flex gap-2 w-full items-start'>
             <CurrencyListModal data={data4All ?? {}} />
             <SearchBar data={data4All ?? {}} />
@@ -209,7 +223,7 @@ export default function Home() {
 
                   <div className='flex w-full justify-between items-center gap-4'>
                     {isEditing && <DragHandle onDragStart={() => currencyItemOnDrag.current = cur} />}
-                    <a href={cur === baseCur ? undefined : `/chart?q=${(cur + '-' + baseCur).toUpperCase()}`} className="text-start tooltip flex items-center gap-2 h-[42px] w-fit" data-tip={data4All ? data4All[cur] : ''}>
+                    <a href={cur === baseCur ? undefined : `/chart?q=${(baseCur + '-' + cur).toUpperCase()}`} className="text-start tooltip flex items-center gap-2 h-[42px] w-fit" data-tip={data4All ? data4All[cur] : ''}>
                       <CountryImg code={cur} />
                       {cur.toUpperCase()}
                     </a>
@@ -218,7 +232,7 @@ export default function Home() {
                       ? <input
                         min={0}
                         step="any"
-                        onChange={handleCurrencyValue}
+                        onChange={(e) => handleCurrencyValueChange(parseFloat(e.target.value))}
                         value={currencyValue === 0 ? '' : currencyValue.toString()}
                         type="number"
                         placeholder="100"
