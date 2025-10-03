@@ -9,12 +9,17 @@ import {
 } from '@/lib/atoms';
 import { DefaultCurrency2Display } from '@/lib/constants';
 import { AddSvg, CrossSvg, ListSvg, SettingSvg, TableSvg, XSvg } from '@/lib/svgs';
-import { Language } from '@/lib/types';
+import { Language, LanguageCode } from '@/lib/types';
 import { useAtom } from 'jotai';
 import React, { useState } from 'react';
 import CountryImg from './CountryImg';
 
-const languageOptions = [
+type LanguageOption = {
+  value: Language;
+  label: string;
+};
+
+const languageOptions: LanguageOption[] = [
   { value: 'en', label: 'English' },
   { value: 'zh-TW', label: '繁體中文' },
   { value: 'zh-CN', label: '简体中文' },
@@ -115,7 +120,12 @@ const CurrencySetting: React.FC = () => {
         <select
           className="select select-bordered w-full mt-2"
           value={language}
-          onChange={(e) => setLanguage(e.target.value as Language)}
+          onChange={(e) => {
+            const newLang = languageOptions.find(opt => opt.value === e.target.value)?.value as LanguageCode;
+            if (newLang) {
+              setLanguage(newLang as Language);
+            }
+          }}
         >
           {languageOptions.map(({ value, label }) => (
             <option value={value} key={value}>{label}</option>
