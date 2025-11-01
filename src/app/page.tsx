@@ -166,7 +166,7 @@ export default function Home() {
 
         <div className='grid grid-cols-1 justify-between m-auto max-w-[800px] p-4'>
           {/* AI Stock Banner */}
-          <a
+          {/* <a
             href="https://aimystock.moneyrate.lol/"
             target="_blank"
             rel="noopener noreferrer"
@@ -182,7 +182,7 @@ export default function Home() {
               </svg>
             </div>
             <p className="text-xs mt-1 opacity-90">Visit aimystock.moneyrate.lol for AI-powered stock market insights</p>
-          </a>
+          </a> */}
 
           <span className='flex gap-2 w-full items-start'>
             <CurrencyListModal data={data4All ?? {}} />
