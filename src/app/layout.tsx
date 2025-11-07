@@ -32,6 +32,8 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="dark">
       <head>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9591354036084214"
+     crossorigin="anonymous"></script>
         <link rel="icon" type="image/png" href="/favicon-48x48.png" sizes="48x48" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="shortcut icon" href="/favicon.ico" />
