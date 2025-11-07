@@ -32,6 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="dark">
       <head>
+        <meta name="google-adsense-account" content="ca-pub-9591354036084214">
         <link rel="icon" type="image/png" href="/favicon-48x48.png" sizes="48x48" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="shortcut icon" href="/favicon.ico" />
