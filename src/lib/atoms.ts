@@ -9,5 +9,5 @@ export const currencyValueAtom = atomWithStorage<number>('currencyValue', Defaul
 export const isEditingAtom = atomWithStorage<boolean>('isEditing', false);
 export const isDefaultCurrencyValueAtom = atomWithStorage<boolean>('isDefaultCurrencyValue', true);
 export const defaultCurrencyValueAtom = atomWithStorage<number>('defaultCurrencyValue', DefaultCurrencyValue);
-export const defaultCurrencyValueDpAtom = atomWithStorage<number>('defaultCurrencyValueDp', 0);
+export const defaultCurrencyValueDpAtom = atomWithStorage<number>('defaultCurrencyValueDp', 2);
 export const languageAtom = atomWithStorage<Language>('language', 'en'); 
