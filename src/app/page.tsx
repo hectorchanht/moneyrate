@@ -233,7 +233,7 @@ export default function Home() {
                         min={0}
                         step="any"
                         onChange={(e) => handleCurrencyValueChange(parseFloat(e.target.value))}
-                        value={currencyValue === 0 ? '' : currencyValue.toString()}
+                        value={currencyValue === 0 ? '' : currencyValue.toFixed(cryptoDp)}
                         type="number"
                         placeholder="100"
                         className={`bg-black h-[2em] max-w-40 text-end`}
