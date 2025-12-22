@@ -199,17 +199,17 @@ export default function Home() {
           >
             {(currencyRatesPairs2Display).map(([cur, val], i) => {
               const valMultiplied = val * currencyValue;
-              let cryptoDp = 12;
+              let cryptoDp = 6;
               if (isEditing) {
                 if (windowWidth < 410) {
-                  cryptoDp = 10;
+                  cryptoDp = 4;
                 }
                 if (windowWidth < 370) {
-                  cryptoDp = 6;
+                  cryptoDp = 3;
                 }
               }
               if (windowWidth < 300) {
-                cryptoDp = 6;
+                cryptoDp = 2;
               }
 
               const dp2Show = ((currencyValue === 0) || (valMultiplied > 1))
@@ -221,9 +221,10 @@ export default function Home() {
               return <div key={cur} id='currencyItem'>
                 <div className='flex gap-2 h-42 items-center'>
 
-                  <div className='flex w-full justify-between items-center gap-4'>
+                  <div className='flex w-full justify-between items-center gap-2'>
                     {isEditing && <DragHandle onDragStart={() => currencyItemOnDrag.current = cur} />}
-                    <a href={cur === baseCur ? undefined : `/chart?q=${(baseCur + '-' + cur).toUpperCase()}`} className="text-start tooltip flex items-center gap-2 h-[42px] w-fit" data-tip={data4All ? data4All[cur] : ''}>
+                    <a href={cur === baseCur ? undefined : `/chart?q=${(baseCur + '-' + cur).toUpperCase()}`}
+                      className="text-start tooltip flex items-center gap-2 h-[42px] w-[300px]" data-tip={data4All ? data4All[cur] : ''}>
                       <CountryImg code={cur} />
                       {cur.toUpperCase()}
                     </a>
@@ -233,10 +234,10 @@ export default function Home() {
                         min={0}
                         step="any"
                         onChange={(e) => handleCurrencyValueChange(parseFloat(e.target.value))}
-                        value={currencyValue === 0 ? '' : currencyValue.toFixed(cryptoDp)}
+                        value={currencyValue === 0 ? '' : currencyValue.toString()}
                         type="number"
                         placeholder="100"
-                        className={`bg-black h-[2em] max-w-40 text-end`}
+                        className={`bg-black h-[2em] w-[inherit] max-w-[240px] text-end`}
                       />
                       : <div onClick={() => onBaseCurChange(cur)} className='w-[240px] text-end'>
                         {val2Show}
