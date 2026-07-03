@@ -24,6 +24,7 @@ const CurrencyChart = () => {
   const [q, setQ] = useState<string | null>(null);
   const [startTimestamp, setStartTimestamp] = useState<number>(0);
   const [endTimestamp, setEndTimestamp] = useState<number>(0);
+  const [triedReverse, setTriedReverse] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -33,6 +34,19 @@ const CurrencyChart = () => {
   }, []);
 
   const { data, error } = useSWR<ResponseData>(q ? `/api/currencyChart?q=${q}` : null, fetcher, { keepPreviousData: true, revalidateOnFocus: false });
+
+  // If a pair has no data, try the reversed pair once (e.g. USD-BTC -> BTC-USD).
+  useEffect(() => {
+    if (error && q && !triedReverse) {
+      const [target, base] = q.split('-');
+      if (target && base) {
+        setTriedReverse(true);
+        setQ(`${base}-${target}`);
+        setStartTimestamp(0);
+        setEndTimestamp(0);
+      }
+    }
+  }, [error, q, triedReverse]);
 
   // Reset slider bounds whenever a new dataset arrives (fixes stale bounds when `q` changes,
   // and avoids the setState-during-render anti-pattern).
@@ -47,7 +61,7 @@ const CurrencyChart = () => {
     return data?.data.filter((item: DataItem) => item.timestamp >= startTimestamp && item.timestamp <= endTimestamp) || [];
   }, [data?.data, startTimestamp, endTimestamp]);
 
-  if (!!error) return <div className="text-center">No data for {q}</div>;
+  if (!!error && triedReverse) return <div className="text-center">No data for {q}</div>;
   if (!data || !q) {
     return (
       <div className="flex flex-col items-center justify-flex-start h-dvh pt-[30px]">
@@ -133,7 +147,7 @@ const CurrencyChart = () => {
           <XAxis dataKey="date" domain={['dataMin', 'dataMax']} />
           <YAxis tickFormatter={(value) => scientificFormat(value).toString()} />
           <Tooltip labelStyle={{ color: 'black' }} contentStyle={{ background: 'white' }} itemStyle={{ fontWeight: '700', color: 'black' }} formatter={(value) => [value]} />
-          <Line type="monotone" dataKey="value" stroke="white" />
+          <Line type="monotone" dataKey="value" stroke="white" isAnimationActive={false} />
         </LineChart>
       </ResponsiveContainer>
     </div>
