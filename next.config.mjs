@@ -11,6 +11,7 @@ const csp = [
   `default-src 'self'`,
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.clarity.ms https://*.clarity.ms`,
   `style-src 'self' 'unsafe-inline'`,
+  `worker-src 'self'`,
   `img-src 'self' data:`,
   `font-src 'self'`,
   `connect-src 'self' https://*.currency-api.pages.dev https://cdn.jsdelivr.net https://*.clarity.ms`,

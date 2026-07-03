@@ -2,6 +2,7 @@ import "@/theme/globals.css";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 // import Head from 'next/head';
+import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { Provider } from 'jotai';
 import Script from 'next/script';
@@ -44,6 +45,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <ServiceWorkerRegister />
         <Provider>
           <LanguageProvider>
             {children}
