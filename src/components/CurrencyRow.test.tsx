@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import CurrencyRow from './CurrencyRow';
@@ -32,22 +32,42 @@ afterEach(() => {
 describe('CurrencyRow', () => {
   it('renders the converted value for a non-base currency', () => {
     render(<CurrencyRow {...baseProps} cur="EUR" val={0.9} name="Euro" />);
-    // 0.9 * 100 = 90 -> 2dp
     expect(screen.getByText('90.00')).toBeTruthy();
   });
 
-  it('calls onSelectBase when the value is clicked', async () => {
+  it('sets the currency as base when its flag is clicked', async () => {
     const user = userEvent.setup();
     const onSelectBase = vi.fn();
     render(<CurrencyRow {...baseProps} cur="EUR" val={0.9} name="Euro" onSelectBase={onSelectBase} />);
 
-    await user.click(screen.getByText('90.00'));
+    await user.click(screen.getByRole('button', { name: /set eur as base/i }));
     expect(onSelectBase).toHaveBeenCalledWith('EUR');
   });
 
-  it('renders an editable input (not a value) for the base currency', () => {
+  it('renders an editable input for the base currency', () => {
     render(<CurrencyRow {...baseProps} cur="USD" val={1} name="US Dollar" />);
     const input = screen.getByRole('spinbutton') as HTMLInputElement;
     expect(input.value).toBe('100');
+  });
+
+  it('lets a non-base row be edited, back-solving the base amount', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(<CurrencyRow {...baseProps} cur="EUR" val={0.9} name="Euro" onValueChange={onValueChange} />);
+
+    // Click the value to reveal the editable input, then set a value.
+    await user.click(screen.getByText('90.00'));
+    fireEvent.change(screen.getByRole('spinbutton'), { target: { value: '18' } });
+
+    // 18 EUR at rate 0.9 -> base amount 20
+    expect(onValueChange.mock.lastCall?.[0]).toBeCloseTo(20);
+  });
+
+  it('shows a 24h change badge with direction', () => {
+    const { rerender } = render(<CurrencyRow {...baseProps} cur="EUR" val={0.9} name="Euro" changePct={1.5} />);
+    expect(screen.getByText(/▲ 1\.50%/)).toBeTruthy();
+
+    rerender(<CurrencyRow {...baseProps} cur="EUR" val={0.9} name="Euro" changePct={-2.25} />);
+    expect(screen.getByText(/▼ 2\.25%/)).toBeTruthy();
   });
 });

@@ -26,7 +26,7 @@ import useSWR from 'swr';
 const LS_CURRENCIES = 'lastGood:currencies';
 const rateCacheKey = (base: string) => `lastGood:rates:${base}`;
 const VIRTUALIZE_THRESHOLD = 40; // rows; below this the natural flow (and drag-drop) is kept
-const ROW_HEIGHT = 58; // px, used only in virtualized mode
+const ROW_HEIGHT = 68; // px, used only in virtualized mode (fits value + 24h change line)
 
 declare global {
   interface DragDropTouch {
@@ -91,6 +91,14 @@ export default function Home() {
   const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrls({ baseCurrencyCode: baseCur }), fetchWithFallback, { keepPreviousData: true, revalidateOnFocus: false });
   const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrls({}), fetchWithFallback, { keepPreviousData: true, revalidateOnFocus: false });
 
+  // Yesterday's table for the same base, to compute a 24h change per currency.
+  const yesterdayStr = useMemo(() => {
+    const d = new Date();
+    d.setUTCDate(d.getUTCDate() - 1);
+    return d.toISOString().slice(0, 10);
+  }, []);
+  const { data: dataYesterday } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrls({ baseCurrencyCode: baseCur, date: yesterdayStr }), fetchWithFallback, { keepPreviousData: true, revalidateOnFocus: false });
+
   // Only consult the localStorage cache after mount so the first client render matches the
   // server (which has no localStorage) — otherwise hydration mismatches.
   const [hydrated, setHydrated] = useState(false);
@@ -140,6 +148,21 @@ export default function Home() {
   const curObj: CurrencyRates = useMemo(() => {
     return pick(effectiveBaseCur?.[baseCur] as CurrencyRates, currency2Display);
   }, [effectiveBaseCur, baseCur, currency2Display]);
+
+  // Percentage change vs yesterday's rate, per displayed currency.
+  const changePctByCur = useMemo<Record<string, number>>(() => {
+    const today = effectiveBaseCur?.[baseCur] as CurrencyRates | undefined;
+    const yest = dataYesterday?.[baseCur] as CurrencyRates | undefined;
+    if (!today || !yest) return {};
+    const out: Record<string, number> = {};
+    for (const code of currency2Display) {
+      const t = today[code], y = yest[code];
+      if (typeof t === 'number' && typeof y === 'number' && y !== 0) {
+        out[code] = ((t - y) / y) * 100;
+      }
+    }
+    return out;
+  }, [effectiveBaseCur, dataYesterday, baseCur, currency2Display]);
 
   const currencyRatesPairs2Display: [string, number][] = useMemo(() => {
     return Object.entries(curObj) || [];;
@@ -211,6 +234,7 @@ export default function Home() {
       windowWidth={windowWidth}
       defaultCurrencyValueDp={defaultCurrencyValueDp}
       name={effectiveAll?.[cur]}
+      changePct={changePctByCur[cur]}
       showDivider={index < rows.length - 1}
       style={style}
       onDragStart={onDragStart}
