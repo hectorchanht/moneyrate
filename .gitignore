@@ -4,7 +4,10 @@
 /node_modules
 /.pnp
 .pnp.js
+.pnp.cjs
+.pnp.loader.mjs
 .yarn/install-state.gz
+bun.lockb
 
 # testing
 /coverage
