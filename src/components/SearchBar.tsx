@@ -29,7 +29,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ data }) => {
       return acc; // Return the accumulator unchanged if no match
     }, []);
 
-    return [...filteredMatches, ...filteredMatches2]
+    // Dedupe: a currency whose code AND name both match would otherwise appear twice.
+    return Array.from(new Set(filteredMatches.concat(filteredMatches2)));
   }, [query, data]);
 
   const clearQuery = () => setQuery('');
@@ -66,7 +67,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data }) => {
         </span>
       </form>
 
-      {matched.length && query.length
+      {matched.length > 0 && query.length > 0
         ? <div className={'overflow-hidden bg-black'}>
           {matched.filter(m => !currency2Display.includes(m)).slice(0, 10).map((code: string) =>
             <div key={code} className='p-3 cursor-pointer flex justify-between items-center'
