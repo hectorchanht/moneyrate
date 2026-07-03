@@ -57,4 +57,15 @@ describe('CurrencyRow', () => {
     rerender(<CurrencyRow {...baseProps} cur="EUR" val={0.9} name="Euro" changePct={-2.25} />);
     expect(screen.getByText(/▼ 2\.25%/)).toBeTruthy();
   });
+
+  it('copies the "value CODE" text to the clipboard', async () => {
+    const user = userEvent.setup();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+
+    render(<CurrencyRow {...baseProps} cur="EUR" val={0.9} name="Euro" />);
+    await user.click(screen.getByRole('button', { name: /copy eur value/i }));
+
+    expect(writeText).toHaveBeenCalledWith('90.00 EUR');
+  });
 });

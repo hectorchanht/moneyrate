@@ -1,8 +1,8 @@
 import CountryImg from '@/components/CountryImg';
 import DragHandle from '@/components/DragHandle';
 import { getResponsiveCryptoDp } from '@/lib/fns';
-import { CrossSvg, EmptySvg } from '@/lib/svgs';
-import { CSSProperties, memo } from 'react';
+import { CheckSvg, CopySvg, CrossSvg, EmptySvg } from '@/lib/svgs';
+import { CSSProperties, memo, useState } from 'react';
 
 export interface CurrencyRowProps {
   cur: string;
@@ -49,6 +49,18 @@ const CurrencyRow = ({
 
   const val2Show = (valMultiplied).toLocaleString(undefined, { minimumFractionDigits: dp2Show, maximumFractionDigits: dp2Show }) ?? 0;
 
+  const [copied, setCopied] = useState(false);
+  const onCopy = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // don't also trigger the row's set-as-base click
+    try {
+      await navigator.clipboard.writeText(`${val2Show} ${cur.toUpperCase()}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1200);
+    } catch {
+      // clipboard unavailable (insecure context / denied)
+    }
+  };
+
   return (
     <div id='currencyItem' style={style}>
       <div className='flex gap-2 h-42 items-center'>
@@ -93,7 +105,17 @@ const CurrencyRow = ({
             ? (isEditing ? <EmptySvg /> : null)
             : (isEditing
               ? <CrossSvg className={'cursor-pointer size-6 shrink-0'} onClick={() => onRemove(cur)} />
-              : null)}
+              : (
+                <button
+                  type="button"
+                  onClick={onCopy}
+                  title="Copy value"
+                  aria-label={`Copy ${cur.toUpperCase()} value`}
+                  className="shrink-0 opacity-40 hover:opacity-100"
+                >
+                  {copied ? <CheckSvg className="size-5" /> : <CopySvg className="size-5" />}
+                </button>
+              ))}
         </div>
       </div>
       {showDivider ? <div className="divider my-2" /> : <br />}
