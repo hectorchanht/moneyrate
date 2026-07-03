@@ -2,6 +2,7 @@
 
 import CurrencyListModal from '@/components/CurrencyListModal';
 import CurrencyRow from '@/components/CurrencyRow';
+import InstallButton from '@/components/InstallButton';
 import SearchBar from '@/components/SearchBar';
 import useWindowWidth from '@/hooks/useWindowWidth';
 import { CurrencyRate4All, CurrencyRate4BaseCur, fetchWithFallback, getCurrencyRateApiUrls } from '@/lib/api';
@@ -288,6 +289,8 @@ export default function Home() {
             </button>
             <SearchBar data={effectiveAll ?? {}} />
           </span>
+
+          <InstallButton />
 
           <br />
 
