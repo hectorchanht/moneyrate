@@ -32,7 +32,16 @@ const CurrencyChart = () => {
     showASCIIArt();
   }, []);
 
-  const { data, error } = useSWR<ResponseData>(q ? `/api/currencyChart?q=${q}` : null, fetcher, { keepPreviousData: true });
+  const { data, error } = useSWR<ResponseData>(q ? `/api/currencyChart?q=${q}` : null, fetcher, { keepPreviousData: true, revalidateOnFocus: false });
+
+  // Reset slider bounds whenever a new dataset arrives (fixes stale bounds when `q` changes,
+  // and avoids the setState-during-render anti-pattern).
+  useEffect(() => {
+    if (data?.data && data.data.length > 0) {
+      setStartTimestamp(data.data[0].timestamp);
+      setEndTimestamp(data.data[data.data.length - 1].timestamp);
+    }
+  }, [data]);
 
   const filteredData = useMemo(() => {
     return data?.data.filter((item: DataItem) => item.timestamp >= startTimestamp && item.timestamp <= endTimestamp) || [];
@@ -52,12 +61,6 @@ const CurrencyChart = () => {
         <div style={{ width: 'calc( 100vw - 40px )' }} className="skeleton rounded-none h-[70%]"></div>
       </div>
     );
-  }
-
-  // Set default start and end timestamps based on fetched data
-  if (startTimestamp === 0 && data?.data.length > 0) {
-    setStartTimestamp(data?.data[0].timestamp);
-    setEndTimestamp(data?.data[data?.data.length - 1].timestamp);
   }
 
   // Function to format numbers in scientific notation

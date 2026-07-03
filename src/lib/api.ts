@@ -1,4 +1,10 @@
-export const fetcher = (...args: Parameters<typeof fetch>) => fetch(...args).then(res => res.json());
+export const fetcher = (...args: Parameters<typeof fetch>) => fetch(...args).then(res => {
+  if (!res.ok) {
+    // Surface non-2xx (e.g. the chart route's 400/404) as a thrown error so SWR populates `error`.
+    throw new Error(`Request failed with status ${res.status}`);
+  }
+  return res.json();
+});
 
 // date can be YYYY-MM-DD: 2024-03-06
 type GetCurrencyRateParams = {
