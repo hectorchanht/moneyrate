@@ -2,7 +2,7 @@ import CountryImg from '@/components/CountryImg';
 import DragHandle from '@/components/DragHandle';
 import { getResponsiveCryptoDp } from '@/lib/fns';
 import { CrossSvg, EmptySvg } from '@/lib/svgs';
-import { CSSProperties, memo, useState } from 'react';
+import { CSSProperties, memo } from 'react';
 
 export interface CurrencyRowProps {
   cur: string;
@@ -49,44 +49,19 @@ const CurrencyRow = ({
 
   const val2Show = (valMultiplied).toLocaleString(undefined, { minimumFractionDigits: dp2Show, maximumFractionDigits: dp2Show }) ?? 0;
 
-  // Local edit state so a non-base row can be typed into (two-way conversion) while keeping the
-  // formatted display when not being edited.
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState('');
-
-  // Typing a value into row `cur` back-solves the base amount so every row updates live.
-  const onDraftChange = (raw: string) => {
-    setDraft(raw);
-    const n = parseFloat(raw);
-    if (!isNaN(n) && val) onValueChange(n / val);
-  };
-
-  const inputClass = 'bg-black h-[2em] w-[inherit] max-w-[240px] text-end';
-
   return (
     <div id='currencyItem' style={style}>
       <div className='flex gap-2 h-42 items-center'>
         <div className='flex w-full justify-between items-center gap-2'>
           {isEditing && <DragHandle onDragStart={() => onDragStart(cur)} />}
-
-          <div className="flex items-center gap-2 h-[42px] w-[300px]">
-            <button
-              type="button"
-              onClick={() => onSelectBase(cur)}
-              title="Set as base currency"
-              aria-label={`Set ${cur.toUpperCase()} as base currency`}
-              className="shrink-0"
-            >
-              <CountryImg code={cur} />
-            </button>
-            <a
-              href={isBase ? undefined : `/chart?q=${(baseCur + '-' + cur).toUpperCase()}`}
-              className="text-start tooltip"
-              data-tip={name ?? ''}
-            >
-              {cur.toUpperCase()}
-            </a>
-          </div>
+          <a
+            href={isBase ? undefined : `/chart?q=${(baseCur + '-' + cur).toUpperCase()}`}
+            className="text-start tooltip flex items-center gap-2 h-[42px] w-[300px]"
+            data-tip={name ?? ''}
+          >
+            <CountryImg code={cur} />
+            {cur.toUpperCase()}
+          </a>
 
           {isBase ? (
             <input
@@ -96,25 +71,14 @@ const CurrencyRow = ({
               value={currencyValue === 0 ? '' : currencyValue.toString()}
               type="number"
               placeholder="100"
-              className={inputClass}
-            />
-          ) : editing ? (
-            <input
-              autoFocus
-              min={0}
-              step="any"
-              type="number"
-              value={draft}
-              onChange={(e) => onDraftChange(e.target.value)}
-              onBlur={() => setEditing(false)}
-              onKeyDown={(e) => { if (e.key === 'Enter') setEditing(false); }}
-              className={inputClass}
+              className={`bg-black h-[2em] w-[inherit] max-w-[240px] text-end`}
             />
           ) : (
+            // Click a currency to make it the active (editable) one — the input moves to this row.
             <div
-              className='w-[240px] text-end cursor-text'
-              onClick={() => { setDraft(String(valMultiplied)); setEditing(true); }}
-              title="Tap to edit"
+              onClick={() => onSelectBase(cur)}
+              className='w-[240px] text-end cursor-pointer'
+              title="Tap to edit this currency"
             >
               <div>{val2Show}</div>
               {!isEditing && typeof changePct === 'number' && isFinite(changePct) && (
