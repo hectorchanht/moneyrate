@@ -167,25 +167,6 @@ export default function Home() {
       <main className="flex-grow">
 
         <div className='grid grid-cols-1 justify-between m-auto max-w-[800px] p-4'>
-          {/* AI Stock Banner */}
-          {/* <a
-            href="https://aimystock.moneyrate.lol/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-3 rounded-lg my-4 text-center hover:from-blue-600 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg group"
-          >
-            <div className="flex items-center justify-center gap-2">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              <span className="font-semibold">Check AI Stock Predictions</span>
-              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-            <p className="text-xs mt-1 opacity-90">Visit aimystock.moneyrate.lol for AI-powered stock market insights</p>
-          </a> */}
-
           <span className='flex gap-2 w-full items-start'>
             <CurrencyListModal data={data4All ?? {}} />
             <SearchBar data={data4All ?? {}} />
