@@ -74,3 +74,12 @@ export const getDataFromLocalStorage = (name: string, defaultValue: any) => {
     return lsData
   }
 };
+
+export const setDataToLocalStorage = (name: string, value: unknown) => {
+  if (typeof window === "undefined" || !window || !window.localStorage) return;
+  try {
+    localStorage.setItem(name, JSON.stringify(value));
+  } catch {
+    // Ignore quota / serialization errors — caching is best-effort.
+  }
+};

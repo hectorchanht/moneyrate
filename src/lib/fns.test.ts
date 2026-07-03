@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { debounce, getDataFromLocalStorage, getDropIndex, getResponsiveCryptoDp } from './fns';
+import { debounce, getDataFromLocalStorage, getDropIndex, getResponsiveCryptoDp, setDataToLocalStorage } from './fns';
 
 describe('getResponsiveCryptoDp', () => {
   it('defaults to 6 on wide viewports', () => {
@@ -93,5 +93,31 @@ describe('getDataFromLocalStorage', () => {
   it('returns the raw string when the stored value is not valid JSON', () => {
     stubStorage({ raw: 'not-json' });
     expect(getDataFromLocalStorage('raw', '')).toBe('not-json');
+  });
+});
+
+describe('setDataToLocalStorage', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  const stubWritableStorage = () => {
+    const store: Record<string, string> = {};
+    const localStorage = {
+      getItem: (k: string) => (k in store ? store[k] : null),
+      setItem: (k: string, v: string) => { store[k] = v; },
+    };
+    vi.stubGlobal('window', { localStorage });
+    vi.stubGlobal('localStorage', localStorage);
+    return store;
+  };
+
+  it('round-trips a JSON-serializable value', () => {
+    stubWritableStorage();
+    setDataToLocalStorage('rates', { usd: 1, eur: 0.9 });
+    expect(getDataFromLocalStorage('rates', null)).toEqual({ usd: 1, eur: 0.9 });
+  });
+
+  it('is a no-op when localStorage is unavailable (SSR)', () => {
+    // window undefined in node env — must not throw
+    expect(() => setDataToLocalStorage('x', { a: 1 })).not.toThrow();
   });
 });
