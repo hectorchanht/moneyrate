@@ -13,7 +13,7 @@ const csp = [
   `style-src 'self' 'unsafe-inline'`,
   `img-src 'self' data:`,
   `font-src 'self'`,
-  `connect-src 'self' https://*.currency-api.pages.dev https://*.clarity.ms`,
+  `connect-src 'self' https://*.currency-api.pages.dev https://cdn.jsdelivr.net https://*.clarity.ms`,
   `frame-ancestors 'none'`,
   `base-uri 'self'`,
   `object-src 'none'`,

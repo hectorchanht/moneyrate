@@ -27,8 +27,9 @@ export async function GET(request: Request) {
     baseCur = ratepair.split('-')[1].toUpperCase();
   let data, is_flip = false;
 
+  const yahooHost = process.env.YAHOO_FINANCE_HOST || 'query1.finance.yahoo.com';
   const getApiUri = (pair: string) => {
-    return `https://query1.finance.yahoo.com/v8/finance/chart/${pair}?period1=0&period2=${+new Date()}&interval=1mo&includePrePost=true`;
+    return `https://${yahooHost}/v8/finance/chart/${pair}?period1=0&period2=${+new Date()}&interval=1mo&includePrePost=true`;
   }
 
   // Fetch a single ticker shape; return the parsed body only if it carries a valid result.

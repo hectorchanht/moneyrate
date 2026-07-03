@@ -5,7 +5,7 @@ import CurrencyListModal from '@/components/CurrencyListModal';
 import DragHandle from '@/components/DragHandle';
 import SearchBar from '@/components/SearchBar';
 import useWindowWidth from '@/hooks/useWindowWidth';
-import { CurrencyRate4All, CurrencyRate4BaseCur, fetcher, getCurrencyRateApiUrl } from '@/lib/api';
+import { CurrencyRate4All, CurrencyRate4BaseCur, fetchWithFallback, getCurrencyRateApiUrls } from '@/lib/api';
 import {
   baseCurAtom,
   currency2DisplayAtom,
@@ -83,8 +83,8 @@ export default function Home() {
   const [defaultCurrencyValueDp] = useAtom(defaultCurrencyValueDpAtom);
 
   // Exchange rates update ~daily, so don't refetch both full tables on every window focus.
-  const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrl({ baseCurrencyCode: baseCur }), fetcher, { keepPreviousData: true, revalidateOnFocus: false });
-  const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrl({}), fetcher, { keepPreviousData: true, revalidateOnFocus: false });
+  const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrls({ baseCurrencyCode: baseCur }), fetchWithFallback, { keepPreviousData: true, revalidateOnFocus: false });
+  const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrls({}), fetchWithFallback, { keepPreviousData: true, revalidateOnFocus: false });
 
   const curObj: CurrencyRates = useMemo(() => {
     return pick(data4BaseCur?.[baseCur] as CurrencyRates, currency2Display);
