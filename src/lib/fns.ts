@@ -62,6 +62,25 @@ export const getDropIndex = (dropY: number, itemHeight: number, length: number):
   return Math.max(0, Math.min(rawIndex, length - 1));
 };
 
+// Sort [code, rate] pairs for display. 'custom' preserves the user's order;
+// others return a new array so the stored order is untouched.
+export const sortCurrencyPairs = (
+  pairs: [string, number][],
+  mode: 'custom' | 'name' | 'value' | 'change',
+  changeOf?: (cur: string) => number | undefined,
+): [string, number][] => {
+  if (mode === 'custom') return pairs;
+  const copy = [...pairs];
+  if (mode === 'name') {
+    copy.sort((a, b) => a[0].localeCompare(b[0]));
+  } else if (mode === 'value') {
+    copy.sort((a, b) => b[1] - a[1]);
+  } else if (mode === 'change') {
+    copy.sort((a, b) => (changeOf?.(b[0]) ?? -Infinity) - (changeOf?.(a[0]) ?? -Infinity));
+  }
+  return copy;
+};
+
 export const getDataFromLocalStorage = (name: string, defaultValue: any) => {
   if (typeof window === "undefined" || !window || !window.localStorage) return defaultValue
   const lsData = localStorage.getItem(name);

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { debounce, getDataFromLocalStorage, getDropIndex, getResponsiveCryptoDp, setDataToLocalStorage } from './fns';
+import { debounce, getDataFromLocalStorage, getDropIndex, getResponsiveCryptoDp, setDataToLocalStorage, sortCurrencyPairs } from './fns';
 
 describe('getResponsiveCryptoDp', () => {
   it('defaults to 6 on wide viewports', () => {
@@ -17,6 +17,33 @@ describe('getResponsiveCryptoDp', () => {
   it('drops to 2 below 300px regardless of edit mode', () => {
     expect(getResponsiveCryptoDp(299, false)).toBe(2);
     expect(getResponsiveCryptoDp(299, true)).toBe(2);
+  });
+});
+
+describe('sortCurrencyPairs', () => {
+  const pairs: [string, number][] = [['usd', 1], ['eur', 0.9], ['btc', 0.00003]];
+
+  it('returns the same array reference for custom (no reorder)', () => {
+    expect(sortCurrencyPairs(pairs, 'custom')).toBe(pairs);
+  });
+
+  it('sorts by code A–Z', () => {
+    expect(sortCurrencyPairs(pairs, 'name').map((p) => p[0])).toEqual(['btc', 'eur', 'usd']);
+  });
+
+  it('sorts by rate high → low', () => {
+    expect(sortCurrencyPairs(pairs, 'value').map((p) => p[0])).toEqual(['usd', 'eur', 'btc']);
+  });
+
+  it('sorts by 24h change high → low, pushing unknowns last', () => {
+    const changeOf = (c: string): number | undefined => ({ usd: 1, eur: -2 } as Record<string, number>)[c];
+    expect(sortCurrencyPairs(pairs, 'change', changeOf).map((p) => p[0])).toEqual(['usd', 'eur', 'btc']);
+  });
+
+  it('does not mutate the input array', () => {
+    const p: [string, number][] = [['b', 2], ['a', 1]];
+    sortCurrencyPairs(p, 'name');
+    expect(p.map((x) => x[0])).toEqual(['b', 'a']);
   });
 });
 

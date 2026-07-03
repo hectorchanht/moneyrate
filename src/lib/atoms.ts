@@ -1,6 +1,6 @@
 import { atomWithStorage } from 'jotai/utils';
 import { DefaultBaseCur, DefaultCurrency2Display, DefaultCurrencyValue } from './constants';
-import type { CurrencyCode, Language } from './types';
+import type { CurrencyCode, Language, SortMode } from './types';
 
 // Create atoms with localStorage persistence
 export const baseCurAtom = atomWithStorage<CurrencyCode>('baseCur', DefaultBaseCur as CurrencyCode);
@@ -10,4 +10,5 @@ export const isEditingAtom = atomWithStorage<boolean>('isEditing', false);
 export const isDefaultCurrencyValueAtom = atomWithStorage<boolean>('isDefaultCurrencyValue', true);
 export const defaultCurrencyValueAtom = atomWithStorage<number>('defaultCurrencyValue', DefaultCurrencyValue);
 export const defaultCurrencyValueDpAtom = atomWithStorage<number>('defaultCurrencyValueDp', 2);
-export const languageAtom = atomWithStorage<Language>('language', 'en'); 
+export const languageAtom = atomWithStorage<Language>('language', 'en');
+export const sortModeAtom = atomWithStorage<SortMode>('sortMode', 'custom');

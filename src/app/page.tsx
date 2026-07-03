@@ -12,9 +12,10 @@ import {
   defaultCurrencyValueAtom,
   defaultCurrencyValueDpAtom,
   isDefaultCurrencyValueAtom,
-  isEditingAtom
+  isEditingAtom,
+  sortModeAtom
 } from '@/lib/atoms';
-import { getDataFromLocalStorage, getDropIndex, setDataToLocalStorage, showASCIIArt } from '@/lib/fns';
+import { getDataFromLocalStorage, getDropIndex, setDataToLocalStorage, showASCIIArt, sortCurrencyPairs } from '@/lib/fns';
 import { ShareSvg } from '@/lib/svgs';
 import { CurrencyCode } from '@/lib/types';
 import { useAtom } from 'jotai';
@@ -86,6 +87,7 @@ export default function Home() {
   const [isDefaultCurrencyValue] = useAtom(isDefaultCurrencyValueAtom);
   const [defaultCurrencyValue] = useAtom(defaultCurrencyValueAtom);
   const [defaultCurrencyValueDp] = useAtom(defaultCurrencyValueDpAtom);
+  const [sortMode] = useAtom(sortModeAtom);
 
   // Exchange rates update ~daily, so don't refetch both full tables on every window focus.
   const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrls({ baseCurrencyCode: baseCur }), fetchWithFallback, { keepPreviousData: true, revalidateOnFocus: false });
@@ -219,7 +221,11 @@ export default function Home() {
     setCurrency2Display(newCurrency2Display);
   };
 
-  const rows = currencyRatesPairs2Display;
+  // Apply the chosen sort for the read-only view; editing always shows the custom (draggable) order.
+  const rows = useMemo(
+    () => sortCurrencyPairs(currencyRatesPairs2Display, isEditing ? 'custom' : sortMode, (c) => changePctByCur[c]),
+    [currencyRatesPairs2Display, isEditing, sortMode, changePctByCur]
+  );
   // Drag-drop needs natural flow, so only virtualize large, read-only (non-editing) lists.
   const shouldVirtualize = !isEditing && rows.length > VIRTUALIZE_THRESHOLD;
 

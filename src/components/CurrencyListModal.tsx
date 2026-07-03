@@ -5,11 +5,12 @@ import {
   defaultCurrencyValueDpAtom,
   isDefaultCurrencyValueAtom,
   isEditingAtom,
-  languageAtom
+  languageAtom,
+  sortModeAtom
 } from '@/lib/atoms';
 import { DefaultCurrency2Display } from '@/lib/constants';
 import { AddSvg, CrossSvg, ListSvg, SettingSvg, TableSvg, XSvg } from '@/lib/svgs';
-import { Language, LanguageCode } from '@/lib/types';
+import { Language, LanguageCode, SortMode } from '@/lib/types';
 import { useAtom } from 'jotai';
 import React, { useState } from 'react';
 import CountryImg from './CountryImg';
@@ -68,7 +69,15 @@ const CurrencySetting: React.FC = () => {
   const [isEditing, setIsEditing] = useAtom(isEditingAtom);
   const [currency2Display, setCurrency2Display] = useAtom(currency2DisplayAtom);
   const [language, setLanguage] = useAtom(languageAtom);
+  const [sortMode, setSortMode] = useAtom(sortModeAtom);
   const t = useTranslation();
+
+  const sortOptions: { value: SortMode; label: string }[] = [
+    { value: 'custom', label: 'Custom (drag order)' },
+    { value: 'name', label: 'Name (A–Z)' },
+    { value: 'value', label: 'Value (high → low)' },
+    { value: 'change', label: '24h change (high → low)' },
+  ];
 
   return (
     <div>
@@ -136,6 +145,21 @@ const CurrencySetting: React.FC = () => {
         <div className="divider m-0" />
 
         <label className="label">
+          <span className="label-text">Sort by</span>
+        </label>
+        <select
+          className="select select-bordered w-full mt-2"
+          value={sortMode}
+          onChange={(e) => setSortMode(e.target.value as SortMode)}
+        >
+          {sortOptions.map(({ value, label }) => (
+            <option value={value} key={value}>{label}</option>
+          ))}
+        </select>
+
+        <div className="divider m-0" />
+
+        <label className="label">
           <span className="label-text">{t.settings.currenciesToDisplay}</span>
         </label>
         <input type="text" className="input input-bordered rounded-none w-full mt-2" placeholder={t.settings.currenciesToDisplaySeparatedByComma}
@@ -146,10 +170,11 @@ const CurrencySetting: React.FC = () => {
 
         <button className="btn btn-primary w-full mt-2" onClick={() => {
           // Remove only this app's persisted keys instead of nuking all same-origin localStorage.
-          ['baseCur', 'currency2Display', 'currencyValue', 'isEditing', 'isDefaultCurrencyValue', 'defaultCurrencyValue', 'defaultCurrencyValueDp', 'language']
+          ['baseCur', 'currency2Display', 'currencyValue', 'isEditing', 'isDefaultCurrencyValue', 'defaultCurrencyValue', 'defaultCurrencyValueDp', 'language', 'sortMode']
             .forEach((key) => localStorage.removeItem(key));
           setCurrency2Display(DefaultCurrency2Display);
           setLanguage('en');
+          setSortMode('custom');
           window.location.reload();
         }}>
           {t.settings.reset}

@@ -17,6 +17,8 @@ export interface LanguageContextType {
   setLanguage: (lang: Language) => void;
 }
 
+export type SortMode = 'custom' | 'name' | 'value' | 'change';
+
 export type CurrencyCode = string & { readonly __brand: 'CurrencyCode' };
 
 export type LanguageCode = string & { readonly __brand: 'LanguageCode' };
