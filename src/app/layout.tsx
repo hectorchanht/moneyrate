@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 // import Head from 'next/head';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { Provider } from 'jotai';
+import Script from 'next/script';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -26,6 +27,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const clarityId = process.env.NEXT_PUBLIC_CLARITY_ID;
   // const fullScreen = 'w-dvw h-dvh overflow-auto mx-auto p-4 md:px-2 sm:px-1';
   // const main = 'grid grid-cols-1 justify-between m-auto max-w-[800px] p-4 md:px-2 sm:px-1';
 
@@ -38,7 +40,6 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <meta name="apple-mobile-web-app-title" content="Money Rate - Fiat Crypto Conversion" />
         <link rel="manifest" href="/site.webmanifest" />
-        <script src="/clarity.js" async />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -48,6 +49,13 @@ export default function RootLayout({
             {children}
           </LanguageProvider>
         </Provider>
+
+        {/* Microsoft Clarity — loaded only when a project id is configured. */}
+        {clarityId && (
+          <Script id="ms-clarity" strategy="afterInteractive">
+            {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "${clarityId}");`}
+          </Script>
+        )}
       </body>
     </html>
   );
