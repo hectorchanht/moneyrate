@@ -107,6 +107,27 @@ const CurrencyChart = () => {
     window.URL.revokeObjectURL(url);
   };
 
+  // Zoom the visible window to the last N years (0 = all). Data is monthly.
+  const applyRange = (years: number) => {
+    if (!data?.data?.length) return;
+    const first = data.data[0].timestamp;
+    const last = data.data[data.data.length - 1].timestamp;
+    if (years === 0) {
+      setStartTimestamp(first);
+      setEndTimestamp(last);
+      return;
+    }
+    const cutoff = last - years * 365 * 24 * 60 * 60;
+    setStartTimestamp(Math.max(first, cutoff));
+    setEndTimestamp(last);
+  };
+  const rangePresets = [
+    { label: '1Y', years: 1 },
+    { label: '5Y', years: 5 },
+    { label: '10Y', years: 10 },
+    { label: 'All', years: 0 },
+  ];
+
   return (
     <div className="w-dvw h-dvh overflow-auto pt-[20px] mx-auto px-4 sm:px-1 md:px-2 text-base-content">
       <div className="flex justify-center text-[32px] gap-4 items-center">
@@ -139,6 +160,14 @@ const CurrencyChart = () => {
           onChange={(e) => setEndTimestamp(Number(e.target.value))}
           className="slider"
         />
+      </div>
+
+      <div className="flex justify-center gap-2 mb-4">
+        {rangePresets.map(({ label, years }) => (
+          <button key={label} type="button" className="btn btn-xs" onClick={() => applyRange(years)}>
+            {label}
+          </button>
+        ))}
       </div>
 
       <ResponsiveContainer width="100%" height="70%">
