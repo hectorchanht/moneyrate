@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import CurrencyRow from './CurrencyRow';
@@ -44,10 +44,18 @@ describe('CurrencyRow', () => {
     expect(onSelectBase).toHaveBeenCalledWith('EUR');
   });
 
-  it('renders an editable input for the base currency', () => {
+  it('renders an editable amount input for the base currency', () => {
     render(<CurrencyRow {...baseProps} cur="USD" val={1} name="US Dollar" />);
-    const input = screen.getByRole('spinbutton') as HTMLInputElement;
+    const input = screen.getByRole('textbox') as HTMLInputElement;
     expect(input.value).toBe('100');
+  });
+
+  it('evaluates a math expression typed into the base amount', () => {
+    const onValueChange = vi.fn();
+    render(<CurrencyRow {...baseProps} cur="USD" val={1} name="US Dollar" onValueChange={onValueChange} />);
+
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: '5+3' } });
+    expect(onValueChange).toHaveBeenLastCalledWith(8);
   });
 
   it('shows a 24h change badge with direction', () => {

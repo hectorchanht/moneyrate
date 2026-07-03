@@ -1,5 +1,31 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { debounce, getDataFromLocalStorage, getDropIndex, getResponsiveCryptoDp, setDataToLocalStorage, sortCurrencyPairs } from './fns';
+import { debounce, evalMathExpression, getDataFromLocalStorage, getDropIndex, getResponsiveCryptoDp, setDataToLocalStorage, sortCurrencyPairs } from './fns';
+
+describe('evalMathExpression', () => {
+  it('returns a plain number unchanged', () => {
+    expect(evalMathExpression('150')).toBe(150);
+    expect(evalMathExpression('12.5')).toBe(12.5);
+  });
+
+  it('respects operator precedence and parentheses', () => {
+    expect(evalMathExpression('2+3*4')).toBe(14);
+    expect(evalMathExpression('(2+3)*4')).toBe(20);
+    expect(evalMathExpression('10/4')).toBe(2.5);
+  });
+
+  it('handles unary minus and thousands separators', () => {
+    expect(evalMathExpression('-5+2')).toBe(-3);
+    expect(evalMathExpression('3*-2')).toBe(-6);
+    expect(evalMathExpression('1,000+500')).toBe(1500);
+  });
+
+  it('returns null for empty, invalid, or non-finite input', () => {
+    expect(evalMathExpression('')).toBeNull();
+    expect(evalMathExpression('abc')).toBeNull();
+    expect(evalMathExpression('5/0')).toBeNull();
+    expect(evalMathExpression('(2+3')).toBeNull();
+  });
+});
 
 describe('getResponsiveCryptoDp', () => {
   it('defaults to 6 on wide viewports', () => {

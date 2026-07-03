@@ -1,6 +1,6 @@
 import CountryImg from '@/components/CountryImg';
 import DragHandle from '@/components/DragHandle';
-import { getResponsiveCryptoDp } from '@/lib/fns';
+import { evalMathExpression, getResponsiveCryptoDp } from '@/lib/fns';
 import { CheckSvg, CopySvg, CrossSvg, EmptySvg } from '@/lib/svgs';
 import { CSSProperties, memo, useState } from 'react';
 
@@ -49,6 +49,14 @@ const CurrencyRow = ({
 
   const val2Show = (valMultiplied).toLocaleString(undefined, { minimumFractionDigits: dp2Show, maximumFractionDigits: dp2Show }) ?? 0;
 
+  // Base-amount field supports math expressions (e.g. "5+3*2"); null = not editing.
+  const [expr, setExpr] = useState<string | null>(null);
+  const onBaseChange = (raw: string) => {
+    setExpr(raw);
+    const result = evalMathExpression(raw);
+    if (result !== null) onValueChange(result); // apply live whenever the expression is valid
+  };
+
   const [copied, setCopied] = useState(false);
   const onCopy = async (e: React.MouseEvent) => {
     e.stopPropagation(); // don't also trigger the row's set-as-base click
@@ -77,12 +85,15 @@ const CurrencyRow = ({
 
           {isBase ? (
             <input
-              min={0}
-              step="any"
-              onChange={(e) => onValueChange(parseFloat(e.target.value))}
-              value={currencyValue === 0 ? '' : currencyValue.toString()}
-              type="number"
+              type="text"
+              inputMode="text"
+              value={expr !== null ? expr : (currencyValue === 0 ? '' : currencyValue.toString())}
+              onFocus={() => setExpr(currencyValue === 0 ? '' : currencyValue.toString())}
+              onChange={(e) => onBaseChange(e.target.value)}
+              onBlur={() => setExpr(null)}
+              onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
               placeholder="100"
+              aria-label={`${cur.toUpperCase()} amount (supports math, e.g. 5+3)`}
               className={`bg-base-200 h-[2em] w-[inherit] max-w-[240px] text-end`}
             />
           ) : (

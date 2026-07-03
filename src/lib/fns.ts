@@ -62,6 +62,85 @@ export const getDropIndex = (dropY: number, itemHeight: number, length: number):
   return Math.max(0, Math.min(rawIndex, length - 1));
 };
 
+// Safely evaluate a basic arithmetic expression (+ - * / parentheses, decimals,
+// unary minus). No eval()/Function() — those are blocked by the production CSP —
+// so this uses a shunting-yard parser. Returns null for empty/invalid input.
+export const evalMathExpression = (input: string): number | null => {
+  if (input == null) return null;
+  const s = String(input).replace(/,/g, '').trim();
+  if (s === '') return null;
+  if (!/^[0-9+\-*/(). ]+$/.test(s)) return null;
+
+  // Tokenize into numbers and single-char operators/parens.
+  const tokens: Array<number | string> = [];
+  let i = 0;
+  while (i < s.length) {
+    const c = s[i];
+    if (c === ' ') { i++; continue; }
+    if (/[0-9.]/.test(c)) {
+      let num = '';
+      while (i < s.length && /[0-9.]/.test(s[i])) num += s[i++];
+      const n = parseFloat(num);
+      if (!Number.isFinite(n)) return null;
+      tokens.push(n);
+    } else {
+      tokens.push(c);
+      i++;
+    }
+  }
+
+  // Shunting-yard -> RPN. 'u-' is unary minus.
+  const prec: Record<string, number> = { 'u-': 4, '*': 3, '/': 3, '+': 2, '-': 2 };
+  const out: Array<number | string> = [];
+  const ops: string[] = [];
+  let prev: number | string | null = null;
+  for (const tk of tokens) {
+    if (typeof tk === 'number') {
+      out.push(tk);
+    } else if (tk === '(') {
+      ops.push(tk);
+    } else if (tk === ')') {
+      while (ops.length && ops[ops.length - 1] !== '(') out.push(ops.pop() as string);
+      if (!ops.length) return null;
+      ops.pop();
+    } else {
+      let op = tk;
+      const unary = op === '-' && (prev === null || prev === '(' || (typeof prev === 'string' && prev !== ')'));
+      if (unary) op = 'u-';
+      while (ops.length) {
+        const top = ops[ops.length - 1];
+        if (top === '(') break;
+        if (prec[top] > prec[op] || (prec[top] === prec[op] && op !== 'u-')) out.push(ops.pop() as string);
+        else break;
+      }
+      ops.push(op);
+    }
+    prev = tk;
+  }
+  while (ops.length) {
+    const op = ops.pop() as string;
+    if (op === '(') return null;
+    out.push(op);
+  }
+
+  const st: number[] = [];
+  for (const tk of out) {
+    if (typeof tk === 'number') {
+      st.push(tk);
+    } else if (tk === 'u-') {
+      if (!st.length) return null;
+      st.push(-(st.pop() as number));
+    } else {
+      if (st.length < 2) return null;
+      const b = st.pop() as number;
+      const a = st.pop() as number;
+      st.push(tk === '+' ? a + b : tk === '-' ? a - b : tk === '*' ? a * b : a / b);
+    }
+  }
+  if (st.length !== 1) return null;
+  return Number.isFinite(st[0]) ? st[0] : null;
+};
+
 // Sort [code, rate] pairs for display. 'custom' preserves the user's order;
 // others return a new array so the stored order is untouched.
 export const sortCurrencyPairs = (
