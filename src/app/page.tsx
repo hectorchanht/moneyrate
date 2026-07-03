@@ -290,8 +290,6 @@ export default function Home() {
             <SearchBar data={effectiveAll ?? {}} />
           </span>
 
-          <InstallButton />
-
           <br />
 
           {(ratesDate || usingStale) && (
@@ -327,6 +325,10 @@ export default function Home() {
 
         </div>
       </main>
+
+      <footer className="m-auto w-full max-w-[800px] px-4 pb-4">
+        <InstallButton />
+      </footer>
     </div>
   )
 }
