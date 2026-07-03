@@ -91,8 +91,12 @@ export default function Home() {
   const [defaultCurrencyValueDp] = useAtom(defaultCurrencyValueDpAtom);
   const [sortMode] = useAtom(sortModeAtom);
 
+  // Optional historical date ('' = latest). Session-only; not persisted.
+  const [historicalDate, setHistoricalDate] = useState('');
+  const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
+
   // Exchange rates update ~daily, so don't refetch both full tables on every window focus.
-  const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrls({ baseCurrencyCode: baseCur }), fetchWithFallback, { keepPreviousData: true, revalidateOnFocus: false });
+  const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrls({ baseCurrencyCode: baseCur, date: historicalDate || 'latest' }), fetchWithFallback, { keepPreviousData: true, revalidateOnFocus: false });
   const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrls({}), fetchWithFallback, { keepPreviousData: true, revalidateOnFocus: false });
 
   // Yesterday's table for the same base, to compute a 24h change per currency.
@@ -101,7 +105,8 @@ export default function Home() {
     d.setUTCDate(d.getUTCDate() - 1);
     return d.toISOString().slice(0, 10);
   }, []);
-  const { data: dataYesterday } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrls({ baseCurrencyCode: baseCur, date: yesterdayStr }), fetchWithFallback, { keepPreviousData: true, revalidateOnFocus: false });
+  // 24h change is only meaningful for the current rates, so skip this fetch in historical mode.
+  const { data: dataYesterday } = useSWR<CurrencyRate4BaseCur>(historicalDate ? null : getCurrencyRateApiUrls({ baseCurrencyCode: baseCur, date: yesterdayStr }), fetchWithFallback, { keepPreviousData: true, revalidateOnFocus: false });
 
   // Only consult the localStorage cache after mount so the first client render matches the
   // server (which has no localStorage) — otherwise hydration mismatches.
@@ -110,7 +115,8 @@ export default function Home() {
 
   // Persist successful responses so a full API outage can fall back to the last-known-good data.
   useEffect(() => { if (data4All) setDataToLocalStorage(LS_CURRENCIES, data4All); }, [data4All]);
-  useEffect(() => { if (data4BaseCur) setDataToLocalStorage(rateCacheKey(baseCur), data4BaseCur); }, [data4BaseCur, baseCur]);
+  // Don't let a historical view overwrite the last-known-good *latest* cache.
+  useEffect(() => { if (data4BaseCur && !historicalDate) setDataToLocalStorage(rateCacheKey(baseCur), data4BaseCur); }, [data4BaseCur, baseCur, historicalDate]);
 
   // Hydrate state from a shared link (?base=&amount=&show=), overriding persisted prefs on load.
   useEffect(() => {
@@ -242,7 +248,7 @@ export default function Home() {
       windowWidth={windowWidth}
       defaultCurrencyValueDp={defaultCurrencyValueDp}
       name={effectiveAll?.[cur]}
-      changePct={changePctByCur[cur]}
+      changePct={historicalDate ? undefined : changePctByCur[cur]}
       showDivider={index < rows.length - 1}
       style={style}
       onDragStart={onDragStart}
@@ -294,13 +300,24 @@ export default function Home() {
 
           <br />
 
-          {(ratesDate || usingStale) && (
-            <div className="text-center text-xs opacity-60 mb-2">
+          <div className="text-center text-xs opacity-60 mb-2 flex flex-wrap items-center justify-center gap-2">
+            <span>
               {usingStale ? 'Showing last saved rates' : 'Rates as of'}
               {ratesDate ? ` ${ratesDate}` : ''}
               {usingStale ? ' — live data unavailable' : ''}
-            </div>
-          )}
+            </span>
+            <input
+              type="date"
+              max={todayStr}
+              value={historicalDate}
+              onChange={(e) => setHistoricalDate(e.target.value)}
+              aria-label="View rates as of a past date"
+              className="bg-base-200 rounded px-1"
+            />
+            {historicalDate && (
+              <button type="button" className="underline" onClick={() => setHistoricalDate('')}>today</button>
+            )}
+          </div>
 
           {shouldVirtualize ? (
             <FixedSizeList
