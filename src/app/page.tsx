@@ -108,6 +108,7 @@ export default function Home() {
     [data4BaseCur, baseCur, hydrated]
   );
   const usingStale = Boolean((err1 || err2) && effectiveBaseCur);
+  const ratesDate = typeof effectiveBaseCur?.date === 'string' ? effectiveBaseCur.date : undefined;
 
   const curObj: CurrencyRates = useMemo(() => {
     return pick(effectiveBaseCur?.[baseCur] as CurrencyRates, currency2Display);
@@ -221,9 +222,11 @@ export default function Home() {
 
           <br />
 
-          {usingStale && (
+          {(ratesDate || usingStale) && (
             <div className="text-center text-xs opacity-60 mb-2">
-              Showing last saved rates — live data unavailable.
+              {usingStale ? 'Showing last saved rates' : 'Rates as of'}
+              {ratesDate ? ` ${ratesDate}` : ''}
+              {usingStale ? ' — live data unavailable' : ''}
             </div>
           )}
 
