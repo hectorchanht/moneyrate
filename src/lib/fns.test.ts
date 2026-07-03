@@ -1,5 +1,38 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { debounce, getDataFromLocalStorage } from './fns';
+import { debounce, getDataFromLocalStorage, getDropIndex, getResponsiveCryptoDp } from './fns';
+
+describe('getResponsiveCryptoDp', () => {
+  it('defaults to 6 on wide viewports', () => {
+    expect(getResponsiveCryptoDp(888, false)).toBe(6);
+    expect(getResponsiveCryptoDp(888, true)).toBe(6);
+  });
+
+  it('narrows to 4 then 3 only while editing', () => {
+    expect(getResponsiveCryptoDp(400, true)).toBe(4);
+    expect(getResponsiveCryptoDp(360, true)).toBe(3);
+    // not editing: width thresholds above 300 have no effect
+    expect(getResponsiveCryptoDp(360, false)).toBe(6);
+  });
+
+  it('drops to 2 below 300px regardless of edit mode', () => {
+    expect(getResponsiveCryptoDp(299, false)).toBe(2);
+    expect(getResponsiveCryptoDp(299, true)).toBe(2);
+  });
+});
+
+describe('getDropIndex', () => {
+  it('floors the offset into an index', () => {
+    expect(getDropIndex(150, 72, 10)).toBe(2);
+  });
+
+  it('clamps a negative offset (drop above the list) to 0', () => {
+    expect(getDropIndex(-40, 72, 10)).toBe(0);
+  });
+
+  it('clamps an offset past the end to the last index', () => {
+    expect(getDropIndex(99999, 72, 5)).toBe(4);
+  });
+});
 
 describe('debounce', () => {
   afterEach(() => vi.useRealTimers());

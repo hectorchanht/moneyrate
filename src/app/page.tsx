@@ -15,7 +15,7 @@ import {
   isDefaultCurrencyValueAtom,
   isEditingAtom
 } from '@/lib/atoms';
-import { showASCIIArt } from '@/lib/fns';
+import { getDropIndex, getResponsiveCryptoDp, showASCIIArt } from '@/lib/fns';
 import { CrossSvg, EmptySvg } from '@/lib/svgs';
 import { CurrencyCode } from '@/lib/types';
 import { useAtom } from 'jotai';
@@ -131,16 +131,13 @@ export default function Home() {
     // Get the mouse coordinates relative to the drop zone
     const dropY = e.clientY - dropZoneRect.top;
 
-    // Calculate the index of the item where it was dropped
     const itemHeight = 72; // Assuming each currency item has a fixed height
-    const rawIndex = Math.floor(dropY / itemHeight); // Calculate the index based on the Y coordinate
 
     const newCurrency2Display = [...currency2Display];
     const draggedIndex = newCurrency2Display.indexOf(currencyItemOnDrag.current);
     if (draggedIndex === -1) return; // dragged item no longer in list
 
-    // Clamp so dropping above/below the list can't produce a negative or out-of-range splice index.
-    const itemIndex = Math.max(0, Math.min(rawIndex, newCurrency2Display.length - 1));
+    const itemIndex = getDropIndex(dropY, itemHeight, newCurrency2Display.length);
 
     const [movedItem] = newCurrency2Display.splice(draggedIndex, 1);
     newCurrency2Display.splice(itemIndex, 0, movedItem);
@@ -184,18 +181,7 @@ export default function Home() {
           >
             {(currencyRatesPairs2Display).map(([cur, val], i) => {
               const valMultiplied = val * currencyValue;
-              let cryptoDp = 6;
-              if (isEditing) {
-                if (windowWidth < 410) {
-                  cryptoDp = 4;
-                }
-                if (windowWidth < 370) {
-                  cryptoDp = 3;
-                }
-              }
-              if (windowWidth < 300) {
-                cryptoDp = 2;
-              }
+              const cryptoDp = getResponsiveCryptoDp(windowWidth, isEditing);
 
               const dp2Show = ((currencyValue === 0) || (valMultiplied > 1))
                 ? defaultCurrencyValueDp
