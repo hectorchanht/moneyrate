@@ -31,12 +31,6 @@ type GetCurrencyRateParams = {
   apiVersion?: string;
 };
 
-// date can be YYYY-MM-DD: 2024-03-06
-type GetCurrencyChartParams = {
-  currency?: '' | string;
-  baseCurrency?: 'latest' | string;
-};
-
 // Primary (configurable pages.dev mirror) + jsdelivr fallback, per the
 // fawazahmed0/currency-api documented endpoints.
 export const getCurrencyRateApiUrls = ({ baseCurrencyCode = '', date = 'latest', apiVersion = 'v1' }: GetCurrencyRateParams): string[] => {
@@ -49,11 +43,6 @@ export const getCurrencyRateApiUrls = ({ baseCurrencyCode = '', date = 'latest',
 
 // Back-compat single-URL helper (primary host only).
 export const getCurrencyRateApiUrl = (params: GetCurrencyRateParams) => getCurrencyRateApiUrls(params)[0];
-
-
-export const getCurrencyChartApiUrl = ({ baseCurrency = '', currency = '', }: GetCurrencyChartParams) => {
-  return `https://www.mtfxgroup.com/api/rates/getCurrencyChartData/?ratepair=${currency + baseCurrency}&start=undefined&end=undefined`;
-}
 
 export type CurrencyRate4All = {
   [key: string]: string;

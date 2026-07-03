@@ -3,6 +3,7 @@ export const DefaultCurrency2Display = ['usd', 'btc', 'cad', 'hkd', 'jpy', 'cny'
 export const DefaultCurrencyValue = 100;
 
 export const Currency2country = {
+  "AED": "ae",
   "AFN": "af",
   "ALL": "al",
   "DZD": "dz",
