@@ -19,6 +19,8 @@ export interface LanguageContextType {
 
 export type SortMode = 'custom' | 'name' | 'value' | 'change';
 
+export type Theme = 'light' | 'dark';
+
 export type CurrencyCode = string & { readonly __brand: 'CurrencyCode' };
 
 export type LanguageCode = string & { readonly __brand: 'LanguageCode' };

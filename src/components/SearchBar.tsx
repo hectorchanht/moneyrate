@@ -93,7 +93,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data }) => {
           role="combobox"
           aria-expanded={visible.length > 0 && query.length > 0}
           aria-controls="search-results"
-          className="w-full bg-black"
+          className="w-full bg-base-200"
         />
 
         <span className={'absolute right-1 m-1 inline-flex cursor-pointer items-center'}>
@@ -105,12 +105,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ data }) => {
       </form>
 
       {visible.length > 0 && query.length > 0
-        ? <div id="search-results" role="listbox" className={'overflow-hidden bg-black'}>
+        ? <div id="search-results" role="listbox" className={'overflow-hidden bg-base-200'}>
           {visible.map((code: string, index: number) =>
             <div key={code}
               role="option"
               aria-selected={index === activeIndex}
-              className={`p-3 cursor-pointer flex justify-between items-center ${index === activeIndex ? 'bg-white/10' : ''}`}
+              className={`p-3 cursor-pointer flex justify-between items-center ${index === activeIndex ? 'bg-base-content/10' : ''}`}
               onMouseEnter={() => setHighlight(index)}
               onClick={() => {
                 onSelect(code);

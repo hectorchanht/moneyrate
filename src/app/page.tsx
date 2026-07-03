@@ -4,6 +4,7 @@ import CurrencyListModal from '@/components/CurrencyListModal';
 import CurrencyRow from '@/components/CurrencyRow';
 import InstallButton from '@/components/InstallButton';
 import SearchBar from '@/components/SearchBar';
+import ThemeToggle from '@/components/ThemeToggle';
 import useWindowWidth from '@/hooks/useWindowWidth';
 import { CurrencyRate4All, CurrencyRate4BaseCur, fetchWithFallback, getCurrencyRateApiUrls } from '@/lib/api';
 import {
@@ -287,6 +288,7 @@ export default function Home() {
                 <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 text-[10px] whitespace-nowrap opacity-70">Copied!</span>
               )}
             </button>
+            <ThemeToggle />
             <SearchBar data={effectiveAll ?? {}} />
           </span>
 

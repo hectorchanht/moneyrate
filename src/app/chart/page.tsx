@@ -108,7 +108,7 @@ const CurrencyChart = () => {
   };
 
   return (
-    <div className="w-dvw h-dvh overflow-auto pt-[20px] mx-auto px-4 sm:px-1 md:px-2">
+    <div className="w-dvw h-dvh overflow-auto pt-[20px] mx-auto px-4 sm:px-1 md:px-2 text-base-content">
       <div className="flex justify-center text-[32px] gap-4 items-center">
 
         <ReverseSvg className='cursor-pointer w-[24px] h-[24px]' onClick={() => {
@@ -129,7 +129,7 @@ const CurrencyChart = () => {
           max={endTimestamp}
           value={startTimestamp}
           onChange={(e) => setStartTimestamp(Number(e.target.value))}
-          className="slider bg-white"
+          className="slider"
         />
         <input
           type="range"
@@ -147,7 +147,7 @@ const CurrencyChart = () => {
           <XAxis dataKey="date" domain={['dataMin', 'dataMax']} />
           <YAxis tickFormatter={(value) => scientificFormat(value).toString()} />
           <Tooltip labelStyle={{ color: 'black' }} contentStyle={{ background: 'white' }} itemStyle={{ fontWeight: '700', color: 'black' }} formatter={(value) => [value]} />
-          <Line type="monotone" dataKey="value" stroke="white" isAnimationActive={false} />
+          <Line type="monotone" dataKey="value" stroke="currentColor" isAnimationActive={false} />
         </LineChart>
       </ResponsiveContainer>
     </div>

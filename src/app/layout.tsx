@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 // import Head from 'next/head';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
+import ThemeApplier from '@/components/ThemeApplier';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { Provider } from 'jotai';
 import Script from 'next/script';
@@ -47,6 +48,7 @@ export default function RootLayout({
       >
         <ServiceWorkerRegister />
         <Provider>
+          <ThemeApplier />
           <LanguageProvider>
             {children}
           </LanguageProvider>

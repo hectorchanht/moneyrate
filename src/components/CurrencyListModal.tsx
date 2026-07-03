@@ -99,7 +99,7 @@ const CurrencySetting: React.FC = () => {
           }} className="checkbox" />
           <span className="label-text pl-2 justify-between items-center flex gap-2">
             {t.settings.resetValue}
-            <input type="number" className="w-[50%] bg-black" placeholder={defaultCurrencyValue.toString()} disabled={!isDefaultCurrencyValue}
+            <input type="number" className="w-[50%] bg-base-200" placeholder={defaultCurrencyValue.toString()} disabled={!isDefaultCurrencyValue}
               onChange={(d) => {
                 const v = parseInt(d.target.value);
                 setDefaultCurrencyValue(isNaN(v) ? 0 : v);
@@ -114,7 +114,7 @@ const CurrencySetting: React.FC = () => {
 
           <span className="label-text pl-2 justify-between items-center flex gap-2">
             {t.settings.setDp}
-            <input type="number" className="w-[50%] bg-black" placeholder={defaultCurrencyValueDp?.toString() ?? 0}
+            <input type="number" className="w-[50%] bg-base-200" placeholder={defaultCurrencyValueDp?.toString() ?? 0}
               onChange={(d) => {
                 setDefaultCurrencyValueDp(isNaN(parseInt(d.target.value)) ? 0 : parseInt(d.target.value ?? 0));
               }}
@@ -170,7 +170,7 @@ const CurrencySetting: React.FC = () => {
 
         <button className="btn btn-primary w-full mt-2" onClick={() => {
           // Remove only this app's persisted keys instead of nuking all same-origin localStorage.
-          ['baseCur', 'currency2Display', 'currencyValue', 'isEditing', 'isDefaultCurrencyValue', 'defaultCurrencyValue', 'defaultCurrencyValueDp', 'language', 'sortMode']
+          ['baseCur', 'currency2Display', 'currencyValue', 'isEditing', 'isDefaultCurrencyValue', 'defaultCurrencyValue', 'defaultCurrencyValueDp', 'language', 'sortMode', 'theme']
             .forEach((key) => localStorage.removeItem(key));
           setCurrency2Display(DefaultCurrency2Display);
           setLanguage('en');

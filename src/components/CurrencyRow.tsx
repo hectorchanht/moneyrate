@@ -83,7 +83,7 @@ const CurrencyRow = ({
               value={currencyValue === 0 ? '' : currencyValue.toString()}
               type="number"
               placeholder="100"
-              className={`bg-black h-[2em] w-[inherit] max-w-[240px] text-end`}
+              className={`bg-base-200 h-[2em] w-[inherit] max-w-[240px] text-end`}
             />
           ) : (
             // Click a currency to make it the active (editable) one — the input moves to this row.
