@@ -18,13 +18,14 @@ vi.mock('next/image', () => ({
 const renderSearchBar = (data: Record<string, string>, displayed: string[] = []) => {
   const store = createStore();
   store.set(currency2DisplayAtom, displayed);
-  return render(
+  const utils = render(
     <Provider store={store}>
       <LanguageProvider>
         <SearchBar data={data} />
       </LanguageProvider>
     </Provider>
   );
+  return { ...utils, store };
 };
 
 afterEach(() => cleanup());
@@ -34,7 +35,7 @@ describe('SearchBar', () => {
     const user = userEvent.setup();
     const { container } = renderSearchBar({ USD: 'US Dollar', EUR: 'Euro' });
 
-    await user.type(screen.getByRole('textbox'), 'zzzzz');
+    await user.type(screen.getByRole('combobox'), 'zzzzz');
 
     expect(screen.queryByText('USD')).toBeNull();
     // Regression: the `matched.length && ...` guard used to render a literal "0".
@@ -45,7 +46,7 @@ describe('SearchBar', () => {
     const user = userEvent.setup();
     renderSearchBar({ USD: 'US Dollar', EUR: 'Euro' });
 
-    await user.type(screen.getByRole('textbox'), 'eur');
+    await user.type(screen.getByRole('combobox'), 'eur');
 
     expect(screen.getByText('EUR')).toBeTruthy();
   });
@@ -54,7 +55,7 @@ describe('SearchBar', () => {
     const user = userEvent.setup();
     renderSearchBar({ USD: 'USD Dollar', EUR: 'Euro' });
 
-    await user.type(screen.getByRole('textbox'), 'usd');
+    await user.type(screen.getByRole('combobox'), 'usd');
 
     // Would be 2 rows without the Set-based dedupe.
     expect(screen.getAllByText('USD')).toHaveLength(1);
@@ -64,8 +65,28 @@ describe('SearchBar', () => {
     const user = userEvent.setup();
     renderSearchBar({ USD: 'US Dollar', EUR: 'Euro' }, ['USD']);
 
-    await user.type(screen.getByRole('textbox'), 'us');
+    await user.type(screen.getByRole('combobox'), 'us');
 
     expect(screen.queryByText('USD')).toBeNull();
+  });
+
+  it('adds the first result on Enter', async () => {
+    const user = userEvent.setup();
+    const { store } = renderSearchBar({ EUR: 'Euro', GBP: 'Pound', JPY: 'Yen' });
+
+    await user.type(screen.getByRole('combobox'), 'p'); // matches GBP, JPY
+    await user.keyboard('{Enter}');
+
+    expect(store.get(currency2DisplayAtom)).toContain('GBP');
+  });
+
+  it('moves the highlight with ArrowDown and adds it on Enter', async () => {
+    const user = userEvent.setup();
+    const { store } = renderSearchBar({ EUR: 'Euro', GBP: 'Pound', JPY: 'Yen' });
+
+    await user.type(screen.getByRole('combobox'), 'p');
+    await user.keyboard('{ArrowDown}{Enter}');
+
+    expect(store.get(currency2DisplayAtom)).toContain('JPY');
   });
 });
