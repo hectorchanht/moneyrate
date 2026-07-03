@@ -38,7 +38,9 @@ declare global {
 const useDragDropTouch = () => {
   useEffect(() => {
     const script = document.createElement('script');
-    script.src = 'https://drag-drop-touch-js.github.io/dragdroptouch/dist/drag-drop-touch.esm.min.js?autoload';
+    // Vendored from drag-drop-touch-js.github.io into /public so it loads same-origin
+    // (removes the unpinned third-party script / missing-SRI risk).
+    script.src = '/vendor/drag-drop-touch.esm.min.js?autoload';
     script.type = 'module';
     script.onload = () => {
       if (typeof window.enableDragDropTouch === 'function') {
