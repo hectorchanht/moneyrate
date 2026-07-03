@@ -99,8 +99,12 @@ const CurrencyRow = ({
           ) : (
             // Click a currency to make it the active (editable) one — the input moves to this row.
             <div
+              role="button"
+              tabIndex={0}
               onClick={() => onSelectBase(cur)}
-              className='w-[240px] text-end cursor-pointer'
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectBase(cur); } }}
+              className='w-[240px] text-end cursor-pointer focus:outline focus:outline-1 focus:outline-base-content/40'
+              aria-label={`Set ${cur.toUpperCase()} as base currency`}
               title="Tap to edit this currency"
             >
               <div>{val2Show}</div>
@@ -115,7 +119,9 @@ const CurrencyRow = ({
           {isBase
             ? (isEditing ? <EmptySvg /> : null)
             : (isEditing
-              ? <CrossSvg className={'cursor-pointer size-6 shrink-0'} onClick={() => onRemove(cur)} />
+              ? <button type="button" onClick={() => onRemove(cur)} aria-label={`Remove ${cur.toUpperCase()}`} className="shrink-0">
+                  <CrossSvg className={'cursor-pointer size-6'} />
+                </button>
               : (
                 <button
                   type="button"

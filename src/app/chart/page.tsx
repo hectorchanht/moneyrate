@@ -132,20 +132,25 @@ const CurrencyChart = () => {
     <div className="w-dvw h-dvh overflow-auto pt-[20px] mx-auto px-4 sm:px-1 md:px-2 text-base-content">
       <div className="flex justify-center text-[32px] gap-4 items-center">
 
-        <ReverseSvg className='cursor-pointer w-[24px] h-[24px]' onClick={() => {
+        <button type="button" aria-label="Reverse currency pair" onClick={() => {
           // redirect to /chart?base-target
           window.location.href = `/chart?q=${q.split('-')[1]}-${q.split('-')[0]}`;
-        }} />
+        }}>
+          <ReverseSvg className='cursor-pointer w-[24px] h-[24px]' />
+        </button>
 
         {data?.title}
 
-        <DownloadSvg className='cursor-pointer w-[24px] h-[24px]' onClick={exportToCSV} />
+        <button type="button" aria-label="Download CSV" onClick={exportToCSV}>
+          <DownloadSvg className='cursor-pointer w-[24px] h-[24px]' />
+        </button>
       </div>
 
       {/* Range slider for selecting start and end timestamps */}
       <div className="flex justify-center my-4">
         <input
           type="range"
+          aria-label="Range start date"
           min={data?.data[0]?.timestamp}
           max={endTimestamp}
           value={startTimestamp}
@@ -154,6 +159,7 @@ const CurrencyChart = () => {
         />
         <input
           type="range"
+          aria-label="Range end date"
           min={startTimestamp}
           max={data?.data[data?.data.length - 1]?.timestamp}
           value={endTimestamp}

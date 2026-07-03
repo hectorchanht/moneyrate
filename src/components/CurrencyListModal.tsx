@@ -100,6 +100,7 @@ const CurrencySetting: React.FC = () => {
           <span className="label-text pl-2 justify-between items-center flex gap-2">
             {t.settings.resetValue}
             <input type="number" className="w-[50%] bg-base-200" placeholder={defaultCurrencyValue.toString()} disabled={!isDefaultCurrencyValue}
+              aria-label={t.settings.resetValue}
               onChange={(d) => {
                 const v = parseInt(d.target.value);
                 setDefaultCurrencyValue(isNaN(v) ? 0 : v);
@@ -115,6 +116,7 @@ const CurrencySetting: React.FC = () => {
           <span className="label-text pl-2 justify-between items-center flex gap-2">
             {t.settings.setDp}
             <input type="number" className="w-[50%] bg-base-200" placeholder={defaultCurrencyValueDp?.toString() ?? 0}
+              aria-label={t.settings.setDp}
               onChange={(d) => {
                 setDefaultCurrencyValueDp(isNaN(parseInt(d.target.value)) ? 0 : parseInt(d.target.value ?? 0));
               }}
@@ -243,7 +245,7 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data }) => {
 
   return (
     <div className='h-[52px] w-[30px] flex items-center justify-center'>
-      <button className="" onClick={openModal}>
+      <button type="button" onClick={openModal} aria-label="Open currency list and settings">
         <ListSvg />
       </button>
 
@@ -252,13 +254,13 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data }) => {
         <div className="modal-box max-w-[460px] p-2" >
 
           <div role="tablist" className="tabs tabs-bordered mb-2">
-            <a role="tab" className={`tab ${activeTab === 1 ? 'tab-active' : ''}`} onClick={() => setActiveTab(1)}>
+            <a role="tab" aria-label="Currency list" aria-selected={activeTab === 1} className={`tab ${activeTab === 1 ? 'tab-active' : ''}`} onClick={() => setActiveTab(1)}>
               <TableSvg />
             </a>
-            <a role="tab" className={`tab ${activeTab === 2 ? 'tab-active' : ''}`} onClick={() => setActiveTab(2)}>
+            <a role="tab" aria-label="Settings" aria-selected={activeTab === 2} className={`tab ${activeTab === 2 ? 'tab-active' : ''}`} onClick={() => setActiveTab(2)}>
               <SettingSvg />
             </a>
-            <a role="tab" className={`tab`} onClick={closeModal}>
+            <a role="tab" aria-label="Close" className={`tab`} onClick={closeModal}>
               <XSvg />
             </a>
           </div>

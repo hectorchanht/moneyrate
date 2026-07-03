@@ -91,6 +91,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data }) => {
           onChange={(e) => { setQuery(e.target.value); setHighlight(0); }}
           onKeyDown={onKeyDown}
           role="combobox"
+          aria-label="Search currencies to add"
           aria-expanded={visible.length > 0 && query.length > 0}
           aria-controls="search-results"
           className="w-full bg-base-200"
