@@ -15,6 +15,7 @@ import {
   isEditingAtom
 } from '@/lib/atoms';
 import { getDataFromLocalStorage, getDropIndex, setDataToLocalStorage, showASCIIArt } from '@/lib/fns';
+import { ShareSvg } from '@/lib/svgs';
 import { CurrencyCode } from '@/lib/types';
 import { useAtom } from 'jotai';
 import { pick } from 'lodash';
@@ -98,6 +99,32 @@ export default function Home() {
   // Persist successful responses so a full API outage can fall back to the last-known-good data.
   useEffect(() => { if (data4All) setDataToLocalStorage(LS_CURRENCIES, data4All); }, [data4All]);
   useEffect(() => { if (data4BaseCur) setDataToLocalStorage(rateCacheKey(baseCur), data4BaseCur); }, [data4BaseCur, baseCur]);
+
+  // Hydrate state from a shared link (?base=&amount=&show=), overriding persisted prefs on load.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const base = params.get('base');
+    const amount = params.get('amount');
+    const show = params.get('show');
+    if (base) setBaseCur(base.toLowerCase() as CurrencyCode);
+    if (amount !== null && amount !== '' && !isNaN(Number(amount))) setCurrencyValue(Number(amount));
+    if (show) setCurrency2Display(show.split(',').map(s => s.trim().toLowerCase()).filter(Boolean));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const [shareCopied, setShareCopied] = useState(false);
+  const onShare = useCallback(async () => {
+    const params = new URLSearchParams({ base: baseCur, amount: String(currencyValue), show: currency2Display.join(',') });
+    const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState(null, '', url);
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 1500);
+    } catch {
+      // clipboard unavailable (insecure context / denied) — the address bar is still updated
+    }
+  }, [baseCur, currencyValue, currency2Display]);
 
   const effectiveAll = useMemo<CurrencyRate4All | undefined>(
     () => data4All ?? (hydrated ? getDataFromLocalStorage(LS_CURRENCIES, undefined) : undefined),
@@ -217,6 +244,18 @@ export default function Home() {
         <div className='grid grid-cols-1 justify-between m-auto max-w-[800px] p-4'>
           <span className='flex gap-2 w-full items-start'>
             <CurrencyListModal data={effectiveAll ?? {}} />
+            <button
+              type="button"
+              onClick={onShare}
+              title="Copy shareable link"
+              aria-label="Copy shareable link"
+              className="h-[52px] w-[30px] shrink-0 flex items-center justify-center relative"
+            >
+              <ShareSvg />
+              {shareCopied && (
+                <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 text-[10px] whitespace-nowrap opacity-70">Copied!</span>
+              )}
+            </button>
             <SearchBar data={effectiveAll ?? {}} />
           </span>
 
