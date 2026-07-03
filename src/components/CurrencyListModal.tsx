@@ -92,7 +92,8 @@ const CurrencySetting: React.FC = () => {
             {t.settings.resetValue}
             <input type="number" className="w-[50%] bg-black" placeholder={defaultCurrencyValue.toString()} disabled={!isDefaultCurrencyValue}
               onChange={(d) => {
-                setDefaultCurrencyValue(parseInt(d.target.value));
+                const v = parseInt(d.target.value);
+                setDefaultCurrencyValue(isNaN(v) ? 0 : v);
               }}
             />
           </span>
@@ -144,7 +145,9 @@ const CurrencySetting: React.FC = () => {
           }} />
 
         <button className="btn btn-primary w-full mt-2" onClick={() => {
-          localStorage.clear();
+          // Remove only this app's persisted keys instead of nuking all same-origin localStorage.
+          ['baseCur', 'currency2Display', 'currencyValue', 'isEditing', 'isDefaultCurrencyValue', 'defaultCurrencyValue', 'defaultCurrencyValueDp', 'language']
+            .forEach((key) => localStorage.removeItem(key));
           setCurrency2Display(DefaultCurrency2Display);
           setLanguage('en');
           window.location.reload();

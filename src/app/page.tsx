@@ -80,8 +80,9 @@ export default function Home() {
   const [defaultCurrencyValue] = useAtom(defaultCurrencyValueAtom);
   const [defaultCurrencyValueDp] = useAtom(defaultCurrencyValueDpAtom);
 
-  const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrl({ baseCurrencyCode: baseCur }), fetcher, { keepPreviousData: true });
-  const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrl({}), fetcher, { keepPreviousData: true });
+  // Exchange rates update ~daily, so don't refetch both full tables on every window focus.
+  const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrl({ baseCurrencyCode: baseCur }), fetcher, { keepPreviousData: true, revalidateOnFocus: false });
+  const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrl({}), fetcher, { keepPreviousData: true, revalidateOnFocus: false });
 
   const curObj: CurrencyRates = useMemo(() => {
     return pick(data4BaseCur?.[baseCur] as CurrencyRates, currency2Display);
@@ -130,13 +131,14 @@ export default function Home() {
 
     // Calculate the index of the item where it was dropped
     const itemHeight = 72; // Assuming each currency item has a fixed height
-    const itemIndex = Math.floor(dropY / itemHeight); // Calculate the index based on the Y coordinate
-
-    // Now you can use itemIndex to determine where to place the dropped item
-    // console.log(`Item dropped at index: ${itemIndex}`);
+    const rawIndex = Math.floor(dropY / itemHeight); // Calculate the index based on the Y coordinate
 
     const newCurrency2Display = [...currency2Display];
     const draggedIndex = newCurrency2Display.indexOf(currencyItemOnDrag.current);
+    if (draggedIndex === -1) return; // dragged item no longer in list
+
+    // Clamp so dropping above/below the list can't produce a negative or out-of-range splice index.
+    const itemIndex = Math.max(0, Math.min(rawIndex, newCurrency2Display.length - 1));
 
     const [movedItem] = newCurrency2Display.splice(draggedIndex, 1);
     newCurrency2Display.splice(itemIndex, 0, movedItem);
