@@ -106,6 +106,10 @@ None - no external service configuration required.
 - No visible behavior yet — this plan intentionally produces zero UI change (contract layer only), confirmed by `npm run build` succeeding with no new runtime code paths exercised.
 - No blockers.
 
+## Self-Check: PASSED
+
+All created/modified files verified present on disk; all 4 task/summary commit hashes (`2cfa699`, `722de40`, `d300691`, `a14af8b`) verified present in `git log`.
+
 ---
 *Phase: 01-guided-first-run-tour*
 *Completed: 2026-07-04*

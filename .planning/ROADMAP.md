@@ -55,7 +55,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Guided First-Run Tour | 0/? | Not started | - |
+| 1. Guided First-Run Tour | 1/3 | In Progress|  |
 | 2. On-Demand Replay | 0/? | Not started | - |
 | 3. Localized, Accessible, Theme-Aware Tour | 0/? | Not started | - |
 

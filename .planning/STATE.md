@@ -2,13 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
+current_plan: 2 of 3
 status: executing
-last_updated: "2026-07-04T03:01:51.132Z"
+last_updated: "2026-07-04T03:22:21.505Z"
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 3
-  completed_plans: 0
+  completed_plans: 1
   percent: 0
 ---
 
@@ -20,7 +21,7 @@ progress:
 
 **Core value:** A first-time visitor understands how to use moneyrate within seconds of landing — the key interactions are demonstrated, not hidden.
 
-**Current focus:** Phase 1 — Guided First-Run Tour (not yet planned).
+**Current focus:** Phase 1 — Guided First-Run Tour
 
 **Full requirements:** `.planning/REQUIREMENTS.md`
 **Full roadmap:** `.planning/ROADMAP.md`
@@ -28,10 +29,13 @@ progress:
 
 ## Current Position
 
+Phase: 1 (Guided First-Run Tour) — EXECUTING
+Current Plan: 2 of 3
+Total Plans in Phase: 3
 **Phase:** 1 of 3 — Guided First-Run Tour
-**Plan:** Not yet planned
-**Status:** Ready to execute
-**Progress:** [ ] 0% — phases: 0/3 complete
+**Plan:** 01-01 complete (contract layer); 01-02 (anchors) next
+**Status:** Executing Phase 1
+**Progress:** [███░░░░░░░] 33%
 
 ## Performance Metrics
 
@@ -40,6 +44,7 @@ progress:
 | 1. Guided First-Run Tour | TBD | TBD | - | - |
 | 2. On-Demand Replay | TBD | TBD | - | - |
 | 3. Localized, Accessible, Theme-Aware Tour | TBD | TBD | - | - |
+| Phase 01 P01 | 12min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -54,6 +59,9 @@ progress:
 | Home page (`/`) only | Highest-traffic entry point; `/chart` and `/convert/[pair]` explicitly deferred to v2 (TOUR-07) | Pre-roadmap |
 | "Seen tour" flag as new `atomWithStorage` | Matches existing state pattern in `src/lib/atoms.ts`; must gate behind `hydrated` flag in `page.tsx` to avoid SSR/localStorage hydration mismatch | Pre-roadmap |
 | 3-phase vertical-slice structure (engine+content / replay / i18n+a11y+theme) | Coarse granularity target (3-5 phases); each phase is an independently demoable, end-to-end user capability rather than a horizontal layer | Roadmap |
+
+- [Phase 01]: resolveTourLocale takes navLangs as a parameter (never reads navigator itself) to stay pure/testable; client-only navigator.languages read deferred to Plan 03's call site
+- [Phase 01]: tour.css overrides driver.js's verified real class names (next-btn, prev-btn, done-btn, footer-btn) confirmed against installed driver.js 1.6.0 source, not assumed from docs
 
 ### Open Todos
 
@@ -71,8 +79,10 @@ progress:
 
 ## Session Continuity
 
-**Last session ended:** 2026-07-04 — roadmap created and approved for planning.
-**Resume with:** `/gsd:plan-phase 1`
+**Last session:** 2026-07-04T03:22:21.505Z
+**Stopped At:** Completed 01-01-PLAN.md
+**Resume File:** None
+**Resume with:** `/gsd:execute-phase 1` (plan 01-02 next)
 
 ---
 *State initialized: 2026-07-04*
