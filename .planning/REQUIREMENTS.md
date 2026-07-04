@@ -50,21 +50,21 @@ Which phases cover which requirements. Populated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TOUR-01 | — | Pending |
-| TOUR-02 | — | Pending |
-| TOUR-03 | — | Pending |
-| TOUR-04 | — | Pending |
-| TOUR-05 | — | Pending |
-| TOUR-06 | — | Pending |
-| I18N-01 | — | Pending |
-| A11Y-01 | — | Pending |
-| A11Y-02 | — | Pending |
+| TOUR-01 | Phase 1 - Guided First-Run Tour | Pending |
+| TOUR-02 | Phase 1 - Guided First-Run Tour | Pending |
+| TOUR-03 | Phase 2 - On-Demand Replay | Pending |
+| TOUR-04 | Phase 1 - Guided First-Run Tour | Pending |
+| TOUR-05 | Phase 1 - Guided First-Run Tour | Pending |
+| TOUR-06 | Phase 1 - Guided First-Run Tour | Pending |
+| I18N-01 | Phase 3 - Localized, Accessible, Theme-Aware Tour | Pending |
+| A11Y-01 | Phase 3 - Localized, Accessible, Theme-Aware Tour | Pending |
+| A11Y-02 | Phase 3 - Localized, Accessible, Theme-Aware Tour | Pending |
 
 **Coverage:**
 - v1 requirements: 9 total
-- Mapped to phases: 0 (roadmap pending)
-- Unmapped: 9 ⚠️
+- Mapped to phases: 9/9 ✓
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-07-04*
-*Last updated: 2026-07-04 after initial definition*
+*Last updated: 2026-07-04 after roadmap creation*
