@@ -11,7 +11,7 @@ Requirements for the onboarding-tour milestone. Each maps to a roadmap phase.
 
 - [x] **TOUR-01**: First-time visitor sees the tour auto-start on first load of the home page (`/`)
 - [x] **TOUR-02**: Tour auto-starts at most once per browser via a persisted "seen" flag; it never auto-repeats on later visits
-- [ ] **TOUR-03**: User can replay the tour anytime via a persistent "?" help control
+- [x] **TOUR-03**: User can replay the tour anytime via a persistent "?" help control
 - [x] **TOUR-04**: User can skip/dismiss the tour at any step; the overlay closes immediately and the "seen" flag is set
 - [x] **TOUR-05**: User can move forward and backward between tour steps
 - [x] **TOUR-06**: Tour presents the 8 guided steps — set base (tap a row), edit amount, add currency (search), manage list/settings, share link, theme toggle, historical-date picker, PWA install — each anchored to a stable, non-translated `data-tour` target
@@ -56,7 +56,7 @@ Which phases cover which requirements. Populated during roadmap creation.
 |-------------|-------|--------|
 | TOUR-01 | Phase 1 - Guided First-Run Tour | Complete |
 | TOUR-02 | Phase 1 - Guided First-Run Tour | Complete |
-| TOUR-03 | Phase 2 - On-Demand Replay | Pending |
+| TOUR-03 | Phase 2 - On-Demand Replay | Complete |
 | TOUR-04 | Phase 1 - Guided First-Run Tour | Complete |
 | TOUR-05 | Phase 1 - Guided First-Run Tour | Complete |
 | TOUR-06 | Phase 1 - Guided First-Run Tour | Complete |
