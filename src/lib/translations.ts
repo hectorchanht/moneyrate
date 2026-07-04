@@ -3,7 +3,9 @@ export const translations = {
     home: {
       title: 'Money Rate - Fiat Crypto Conversion',
       description: 'Instantly fiat and crypto conversion for you and me.',
-      searchPlaceholder: 'fiat 💸 (usd) | crypto 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | crypto 📈 (btc)',
+      ratesAsOf: 'Rates as of',
+      today: 'today'
     },
     settings: {
       enableDeleteDragAndDrop: 'Enable Delete & Drag and Drop 🔧',
@@ -21,7 +23,9 @@ export const translations = {
     home: {
       title: 'Money Rate - 法幣和加密貨幣轉換',
       description: '立即轉換法幣和加密貨幣，為你我而設。',
-      searchPlaceholder: '法幣 💸 (usd) | 加密貨幣 📈 (btc)'
+      searchPlaceholder: '法幣 💸 (usd) | 加密貨幣 📈 (btc)',
+      ratesAsOf: '匯率更新於',
+      today: '今天'
     },
     settings: {
       enableDeleteDragAndDrop: '啟用刪除和拖放 🔧',
@@ -39,7 +43,9 @@ export const translations = {
     home: {
       title: 'Money Rate - 法币和加密货币转换',
       description: '立即转换法币和加密货币，为你我而设。',
-      searchPlaceholder: '法币 💸 (usd) | 加密货币 📈 (btc)'
+      searchPlaceholder: '法币 💸 (usd) | 加密货币 📈 (btc)',
+      ratesAsOf: '汇率更新于',
+      today: '今天'
     },
     settings: {
       enableDeleteDragAndDrop: '启用删除和拖放 🔧',
@@ -57,7 +63,9 @@ export const translations = {
     home: {
       title: 'マネーレート - フィアット暗号通貨変換',
       description: 'あなたと私ための即時フィアットと暗号通貨変換。',
-      searchPlaceholder: 'フィアット 💸 (usd) | 暗号通貨 📈 (btc)'
+      searchPlaceholder: 'フィアット 💸 (usd) | 暗号通貨 📈 (btc)',
+      ratesAsOf: '為替レート基準日',
+      today: '今日'
     },
     settings: {
       enableDeleteDragAndDrop: '削除とドラッグアンドドロップを有効にする 🔧',
@@ -75,7 +83,9 @@ export const translations = {
     home: {
       title: '머니 레이트 - 법정화와 암호화폐 변환',
       description: '당신과 나에게 즉시 법정화와 암호화폐 변환을 제공합니다.',
-      searchPlaceholder: '법정화 💸 (usd) | 암호화폐 📈 (btc)'
+      searchPlaceholder: '법정화 💸 (usd) | 암호화폐 📈 (btc)',
+      ratesAsOf: '환율 기준일',
+      today: '오늘'
     },
     settings: {
       enableDeleteDragAndDrop: '삭제 및 드래그 앤 드롭 활성화 🔧',
@@ -93,7 +103,9 @@ export const translations = {
     home: {
       title: 'Taux de l\'Argent - Conversion Fiat Crypto',
       description: 'Conversion instantanée de fiat et de crypto pour vous et moi.',
-      searchPlaceholder: 'fiat 💸 (usd) | crypto 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | crypto 📈 (btc)',
+      ratesAsOf: 'Taux au',
+      today: 'aujourd\'hui'
     },
     settings: {
       enableDeleteDragAndDrop: 'Activer Supprimer et Glisser-Déposer 🔧',
@@ -111,7 +123,9 @@ export const translations = {
     home: {
       title: 'Geldkurs - Fiat-Kryptowährungsumrechnung',
       description: 'Sofortige Umrechnung von Fiat und Kryptowährungen für dich und mich.',
-      searchPlaceholder: 'fiat 💸 (usd) | kryptowährung 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | kryptowährung 📈 (btc)',
+      ratesAsOf: 'Kurse vom',
+      today: 'heute'
     },
     settings: {
       enableDeleteDragAndDrop: 'Löschen und Ziehen und Fallenlassen aktivieren 🔧',
@@ -129,7 +143,9 @@ export const translations = {
     home: {
       title: 'Tasa de Dinero - Conversión Fiat Criptomoneda',
       description: 'Conversión instantánea de fiat y criptomonedas para ti y para mí.',
-      searchPlaceholder: 'fiat 💸 (usd) | criptomoneda 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | criptomoneda 📈 (btc)',
+      ratesAsOf: 'Tasas al',
+      today: 'hoy'
     },
     settings: {
       enableDeleteDragAndDrop: 'Habilitar Eliminar y Arrastrar y Soltar 🔧',
@@ -147,7 +163,9 @@ export const translations = {
     home: {
       title: 'Tasso di Denaro - Conversione Fiat Criptovaluta',
       description: 'Conversione istantanea di fiat e criptovalute per te e per me.',
-      searchPlaceholder: 'fiat 💸 (usd) | criptovaluta 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | criptovaluta 📈 (btc)',
+      ratesAsOf: 'Tassi aggiornati al',
+      today: 'oggi'
     },
     settings: {
       enableDeleteDragAndDrop: 'Abilita Elimina e Trascina e Rilascia 🔧',
@@ -165,7 +183,9 @@ export const translations = {
     home: {
       title: 'Taxa de Dinheiro - Conversão Fiat Criptomoeda',
       description: 'Conversão instantânea de fiat e criptomoedas para você e para mim.',
-      searchPlaceholder: 'fiat 💸 (usd) | criptomoeda 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | criptomoeda 📈 (btc)',
+      ratesAsOf: 'Taxas em',
+      today: 'hoje'
     },
     settings: {
       enableDeleteDragAndDrop: 'Habilitar Excluir e Arrastar e Soltar 🔧',
@@ -183,7 +203,9 @@ export const translations = {
     home: {
       title: 'Курс Денег - Конвертация Фиат Криптовалюта',
       description: 'Немедленная конвертация фиат и криптовалют для вас и для меня.',
-      searchPlaceholder: 'фиат 💸 (usd) | криптовалюта 📈 (btc)'
+      searchPlaceholder: 'фиат 💸 (usd) | криптовалюта 📈 (btc)',
+      ratesAsOf: 'Курс на',
+      today: 'сегодня'
     },
     settings: {
       enableDeleteDragAndDrop: 'Включить Удаление и Перетаскивание 🔧',
@@ -201,7 +223,9 @@ export const translations = {
     home: {
       title: 'سعر المال - تحويل فيات العملة المشفرة',
       description: 'تحويل فوري لفيات والعملات المشفرة من أجلك وأجلي.',
-      searchPlaceholder: 'فيات 💸 (usd) | عملة مشفرة 📈 (btc)'
+      searchPlaceholder: 'فيات 💸 (usd) | عملة مشفرة 📈 (btc)',
+      ratesAsOf: 'الأسعار كما في',
+      today: 'اليوم'
     },
     settings: {
       enableDeleteDragAndDrop: 'تمكين حذف وسحب وإسقاط 🔧',
@@ -219,7 +243,9 @@ export const translations = {
     home: {
       title: 'पैसे की दर - फिएट क्रिप्टो मुद्रा परिवर्तन',
       description: 'आप और मेरे लिए तत्काल फिएट और क्रिप्टो मुद्रा परिवर्तन।',
-      searchPlaceholder: 'फिएट 💸 (usd) | क्रिप्टो मुद्रा 📈 (btc)'
+      searchPlaceholder: 'फिएट 💸 (usd) | क्रिप्टो मुद्रा 📈 (btc)',
+      ratesAsOf: 'दरें इस तारीख तक',
+      today: 'आज'
     },
     settings: {
       enableDeleteDragAndDrop: 'हटाना और खींचना और छोड़ना सक्षम करें 🔧',
@@ -237,7 +263,9 @@ export const translations = {
     home: {
       title: 'টাকার হার - ফিয়াট ক্রিপ্টো মুদ্রা রূপান্তর',
       description: 'আপনি এবং আমার জন্য তাত্ক্ষণিক ফিয়াট এবং ক্রিপ্টো মুদ্রা রূপান্তর।',
-      searchPlaceholder: 'ফিয়াট 💸 (usd) | ক্রিপ্টো মুদ্রা 📈 (btc)'
+      searchPlaceholder: 'ফিয়াট 💸 (usd) | ক্রিপ্টো মুদ্রা 📈 (btc)',
+      ratesAsOf: 'হার হালনাগাদ',
+      today: 'আজ'
     },
     settings: {
       enableDeleteDragAndDrop: 'মুছে ফেলা এবং টানা এবং ছেড়ে দেওয়া সক্ষম করুন 🔧',
@@ -255,7 +283,9 @@ export const translations = {
     home: {
       title: 'ਪੈਸੇ ਦੀ ਦਰ - ਫਿਯਾਟ ਕ੍ਰਿਪਟੋ ਮੁਦਰਾ ਪਰਿਵਰਤਨ',
       description: 'ਤੁਹਾਡੇ ਅਤੇ ਮੇਰੇ ਲਈ ਤਤਕਾਲ ਫਿਯਾਟ ਅਤੇ ਕ੍ਰਿਪਟੋ ਮੁਦਰਾ ਪਰਿਵਰਤਨ।',
-      searchPlaceholder: 'ਫਿਯਾਟ 💸 (usd) | ਕ੍ਰਿਪਟੋ ਮੁਦਰਾ 📈 (btc)'
+      searchPlaceholder: 'ਫਿਯਾਟ 💸 (usd) | ਕ੍ਰਿਪਟੋ ਮੁਦਰਾ 📈 (btc)',
+      ratesAsOf: 'ਦਰਾਂ ਇਸ ਮਿਤੀ ਤੱਕ',
+      today: 'ਅੱਜ'
     },
     settings: {
       enableDeleteDragAndDrop: 'ਹਟਾਉਣਾ ਅਤੇ ਖਿੱਚਣਾ ਅਤੇ ਛੱਡਣਾ ਸਕਸ਼ਮ ਕਰੋ 🔧',
@@ -273,7 +303,9 @@ export const translations = {
     home: {
       title: 'پیسے کی شرح - فیت کپٹو کرنسی تبدیل',
       description: 'آپ اور میرے لیے فوری فیت اور کپٹو کرنسی تبدیل۔',
-      searchPlaceholder: 'فیت 💸 (usd) | کپٹو کرنسی 📈 (btc)'
+      searchPlaceholder: 'فیت 💸 (usd) | کپٹو کرنسی 📈 (btc)',
+      ratesAsOf: 'شرحیں بمطابق',
+      today: 'آج'
     },
     settings: {
       enableDeleteDragAndDrop: 'ہٹانے اور کھینچنے اور چھوڑنے کو فعال کریں 🔧',
@@ -291,7 +323,9 @@ export const translations = {
     home: {
       title: 'Tỷ giá Tiền - Chuyển đổi Fiat Crypto',
       description: 'Chuyển đổi tức thời của fiat và crypto cho bạn và tôi.',
-      searchPlaceholder: 'fiat 💸 (usd) | crypto 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | crypto 📈 (btc)',
+      ratesAsOf: 'Tỷ giá cập nhật ngày',
+      today: 'hôm nay'
     },
     settings: {
       enableDeleteDragAndDrop: 'Kích hoạt Xóa và Kéo và Thả 🔧',
@@ -309,7 +343,9 @@ export const translations = {
     home: {
       title: 'อัตราเงิน - การแปลงฟิเอตคริปโต',
       description: 'การแปลงฟิเอตและคริปโตทันทีสำหรับคุณและฉัน。',
-      searchPlaceholder: 'ฟิเอต 💸 (usd) | คริปโต 📈 (btc)'
+      searchPlaceholder: 'ฟิเอต 💸 (usd) | คริปโต 📈 (btc)',
+      ratesAsOf: 'อัตราแลกเปลี่ยน ณ วันที่',
+      today: 'วันนี้'
     },
     settings: {
       enableDeleteDragAndDrop: 'เปิดใช้งานลบและลากแล้วปล่อย 🔧',
@@ -327,7 +363,9 @@ export const translations = {
     home: {
       title: 'Tingkat Uang - Konversi Fiat Kripto',
       description: 'Konversi fiat dan kripto instan untuk kamu dan saya.',
-      searchPlaceholder: 'fiat 💸 (usd) | kripto 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | kripto 📈 (btc)',
+      ratesAsOf: 'Kurs per',
+      today: 'hari ini'
     },
     settings: {
       enableDeleteDragAndDrop: 'Aktifkan Hapus dan Tarik dan Lepas 🔧',
@@ -345,7 +383,9 @@ export const translations = {
     home: {
       title: 'Kadar Wang - Penukaran Fiat Kripto',
       description: 'Penukaran fiat dan kripto segera untuk kamu dan saya.',
-      searchPlaceholder: 'fiat 💸 (usd) | kripto 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | kripto 📈 (btc)',
+      ratesAsOf: 'Kadar setakat',
+      today: 'hari ini'
     },
     settings: {
       enableDeleteDragAndDrop: 'Aktifkan Padam dan Tarik dan Lepas 🔧',
@@ -363,7 +403,9 @@ export const translations = {
     home: {
       title: 'Wisselkoers - Fiat Crypto Conversie',
       description: 'Instant fiat en crypto conversie voor jou en mij.',
-      searchPlaceholder: 'fiat 💸 (usd) | crypto 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | crypto 📈 (btc)',
+      ratesAsOf: 'Koersen per',
+      today: 'vandaag'
     },
     settings: {
       enableDeleteDragAndDrop: 'Verwijderen en Slepen en Loslaten inschakelen 🔧',
@@ -381,7 +423,9 @@ export const translations = {
     home: {
       title: 'Kurs Pieniądza - Konwersja Fiat Kryptowaluta',
       description: 'Natychmiastowa konwersja fiat i kryptowalut dla ciebie i dla mnie.',
-      searchPlaceholder: 'fiat 💸 (usd) | kryptowaluta 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | kryptowaluta 📈 (btc)',
+      ratesAsOf: 'Kursy na dzień',
+      today: 'dzisiaj'
     },
     settings: {
       enableDeleteDragAndDrop: 'Włącz Usuwanie i Przeciągnij i Upuść 🔧',
@@ -399,7 +443,9 @@ export const translations = {
     home: {
       title: 'Cursul Bani - Conversia Fiat Criptomoneda',
       description: 'Conversia instantanee a fiat și criptomonedelor pentru tine și pentru mine.',
-      searchPlaceholder: 'fiat 💸 (usd) | criptomonedă 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | criptomonedă 📈 (btc)',
+      ratesAsOf: 'Cursuri valabile la',
+      today: 'astăzi'
     },
     settings: {
       enableDeleteDragAndDrop: 'Activează Șterge și Trage și Lasă 🔧',
@@ -417,7 +463,9 @@ export const translations = {
     home: {
       title: 'Valutakurs - Fiatkryptoomvandling',
       description: 'Omedelbar omvandling av fiat och krypto för dig och mig.',
-      searchPlaceholder: 'fiat 💸 (usd) | krypto 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | krypto 📈 (btc)',
+      ratesAsOf: 'Kurser per',
+      today: 'idag'
     },
     settings: {
       enableDeleteDragAndDrop: 'Aktivera Radera och Dra och Släpp 🔧',
@@ -435,7 +483,9 @@ export const translations = {
     home: {
       title: 'Valutakurs - Fiat Crypto Konvertering',
       description: 'Øyeblikkelig fiat og krypto konvertering for deg og meg.',
-      searchPlaceholder: 'fiat 💸 (usd) | krypto 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | krypto 📈 (btc)',
+      ratesAsOf: 'Kurser per',
+      today: 'i dag'
     },
     settings: {
       enableDeleteDragAndDrop: 'Aktiver Slett og Dra og Slipp 🔧',
@@ -453,7 +503,9 @@ export const translations = {
     home: {
       title: 'Valutakurs - Fiat Crypto Konvertering',
       description: 'Øjeblikkelig fiat og krypto konvertering for dig og mig.',
-      searchPlaceholder: 'fiat 💸 (usd) | krypto 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | krypto 📈 (btc)',
+      ratesAsOf: 'Kurser pr.',
+      today: 'i dag'
     },
     settings: {
       enableDeleteDragAndDrop: 'Aktivér Slet og Træk og Slip 🔧',
@@ -471,7 +523,9 @@ export const translations = {
     home: {
       title: 'Valuuttakurssi - Fiat Crypto Muunnos',
       description: 'Välitön fiat ja krypto muunnos sinulle ja minulle.',
-      searchPlaceholder: 'fiat 💸 (usd) | krypto 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | krypto 📈 (btc)',
+      ratesAsOf: 'Kurssit päivätty',
+      today: 'tänään'
     },
     settings: {
       enableDeleteDragAndDrop: 'Ota Käyttöön Poista ja Vedä ja Pudota 🔧',
@@ -489,7 +543,9 @@ export const translations = {
     home: {
       title: 'Kurz Mien - Konverzia Fiat Crypto',
       description: 'Okamžitá konverzia fiat a krypto pre vás a pre mňa.',
-      searchPlaceholder: 'fiat 💸 (usd) | krypto 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | krypto 📈 (btc)',
+      ratesAsOf: 'Kurzy k',
+      today: 'dnes'
     },
     settings: {
       enableDeleteDragAndDrop: 'Aktivovať Vymazať a Potiahnuť a Pustiť 🔧',
@@ -507,7 +563,9 @@ export const translations = {
     home: {
       title: 'Tečaj Denarja - Pretvorba Fiat Crypto',
       description: 'Takojšnja pretvorba fiat in kripto za vas in zame.',
-      searchPlaceholder: 'fiat 💸 (usd) | kripto 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | kripto 📈 (btc)',
+      ratesAsOf: 'Tečaji na dan',
+      today: 'danes'
     },
     settings: {
       enableDeleteDragAndDrop: 'Omogoči Izbriši in Povleci in Spusti 🔧',
@@ -525,7 +583,9 @@ export const translations = {
     home: {
       title: 'Döviz Kuru - Fiat Kripto Dönüşümü',
       description: 'Anında fiat ve kripto dönüşümü sizin ve benim için.',
-      searchPlaceholder: 'fiat 💸 (usd) | kripto 📈 (btc)'
+      searchPlaceholder: 'fiat 💸 (usd) | kripto 📈 (btc)',
+      ratesAsOf: 'Kurlar tarih itibarıyla',
+      today: 'bugün'
     },
     settings: {
       enableDeleteDragAndDrop: 'Sil ve Sürükle ve Bırak\'ı Etkinleştir 🔧',

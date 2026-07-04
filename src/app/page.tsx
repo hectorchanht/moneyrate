@@ -5,6 +5,7 @@ import CurrencyRow from '@/components/CurrencyRow';
 import InstallButton from '@/components/InstallButton';
 import SearchBar from '@/components/SearchBar';
 import ThemeToggle from '@/components/ThemeToggle';
+import { useTranslation } from '@/hooks/useTranslation';
 import useWindowWidth from '@/hooks/useWindowWidth';
 import { CurrencyRate4All, CurrencyRate4BaseCur, fetchWithFallback, getCurrencyRateApiUrls } from '@/lib/api';
 import {
@@ -98,6 +99,7 @@ export default function Home() {
   const [sortMode] = useAtom(sortModeAtom);
   const [tourSeen, setTourSeen] = useAtom(tourSeenAtom);
   const [showDatePicker] = useAtom(showDatePickerAtom);
+  const i18n = useTranslation();
 
   // Optional historical date ('' = latest). Session-only; not persisted.
   const [historicalDate, setHistoricalDate] = useState('');
@@ -229,7 +231,6 @@ export default function Home() {
     () => data4BaseCur ?? (hydrated ? getDataFromLocalStorage(rateCacheKey(baseCur), undefined) : undefined),
     [data4BaseCur, baseCur, hydrated]
   );
-  const usingStale = Boolean((err1 || err2) && effectiveBaseCur);
   const ratesDate = typeof effectiveBaseCur?.date === 'string' ? effectiveBaseCur.date : undefined;
 
   const curObj: CurrencyRates = useMemo(() => {
@@ -378,29 +379,23 @@ export default function Home() {
 
           <br />
 
-          <div className="text-center text-xs opacity-60 mb-2 flex flex-wrap items-center justify-center gap-2">
-            <span>
-              {usingStale ? 'Showing last saved rates' : 'Rates as of'}
-              {ratesDate ? ` ${ratesDate}` : ''}
-              {usingStale ? ' — live data unavailable' : ''}
-            </span>
-            {showDatePicker && (
-              <>
-                <input
-                  type="date"
-                  max={todayStr}
-                  value={historicalDate || ratesDate || todayStr}
-                  onChange={(e) => setHistoricalDate(e.target.value)}
-                  aria-label="View rates as of a past date"
-                  data-tour="tour-historical-date"
-                  className="bg-base-200 rounded px-1"
-                />
-                {historicalDate && (
-                  <button type="button" className="underline" onClick={() => setHistoricalDate('')}>today</button>
-                )}
-              </>
-            )}
-          </div>
+          {showDatePicker && (
+            <div className="text-center text-xs opacity-60 mb-2 flex flex-wrap items-center justify-center gap-2">
+              <span>{i18n.home.ratesAsOf}</span>
+              <input
+                type="date"
+                max={todayStr}
+                value={historicalDate || ratesDate || todayStr}
+                onChange={(e) => setHistoricalDate(e.target.value)}
+                aria-label={i18n.home.ratesAsOf}
+                data-tour="tour-historical-date"
+                className="bg-base-200 rounded px-1"
+              />
+              {historicalDate && (
+                <button type="button" className="underline" onClick={() => setHistoricalDate('')}>{i18n.home.today}</button>
+              )}
+            </div>
+          )}
 
           {shouldVirtualize ? (
             <FixedSizeList
