@@ -15,11 +15,14 @@ import {
   defaultCurrencyValueDpAtom,
   isDefaultCurrencyValueAtom,
   isEditingAtom,
-  sortModeAtom
+  sortModeAtom,
+  tourSeenAtom
 } from '@/lib/atoms';
-import { getDataFromLocalStorage, getDropIndex, setDataToLocalStorage, showASCIIArt, sortCurrencyPairs } from '@/lib/fns';
+import { getDataFromLocalStorage, getDropIndex, resolveTourLocale, setDataToLocalStorage, showASCIIArt, sortCurrencyPairs } from '@/lib/fns';
 import { ShareSvg } from '@/lib/svgs';
+import { buildTourSteps, SUPPORTED_LOCALES, TOUR_INSTALL_FALLBACK_DESCRIPTION } from '@/lib/tourSteps';
 import { CurrencyCode } from '@/lib/types';
+import { driver, type Driver } from 'driver.js';
 import { useAtom } from 'jotai';
 import { pick } from 'lodash';
 import { CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -81,6 +84,7 @@ export default function Home() {
   useDragDropTouch();
 
   const currencyItemOnDrag = useRef<string>('');
+  const tourStartedRef = useRef(false);
   const windowWidth = useWindowWidth();
   const [baseCur, setBaseCur] = useAtom(baseCurAtom);
   const [currency2Display, setCurrency2Display] = useAtom(currency2DisplayAtom);
@@ -90,6 +94,7 @@ export default function Home() {
   const [defaultCurrencyValue] = useAtom(defaultCurrencyValueAtom);
   const [defaultCurrencyValueDp] = useAtom(defaultCurrencyValueDpAtom);
   const [sortMode] = useAtom(sortModeAtom);
+  const [tourSeen, setTourSeen] = useAtom(tourSeenAtom);
 
   // Optional historical date ('' = latest). Session-only; not persisted.
   const [historicalDate, setHistoricalDate] = useState('');
@@ -148,6 +153,71 @@ export default function Home() {
     () => data4All ?? (hydrated ? getDataFromLocalStorage(LS_CURRENCIES, undefined) : undefined),
     [data4All, hydrated]
   );
+
+  // First-run guided tour: auto-starts once hydrated, real content is rendered
+  // (not the skeleton), and the tour hasn't been seen yet. Guarded against
+  // React Strict Mode's dev double-invoke by tourStartedRef.
+  useEffect(() => {
+    if (!hydrated || tourSeen || !effectiveAll || tourStartedRef.current) return;
+    tourStartedRef.current = true;
+
+    const locale = resolveTourLocale(typeof navigator !== 'undefined' ? navigator.languages : [], SUPPORTED_LOCALES, 'en');
+
+    const steps = buildTourSteps(locale);
+
+    // Pre-filter steps whose anchor selector isn't present in the DOM (silent
+    // skip — driver.js throws at drive-time on an unresolvable selector).
+    // Keep element-less steps (the welcome card) unconditionally.
+    const filteredSteps = steps
+      .filter((step) => !step.element || document.querySelector(step.element as string))
+      .map((step) => {
+        if (step.element !== '[data-tour="tour-install"]') return step;
+        // Install anchor may be present with no button rendered (no captured
+        // beforeinstallprompt). Swap in the fallback copy without mutating
+        // the original step object; never drop step 8 (TOUR-06).
+        const hasInstallButton = document.querySelector('[data-tour="tour-install"] button');
+        if (hasInstallButton) return step;
+        return { ...step, popover: { ...step.popover, description: TOUR_INSTALL_FALLBACK_DESCRIPTION } };
+      });
+
+    // One-time theme read for the overlay scrim only — do NOT re-init driver
+    // on theme change; popover colors themselves come from tour.css tokens.
+    const isDarkTheme = document.documentElement.getAttribute('data-theme') !== 'light';
+
+    let driverObj: Driver | null = driver({
+      steps: filteredSteps,
+      allowClose: true,
+      overlayClickBehavior: 'close',
+      allowKeyboardControl: true,
+      disableActiveInteraction: true,
+      smoothScroll: true,
+      stagePadding: 4,
+      showProgress: true,
+      overlayColor: isDarkTheme ? 'rgba(0,0,0,0.65)' : 'rgba(0,0,0,0.45)',
+      nextBtnText: 'Next',
+      prevBtnText: 'Back',
+      doneBtnText: "Got it, let's go",
+      onDoneClick: () => {
+        setTourSeen(true);
+        driverObj?.destroy();
+      },
+      onCloseClick: () => {
+        setTourSeen(true);
+        driverObj?.destroy();
+      },
+      onDestroyed: () => {
+        setTourSeen(true);
+      },
+    });
+
+    driverObj.drive();
+
+    return () => {
+      driverObj?.destroy();
+      driverObj = null;
+    };
+  }, [hydrated, tourSeen, effectiveAll]);
+
   const effectiveBaseCur = useMemo<CurrencyRate4BaseCur | undefined>(
     () => data4BaseCur ?? (hydrated ? getDataFromLocalStorage(rateCacheKey(baseCur), undefined) : undefined),
     [data4BaseCur, baseCur, hydrated]
