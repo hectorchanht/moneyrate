@@ -287,6 +287,7 @@ export default function Home() {
               onClick={onShare}
               title="Copy shareable link"
               aria-label="Copy shareable link"
+              data-tour="tour-share"
               className="h-[52px] w-[30px] shrink-0 flex items-center justify-center relative"
             >
               <ShareSvg />
@@ -312,6 +313,7 @@ export default function Home() {
               value={historicalDate}
               onChange={(e) => setHistoricalDate(e.target.value)}
               aria-label="View rates as of a past date"
+              data-tour="tour-historical-date"
               className="bg-base-200 rounded px-1"
             />
             {historicalDate && (

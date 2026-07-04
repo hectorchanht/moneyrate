@@ -94,6 +94,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data }) => {
           aria-label="Search currencies to add"
           aria-expanded={visible.length > 0 && query.length > 0}
           aria-controls="search-results"
+          data-tour="tour-search"
           className="w-full bg-base-200"
         />
 

@@ -20,6 +20,7 @@ export default function ThemeToggle() {
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
       title="Toggle light/dark theme"
       aria-label="Toggle light/dark theme"
+      data-tour="tour-theme-toggle"
       className="h-[52px] w-[30px] shrink-0 flex items-center justify-center"
     >
       {isLight ? <MoonSvg /> : <SunSvg />}
