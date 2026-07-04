@@ -2,14 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 2 of 3
+current_plan: 3
 status: executing
-last_updated: "2026-07-04T03:22:21.505Z"
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-07-04T03:32:54.027Z"
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 3
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -30,12 +31,12 @@ progress:
 ## Current Position
 
 Phase: 1 (Guided First-Run Tour) — EXECUTING
-Current Plan: 2 of 3
+Current Plan: 3
 Total Plans in Phase: 3
 **Phase:** 1 of 3 — Guided First-Run Tour
-**Plan:** 01-01 complete (contract layer); 01-02 (anchors) next
-**Status:** Executing Phase 1
-**Progress:** [███░░░░░░░] 33%
+**Plan:** 01-02 complete (DOM anchors); 01-03 (wiring) next
+**Status:** Ready to execute
+**Progress:** [███████░░░] 67%
 
 ## Performance Metrics
 
@@ -45,6 +46,7 @@ Total Plans in Phase: 3
 | 2. On-Demand Replay | TBD | TBD | - | - |
 | 3. Localized, Accessible, Theme-Aware Tour | TBD | TBD | - | - |
 | Phase 01 P01 | 12min | 3 tasks | 8 files |
+| Phase 01 P02 | 3min | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -62,6 +64,8 @@ Total Plans in Phase: 3
 
 - [Phase 01]: resolveTourLocale takes navLangs as a parameter (never reads navigator itself) to stay pure/testable; client-only navigator.languages read deferred to Plan 03's call site
 - [Phase 01]: tour.css overrides driver.js's verified real class names (next-btn, prev-btn, done-btn, footer-btn) confirmed against installed driver.js 1.6.0 source, not assumed from docs
+- [Phase 01]: tour-base-row uses data-tour={isBase ? 'tour-base-row' : undefined} so exactly one row carries the attribute regardless of sort order or virtualization
+- [Phase 01]: InstallButton's inner button wrapped in {deferred && (...)} rather than removing the deferred check, preserving install-prompt gating while guaranteeing the wrapper always renders
 
 ### Open Todos
 
@@ -79,10 +83,10 @@ Total Plans in Phase: 3
 
 ## Session Continuity
 
-**Last session:** 2026-07-04T03:22:21.505Z
-**Stopped At:** Completed 01-01-PLAN.md
+**Last session:** 2026-07-04T03:32:54.021Z
+**Stopped At:** Completed 01-02-PLAN.md
 **Resume File:** None
-**Resume with:** `/gsd:execute-phase 1` (plan 01-02 next)
+**Resume with:** `/gsd:execute-phase 1` (plan 01-03 next)
 
 ---
 *State initialized: 2026-07-04*
