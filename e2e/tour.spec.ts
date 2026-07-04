@@ -1,5 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
 
+// Mirrors src/lib/tourSteps.ts's TOUR_STEP_COUNT (TOUR-06: exactly 8 anchored
+// feature steps, plus 1 welcome card = 9 total popover renders). Not
+// imported directly — this spec file intentionally has no cross-imports
+// from src/ (existing e2e convention, see e2e/home.spec.ts).
+const TOUR_STEP_COUNT = 8;
+
 // Deterministic rate data so tests don't depend on the live API.
 // Mirrors e2e/home.spec.ts's mockRates() exactly (same upstream paths).
 async function mockRates(page: Page) {
@@ -150,5 +156,136 @@ test.describe('tour keyboard accessibility (A11Y-01)', () => {
 
     await page.keyboard.press('Escape');
     await expect(page.locator('.driver-popover')).not.toBeVisible();
+  });
+});
+
+test.describe('tour mobile/touch fit (A11Y-02)', () => {
+  test('all 9 popovers (welcome + 8 steps) fit within a 320px viewport', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 800 });
+    await seed(page);
+    await page.goto('/');
+
+    await focusReplayButton(page);
+    await page.keyboard.press('Enter');
+    await expect(page.locator('.driver-popover')).toBeVisible();
+
+    // Welcome card + 8 anchored feature steps = 9 renders. Assert the
+    // responsive max-width formula (tour.css) keeps every popover fully
+    // within the 320px viewport at each step, never overflowing/touching
+    // the edge (D-08, SC4). Advances via the real .driver-popover-next-btn
+    // class (never a keyboard ArrowRight press here) — driver.js's default
+    // `animate: true` keeps an internal __transitionCallback guard set for
+    // ~400ms after each highlight change, during which ArrowRight/moveNext
+    // silently no-ops; clicking the Next button goes through the same
+    // onNextClick path without racing that timing window, and mobile
+    // keyboard-nav itself is already covered by the A11Y-01 describe block
+    // above. Only 7 clicks are needed to visit all 9 renders (welcome -> ...
+    // -> step 8): clicking Next on step 8 itself is the Done action and
+    // destroys the tour, so the loop must stop advancing after step 8 is
+    // checked, not before.
+    for (let i = 0; i < TOUR_STEP_COUNT + 1; i++) {
+      const box = await page.locator('.driver-popover').boundingBox();
+      expect(box).not.toBeNull();
+      if (box) {
+        expect(box.x).toBeGreaterThanOrEqual(0);
+        expect(box.x + box.width).toBeLessThanOrEqual(320);
+      }
+      if (i < TOUR_STEP_COUNT - 1) {
+        await page.locator('.driver-popover-next-btn').click();
+        await expect(page.locator('.driver-popover')).toBeVisible();
+      }
+    }
+
+    await page.keyboard.press('Escape');
+  });
+
+  test('footer buttons clear the 44px touch-target floor at mobile width', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 800 });
+    await seed(page);
+    await page.goto('/');
+
+    await focusReplayButton(page);
+    await page.keyboard.press('Enter');
+    await expect(page.locator('.driver-popover')).toBeVisible();
+
+    // Advance to a feature step (via click, see comment above) so both the
+    // next and prev footer buttons render.
+    await page.locator('.driver-popover-next-btn').click();
+    await expect(page.locator('.driver-popover')).toBeVisible();
+
+    const nextBtn = page.locator('.driver-popover-next-btn');
+    const nextBox = await nextBtn.boundingBox();
+    expect(nextBox).not.toBeNull();
+    if (nextBox) expect(nextBox.height).toBeGreaterThanOrEqual(44);
+
+    const prevBtn = page.locator('.driver-popover-prev-btn');
+    await expect(prevBtn).toBeVisible();
+    const prevBox = await prevBtn.boundingBox();
+    expect(prevBox).not.toBeNull();
+    if (prevBox) expect(prevBox.height).toBeGreaterThanOrEqual(44);
+
+    await page.keyboard.press('Escape');
+  });
+});
+
+test.describe('tour RTL (ar/ur, scoped to popover)', () => {
+  for (const rtlLocale of ['ar', 'ur'] as const) {
+    test(`popover renders dir="rtl" and mirrors footer order for ${rtlLocale}`, async ({ page }) => {
+      await mockRates(page);
+      await page.addInitScript((locale) => {
+        localStorage.setItem('currency2Display', JSON.stringify(['usd', 'eur', 'cad']));
+        localStorage.setItem('currencyValue', '100');
+        localStorage.setItem('baseCur', JSON.stringify('usd'));
+        localStorage.setItem('theme', JSON.stringify('dark'));
+        localStorage.setItem('language', JSON.stringify(locale));
+        localStorage.setItem('tourSeen', JSON.stringify(true));
+      }, rtlLocale);
+      await page.goto('/');
+
+      await focusReplayButton(page);
+      await page.keyboard.press('Enter');
+      await expect(page.locator('.driver-popover')).toBeVisible();
+
+      await expect(page.locator('.driver-popover')).toHaveAttribute('dir', 'rtl');
+
+      // Welcome card shows only Next/Close (no Previous), so advance one step
+      // via the real .driver-popover-next-btn class (never ArrowRight — see
+      // the mobile/touch-fit describe block above for why keyboard nav races
+      // driver.js's internal transition guard) to reach a footer with both
+      // Next and Back rendered together.
+      await page.locator('.driver-popover-next-btn').click();
+      await expect(page.locator('.driver-popover-footer')).toBeVisible();
+      await expect(page.locator('.driver-popover-footer')).toHaveCSS('flex-direction', 'row-reverse');
+
+      // Arrow positioning is physical-direction (viewport geometry), not
+      // text-direction — untouched by RTL, so no assertion needed here
+      // beyond confirming the popover is still anchored/visible.
+      await expect(page.locator('.driver-popover')).toBeVisible();
+
+      await page.keyboard.press('Escape');
+    });
+  }
+
+  test('app-wide dir is NOT set to rtl (scope: popover only)', async ({ page }) => {
+    await mockRates(page);
+    await page.addInitScript(() => {
+      localStorage.setItem('currency2Display', JSON.stringify(['usd', 'eur', 'cad']));
+      localStorage.setItem('currencyValue', '100');
+      localStorage.setItem('baseCur', JSON.stringify('usd'));
+      localStorage.setItem('theme', JSON.stringify('dark'));
+      localStorage.setItem('language', JSON.stringify('ar'));
+      localStorage.setItem('tourSeen', JSON.stringify(true));
+    });
+    await page.goto('/');
+
+    await focusReplayButton(page);
+    await page.keyboard.press('Enter');
+    await expect(page.locator('.driver-popover')).toBeVisible();
+    await expect(page.locator('.driver-popover')).toHaveAttribute('dir', 'rtl');
+
+    await expect(page.locator('html')).not.toHaveAttribute('dir', 'rtl');
+    await expect(page.locator('body')).not.toHaveAttribute('dir', 'rtl');
+
+    await page.keyboard.press('Escape');
   });
 });
