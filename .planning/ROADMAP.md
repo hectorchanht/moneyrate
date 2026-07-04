@@ -84,7 +84,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Guided First-Run Tour | 3/3 | Complete   | 2026-07-04 |
 | 2. On-Demand Replay | 1/1 | Complete   | 2026-07-04 |
-| 3. Localized, Accessible, Theme-Aware Tour | 4/4 | Complete   | 2026-07-04 |
+| 3. Localized, Accessible, Theme-Aware Tour | 4/4 | Complete    | 2026-07-04 |
 
 ---
 *Roadmap created: 2026-07-04*
