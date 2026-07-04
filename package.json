@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "daisyui": "^4.12.13",
+    "driver.js": "^1.6.0",
     "jotai": "^2.12.3",
     "lodash": "^4.17.21",
     "next": "14.2.15",

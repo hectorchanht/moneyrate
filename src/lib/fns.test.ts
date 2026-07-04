@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { debounce, evalMathExpression, getDataFromLocalStorage, getDropIndex, getResponsiveCryptoDp, setDataToLocalStorage, sortCurrencyPairs } from './fns';
+import { debounce, evalMathExpression, getDataFromLocalStorage, getDropIndex, getResponsiveCryptoDp, resolveTourLocale, setDataToLocalStorage, sortCurrencyPairs } from './fns';
 
 describe('evalMathExpression', () => {
   it('returns a plain number unchanged', () => {
@@ -172,5 +172,23 @@ describe('setDataToLocalStorage', () => {
   it('is a no-op when localStorage is unavailable (SSR)', () => {
     // window undefined in node env — must not throw
     expect(() => setDataToLocalStorage('x', { a: 1 })).not.toThrow();
+  });
+});
+
+describe('resolveTourLocale', () => {
+  it('returns exact match when navigator language is directly supported', () => {
+    expect(resolveTourLocale(['zh-TW'], ['en', 'zh-TW'], 'en')).toBe('zh-TW');
+  });
+
+  it('falls back to base-language match', () => {
+    expect(resolveTourLocale(['fr-CA'], ['en', 'fr'], 'en')).toBe('fr');
+  });
+
+  it('falls back to default when nothing matches', () => {
+    expect(resolveTourLocale(['xx-YY'], ['en', 'fr'], 'en')).toBe('en');
+  });
+
+  it('falls back to default when navLangs is empty', () => {
+    expect(resolveTourLocale([], ['en', 'fr'], 'en')).toBe('en');
   });
 });

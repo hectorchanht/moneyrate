@@ -1,3 +1,5 @@
+import type { Language } from './types';
+
 // Debounce function (example)
 export const debounce = (func: (...args: any[]) => void, delay: number) => {
   let timeoutId: NodeJS.Timeout;
@@ -180,4 +182,37 @@ export const setDataToLocalStorage = (name: string, value: unknown) => {
   } catch {
     // Ignore quota / serialization errors — caching is best-effort.
   }
+};
+
+// Resolve the best supported tour locale from a list of device language
+// preferences (e.g. navigator.languages). Pure and unit-testable — does not
+// read `navigator` itself; the client-only read happens at the call site.
+// Exact match wins first; otherwise falls back to the first supported tag
+// sharing the same base language (via Intl.Locale); otherwise `fallback`.
+export const resolveTourLocale = (
+  navLangs: readonly string[],
+  supported: readonly Language[],
+  fallback: Language = 'en'
+): Language => {
+  const supportedSet = new Set<string>(supported);
+  const baseMap = new Map<string, Language>(); // base language subtag -> first matching supported tag
+  for (const tag of supported) {
+    try {
+      const base = new Intl.Locale(tag).language;
+      if (!baseMap.has(base)) baseMap.set(base, tag);
+    } catch {
+      // malformed tag in the supported list itself — skip defensively
+    }
+  }
+  for (const raw of navLangs) {
+    if (supportedSet.has(raw)) return raw as Language; // exact match, e.g. 'zh-TW'
+    try {
+      const base = new Intl.Locale(raw).language;
+      const match = baseMap.get(base);
+      if (match) return match;
+    } catch {
+      // malformed navigator.languages entry — skip and try the next candidate
+    }
+  }
+  return fallback;
 };
