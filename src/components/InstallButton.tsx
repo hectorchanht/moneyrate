@@ -27,21 +27,21 @@ export default function InstallButton() {
     };
   }, []);
 
-  if (!deferred) return null;
-
   return (
-    <div className="w-full flex justify-center my-2">
-      <button
-        type="button"
-        className="btn btn-sm btn-primary"
-        onClick={async () => {
-          await deferred.prompt();
-          await deferred.userChoice;
-          setDeferred(null);
-        }}
-      >
-        Install app
-      </button>
+    <div data-tour="tour-install" className="w-full flex justify-center my-2 min-h-0">
+      {deferred && (
+        <button
+          type="button"
+          className="btn btn-sm btn-primary"
+          onClick={async () => {
+            await deferred.prompt();
+            await deferred.userChoice;
+            setDeferred(null);
+          }}
+        >
+          Install app
+        </button>
+      )}
     </div>
   );
 }
