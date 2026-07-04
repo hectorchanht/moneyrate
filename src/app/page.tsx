@@ -21,7 +21,7 @@ import {
   tourSeenAtom
 } from '@/lib/atoms';
 import { getDataFromLocalStorage, getDropIndex, resolveTourLocale, setDataToLocalStorage, showASCIIArt, sortCurrencyPairs } from '@/lib/fns';
-import { ShareSvg } from '@/lib/svgs';
+import { QuestionSvg, ShareSvg } from '@/lib/svgs';
 import { buildTourSteps, SUPPORTED_LOCALES, TOUR_INSTALL_FALLBACK_DESCRIPTION } from '@/lib/tourSteps';
 import { CurrencyCode } from '@/lib/types';
 import { driver, type Driver } from 'driver.js';
@@ -159,12 +159,13 @@ export default function Home() {
     [data4All, hydrated]
   );
 
-  // First-run guided tour: auto-starts once hydrated, real content is rendered
-  // (not the skeleton), and the tour hasn't been seen yet. Guarded against
-  // React Strict Mode's dev double-invoke by tourStartedRef.
-  useEffect(() => {
-    if (!hydrated || tourSeen || !effectiveAll || tourStartedRef.current) return;
-    tourStartedRef.current = true;
+  // Reusable tour launcher — shared by the gated auto-start effect and the
+  // ungated "?" replay button (D-04). Self-destroys any existing instance
+  // first so a replay never stacks two overlays / leaks the previous driver.
+  // Does NOT read or write tourSeenAtom (D-03) and does NOT check any gates —
+  // gating is the caller's responsibility.
+  const startTour = useCallback(() => {
+    tourDriverRef.current?.destroy(); tourDriverRef.current = null;
 
     const locale = resolveTourLocale(typeof navigator !== 'undefined' ? navigator.languages : [], SUPPORTED_LOCALES, 'en');
 
@@ -215,14 +216,24 @@ export default function Home() {
       },
     });
 
-    // Hold the instance in a ref so ONLY a real unmount tears it down (below).
-    // Do NOT destroy in this effect's cleanup: effectiveAll changes identity when
-    // the network fetch resolves after the cached value, which would re-run this
-    // effect and destroy the tour milliseconds after it starts (→ onDestroyed
-    // sets tourSeen, so it never reappears).
+    // Hold the instance in a ref so ONLY a real unmount (or the next startTour()
+    // call) tears it down. Do NOT destroy from a useEffect cleanup keyed on
+    // reactive deps: effectiveAll changes identity when the network fetch
+    // resolves after the cached value, which would re-run that effect and
+    // destroy the tour milliseconds after it starts (→ onDestroyed sets
+    // tourSeen, so it never reappears).
     tourDriverRef.current = driverObj;
     driverObj.drive();
-  }, [hydrated, tourSeen, effectiveAll]);
+  }, [setTourSeen]);
+
+  // First-run guided tour: auto-starts once hydrated, real content is rendered
+  // (not the skeleton), and the tour hasn't been seen yet. Guarded against
+  // React Strict Mode's dev double-invoke by tourStartedRef.
+  useEffect(() => {
+    if (!hydrated || tourSeen || !effectiveAll || tourStartedRef.current) return;
+    tourStartedRef.current = true;
+    startTour();
+  }, [hydrated, tourSeen, effectiveAll, startTour]);
 
   // Destroy the tour only on genuine unmount, never on dependency-change re-runs.
   useEffect(() => () => { tourDriverRef.current?.destroy(); tourDriverRef.current = null; }, []);
@@ -372,6 +383,15 @@ export default function Home() {
               {shareCopied && (
                 <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 text-[10px] whitespace-nowrap opacity-70">Copied!</span>
               )}
+            </button>
+            <button
+              type="button"
+              onClick={() => startTour()}
+              title="Replay tour"
+              aria-label="Replay tour"
+              className="h-[52px] w-[30px] shrink-0 flex items-center justify-center"
+            >
+              <QuestionSvg />
             </button>
             <ThemeToggle />
             <SearchBar data={effectiveAll ?? {}} />
