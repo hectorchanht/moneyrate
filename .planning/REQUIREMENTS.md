@@ -63,7 +63,7 @@ Which phases cover which requirements. Populated during roadmap creation.
 | I18N-01 | Phase 3 - Localized, Accessible, Theme-Aware Tour | Pending |
 | A11Y-01 | Phase 3 - Localized, Accessible, Theme-Aware Tour | Pending |
 | A11Y-02 | Phase 3 - Localized, Accessible, Theme-Aware Tour | Pending |
-| LANG-01 | Phase 3 - Localized, Accessible, Theme-Aware Tour (pulled forward from v2 per D-03) | Pending |
+| LANG-01 | Phase 3 - Localized, Accessible, Theme-Aware Tour (pulled forward from v2 per D-03) | Complete |
 
 **Coverage:**
 - v1 requirements: 9 total

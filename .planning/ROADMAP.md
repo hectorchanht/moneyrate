@@ -65,7 +65,7 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 03-01-PLAN.md — i18n plumbing: `getTourString` per-string fallback, localize `buildTourSteps`, English `tour` namespace, `startTour()` reads `languageAtom`, first-load device-language default (I18N-01, LANG-01, D-01/02/03/04/05)
+- [x] 03-01-PLAN.md — i18n plumbing: `getTourString` per-string fallback, localize `buildTourSteps`, English `tour` namespace, `startTour()` reads `languageAtom`, first-load device-language default (I18N-01, LANG-01, D-01/02/03/04/05)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -84,7 +84,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Guided First-Run Tour | 3/3 | Complete   | 2026-07-04 |
 | 2. On-Demand Replay | 1/1 | Complete   | 2026-07-04 |
-| 3. Localized, Accessible, Theme-Aware Tour | 0/4 | Not started | - |
+| 3. Localized, Accessible, Theme-Aware Tour | 1/4 | In Progress|  |
 
 ---
 *Roadmap created: 2026-07-04*

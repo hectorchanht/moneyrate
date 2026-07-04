@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 3
+current_plan: 2
 status: executing
-stopped_at: Phase 3 UI-SPEC approved
-last_updated: "2026-07-04T08:18:41.505Z"
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-07-04T08:33:40.246Z"
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 8
-  completed_plans: 4
-  percent: 50
+  completed_plans: 5
+  percent: 63
 ---
 
 # State: moneyrate — Onboarding Tour
@@ -22,7 +22,7 @@ progress:
 
 **Core value:** A first-time visitor understands how to use moneyrate within seconds of landing — the key interactions are demonstrated, not hidden.
 
-**Current focus:** Phase 1 — Guided First-Run Tour
+**Current focus:** Phase 3 — Localized, Accessible, Theme-Aware Tour
 
 **Full requirements:** `.planning/REQUIREMENTS.md`
 **Full roadmap:** `.planning/ROADMAP.md`
@@ -30,13 +30,14 @@ progress:
 
 ## Current Position
 
-Phase: 1 (Guided First-Run Tour) — EXECUTING
-Current Plan: 3
+Phase: 3 (Localized, Accessible, Theme-Aware Tour) — EXECUTING
+Plan: 2 of 4
+Current Plan: 2
 Total Plans in Phase: 4
 **Phase:** 1 of 3 — Guided First-Run Tour
 **Plan:** 01-03 complete (tour wiring) — all 3 plans of Phase 1 done
 **Status:** Ready to execute
-**Progress:** [██████████] 100%
+**Progress:** [██████░░░░] 63%
 
 ## Performance Metrics
 
@@ -48,6 +49,7 @@ Total Plans in Phase: 4
 | Phase 01 P01 | 12min | 3 tasks | 8 files |
 | Phase 01 P02 | 3min | 3 tasks | 6 files |
 | Phase 01 P03 | 14min | - tasks | - files |
+| Phase 3 P01 | 12min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -68,6 +70,8 @@ Total Plans in Phase: 4
 - [Phase 01]: tour-base-row uses data-tour={isBase ? 'tour-base-row' : undefined} so exactly one row carries the attribute regardless of sort order or virtualization
 - [Phase 01]: InstallButton's inner button wrapped in {deferred && (...)} rather than removing the deferred check, preserving install-prompt gating while guaranteeing the wrapper always renders
 - [Phase 01]: Combined Task 1 (scaffold) and Task 2 (driver config) into a single 01-03 commit since they fill the same useEffect body and splitting would produce a non-compiling intermediate commit
+- [Phase 3]: Reused getTourString's per-key en-fallback contract inside useTranslation() so i18n.tour.replayLabel type-checks and behaves correctly before 03-02 lands the remaining 29 locales
+- [Phase 3]: First-load device-language default effect placed directly above the tour auto-start effect, gated on hydrated, mirroring the existing link-hydration effect shape
 
 ### Open Todos
 
@@ -85,9 +89,9 @@ Total Plans in Phase: 4
 
 ## Session Continuity
 
-**Last session:** 2026-07-04T07:40:01.915Z
-**Stopped At:** Phase 3 UI-SPEC approved
-**Resume File:** .planning/phases/03-localized-accessible-theme-aware-tour/03-UI-SPEC.md
+**Last session:** 2026-07-04T08:33:40.240Z
+**Stopped At:** Completed 03-01-PLAN.md
+**Resume File:** None
 **Resume with:** `/gsd:verify-phase 1`
 
 ---
