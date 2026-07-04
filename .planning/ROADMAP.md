@@ -7,7 +7,7 @@
 ## Phases
 
 - [x] **Phase 1: Guided First-Run Tour** - A first-time visitor automatically sees a full 8-step guided tour of the home page, navigable and dismissible, that never repeats uninvited. (completed 2026-07-04)
-- [ ] **Phase 2: On-Demand Replay** - Any visitor can reopen the same tour at any time via a persistent help control.
+- [x] **Phase 2: On-Demand Replay** - Any visitor can reopen the same tour at any time via a persistent help control. (completed 2026-07-04)
 - [ ] **Phase 3: Localized, Accessible, Theme-Aware Tour** - The tour reads correctly in the visitor's language, is fully keyboard-operable, honors light/dark theme, and works on mobile/touch.
 
 ## Phase Details
@@ -37,7 +37,7 @@
   3. Replaying the tour does not reset or corrupt the persisted "seen" flag's original semantics (it remains "seen" for auto-start purposes before and after a manual replay).
 **Plans**: 1 plan
 Plans:
-- [ ] 02-01-PLAN.md — Add `QuestionSvg` + extract a reusable `startTour()`; wire a persistent "?" replay button that relaunches the Phase-1 tour independent of the seen-flag
+- [x] 02-01-PLAN.md — Add `QuestionSvg` + extract a reusable `startTour()`; wire a persistent "?" replay button that relaunches the Phase-1 tour independent of the seen-flag
 **UI hint**: yes
 
 ### Phase 3: Localized, Accessible, Theme-Aware Tour
@@ -58,7 +58,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Guided First-Run Tour | 3/3 | Complete   | 2026-07-04 |
-| 2. On-Demand Replay | 0/1 | Not started | - |
+| 2. On-Demand Replay | 1/1 | Complete   | 2026-07-04 |
 | 3. Localized, Accessible, Theme-Aware Tour | 0/? | Not started | - |
 
 ---
