@@ -35,7 +35,9 @@
   1. A persistent "?" help control is visible on the home page regardless of "seen" state.
   2. Clicking/tapping the "?" control launches the same 8-step tour from Phase 1, starting at step 1, with full forward/back/skip behavior intact.
   3. Replaying the tour does not reset or corrupt the persisted "seen" flag's original semantics (it remains "seen" for auto-start purposes before and after a manual replay).
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 02-01-PLAN.md — Add `QuestionSvg` + extract a reusable `startTour()`; wire a persistent "?" replay button that relaunches the Phase-1 tour independent of the seen-flag
 **UI hint**: yes
 
 ### Phase 3: Localized, Accessible, Theme-Aware Tour
@@ -56,7 +58,7 @@
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Guided First-Run Tour | 3/3 | Complete   | 2026-07-04 |
-| 2. On-Demand Replay | 0/? | Not started | - |
+| 2. On-Demand Replay | 0/1 | Not started | - |
 | 3. Localized, Accessible, Theme-Aware Tour | 0/? | Not started | - |
 
 ---
