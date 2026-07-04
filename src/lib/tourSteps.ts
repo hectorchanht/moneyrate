@@ -12,63 +12,47 @@ export const SUPPORTED_LOCALES = Object.keys(translations) as Language[];
 
 // Fallback copy for step 8 when the InstallButton has no captured
 // `beforeinstallprompt` event (desktop Safari/Firefox, already-installed PWAs).
-export const TOUR_INSTALL_FALLBACK_DESCRIPTION =
-  "Look for an install option in your browser's menu — moneyrate works offline once installed.";
+// Still imported by page.tsx until Task 2 migrates that call site to
+// getTourString(language, 'step8FallbackBody') and deletes this export.
+export const TOUR_INSTALL_FALLBACK_DESCRIPTION = translations.en.tour.step8FallbackBody;
 
-// Copy for the final anchored step's CTA (step 8/8), replacing "Next".
-export const TOUR_DONE_BTN_TEXT = "Got it, let's go";
+type TourNamespace = typeof translations.en.tour;
+
+// Not every locale object has a `tour` namespace yet (30-locale authoring is
+// 03-02's job — this phase only lands `en`, the fallback source). Indexing
+// through this widened view keeps getTourString type-safe without requiring
+// every locale to declare `tour` up front.
+type TranslationsWithOptionalTour = {
+  [K in keyof typeof translations]: (typeof translations)[K] & { tour?: Partial<TourNamespace> };
+};
+const translationsWithOptionalTour = translations as TranslationsWithOptionalTour;
+
+// Per-string i18n fallback (D-04): looks up ONE key in the active locale's
+// `tour` namespace, falling back to `en` only for that specific key — never
+// the whole-object fallback useTranslation() uses (that would silently drop
+// every other correctly-translated tour string when just one key is missing
+// from a locale). See RESEARCH.md Pitfall 2.
+export const getTourString = (locale: Language, key: keyof TourNamespace): string => {
+  const localeTour = translationsWithOptionalTour[locale]?.tour;
+  return localeTour?.[key] ?? translations.en.tour[key];
+};
 
 type TourFeatureStepCopy = {
   selector: string;
-  title: string;
-  description: string;
 };
 
-// 8-step copy, in TOUR-06 anchor order. English only in Phase 1 (D-05 scope
-// note — full 30-language dictionary entries are Phase 3's job, I18N-01).
-// `locale` is accepted by buildTourSteps() and threaded for Phase 3 to
-// localize; Phase 1 returns this English copy regardless of locale.
+// 8-step anchor order (TOUR-06). Copy itself is localized via getTourString
+// in buildTourSteps() below; only the selector (never localized, per
+// CLAUDE.md's data-tour anchor rule) lives here.
 const TOUR_FEATURE_STEPS: TourFeatureStepCopy[] = [
-  {
-    selector: '[data-tour="tour-base-row"]',
-    title: 'Set your base currency',
-    description: 'Tap any currency row to make it the base — every other rate recalculates instantly.',
-  },
-  {
-    selector: '[data-tour="tour-amount-input"]',
-    title: 'Edit the amount',
-    description: 'Type a number (or a quick sum like 5+3) into the base row to convert a custom amount.',
-  },
-  {
-    selector: '[data-tour="tour-search"]',
-    title: 'Add a currency',
-    description: 'Search any fiat, crypto, or commodity by name or code to add it to your list.',
-  },
-  {
-    selector: '[data-tour="tour-list-settings"]',
-    title: 'Manage your list',
-    description: 'Open this menu to add or remove currencies in bulk, reorder them, or change settings.',
-  },
-  {
-    selector: '[data-tour="tour-share"]',
-    title: 'Share your rates',
-    description: 'Copy a link that reopens this exact base, amount, and currency list for anyone.',
-  },
-  {
-    selector: '[data-tour="tour-theme-toggle"]',
-    title: 'Switch theme',
-    description: 'Toggle between light and dark mode any time.',
-  },
-  {
-    selector: '[data-tour="tour-historical-date"]',
-    title: 'Look up past rates',
-    description: 'Pick a date to see what the rates were on any day in history.',
-  },
-  {
-    selector: '[data-tour="tour-install"]',
-    title: 'Install the app',
-    description: 'Add moneyrate to your home screen or desktop for one-tap access, even offline.',
-  },
+  { selector: '[data-tour="tour-base-row"]' },
+  { selector: '[data-tour="tour-amount-input"]' },
+  { selector: '[data-tour="tour-search"]' },
+  { selector: '[data-tour="tour-list-settings"]' },
+  { selector: '[data-tour="tour-share"]' },
+  { selector: '[data-tour="tour-theme-toggle"]' },
+  { selector: '[data-tour="tour-historical-date"]' },
+  { selector: '[data-tour="tour-install"]' },
 ];
 
 // Builds the full driver.js step list: a centered welcome card (no `element`,
@@ -77,13 +61,10 @@ const TOUR_FEATURE_STEPS: TourFeatureStepCopy[] = [
 // welcome step's presence in the array doesn't skew the built-in
 // {{current}}/{{total}} progress count (RESEARCH Pitfall 2).
 export const buildTourSteps = (locale: Language): DriveStep[] => {
-  // Phase 1 ships English copy only; `locale` is threaded through for Phase 3.
-  void locale;
-
   const welcomeStep: DriveStep = {
     popover: {
-      title: 'Welcome to moneyrate',
-      description: 'A quick ~30-second tour of the essentials?',
+      title: getTourString(locale, 'welcomeTitle'),
+      description: getTourString(locale, 'welcomeBody'),
       showButtons: ['next', 'close'],
       // driver.js 1.6.0 ignores per-step `showProgress: false` when the driver
       // is globally configured with showProgress: true, so it falls back to the
@@ -98,8 +79,8 @@ export const buildTourSteps = (locale: Language): DriveStep[] => {
   const featureSteps: DriveStep[] = TOUR_FEATURE_STEPS.map((step, i) => ({
     element: step.selector,
     popover: {
-      title: step.title,
-      description: step.description,
+      title: getTourString(locale, `step${i + 1}Title` as keyof TourNamespace),
+      description: getTourString(locale, `step${i + 1}Body` as keyof TourNamespace),
       progressText: `${i + 1} / ${TOUR_STEP_COUNT}`,
     },
   }));

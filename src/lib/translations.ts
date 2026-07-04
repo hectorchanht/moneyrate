@@ -17,6 +17,31 @@ export const translations = {
       currenciesToDisplaySeparatedByComma: 'Currencies to display separated by comma(,)',
       changeLanguage: 'Change Language 🌐',
       setDp: 'Set value decimal places'
+    },
+    tour: {
+      welcomeTitle: 'Welcome to moneyrate',
+      welcomeBody: 'A quick ~30-second tour of the essentials?',
+      step1Title: 'Set your base currency',
+      step1Body: 'Tap any currency row to make it the base — every other rate recalculates instantly.',
+      step2Title: 'Edit the amount',
+      step2Body: 'Type a number (or a quick sum like 5+3) into the base row to convert a custom amount.',
+      step3Title: 'Add a currency',
+      step3Body: 'Search any fiat, crypto, or commodity by name or code to add it to your list.',
+      step4Title: 'Manage your list',
+      step4Body: 'Open this menu to add or remove currencies in bulk, reorder them, or change settings.',
+      step5Title: 'Share your rates',
+      step5Body: 'Copy a link that reopens this exact base, amount, and currency list for anyone.',
+      step6Title: 'Switch theme',
+      step6Body: 'Toggle between light and dark mode any time.',
+      step7Title: 'Look up past rates',
+      step7Body: 'Pick a date to see what the rates were on any day in history.',
+      step8Title: 'Install the app',
+      step8Body: 'Add moneyrate to your home screen or desktop for one-tap access, even offline.',
+      step8FallbackBody: "Look for an install option in your browser's menu — moneyrate works offline once installed.",
+      nextBtn: 'Next',
+      prevBtn: 'Back',
+      doneBtn: "Got it, let's go",
+      replayLabel: 'Replay tour'
     }
   },
   'zh-TW': {

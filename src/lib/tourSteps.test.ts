@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { buildTourSteps, SUPPORTED_LOCALES, TOUR_INSTALL_FALLBACK_DESCRIPTION, TOUR_STEP_COUNT } from './tourSteps';
+import { buildTourSteps, getTourString, SUPPORTED_LOCALES, TOUR_STEP_COUNT } from './tourSteps';
+import type { Language } from './types';
 
 const EXPECTED_SELECTORS = [
   '[data-tour="tour-base-row"]',
@@ -39,6 +40,15 @@ describe('buildTourSteps', () => {
   it('the welcome step has no progress shown', () => {
     expect(steps[0].popover?.showProgress).toBe(false);
   });
+
+  it('welcome and feature step copy is sourced from getTourString', () => {
+    expect(steps[0].popover?.title).toBe(getTourString('en', 'welcomeTitle'));
+    expect(steps[1].popover?.title).toBe(getTourString('en', 'step1Title'));
+  });
+
+  it('step 8 description defaults to the install-present copy (fallback swap happens in page.tsx)', () => {
+    expect(steps[8].popover?.description).toBe(getTourString('en', 'step8Body'));
+  });
 });
 
 describe('TOUR_STEP_COUNT', () => {
@@ -55,8 +65,25 @@ describe('SUPPORTED_LOCALES', () => {
   });
 });
 
-describe('TOUR_INSTALL_FALLBACK_DESCRIPTION', () => {
-  it('is a non-empty fallback string for the install step', () => {
-    expect(TOUR_INSTALL_FALLBACK_DESCRIPTION.length).toBeGreaterThan(0);
+describe('getTourString', () => {
+  it('returns the English string for a known key', () => {
+    expect(getTourString('en', 'welcomeTitle')).toBe('Welcome to moneyrate');
+  });
+
+  it('falls back to English when the whole locale is unsupported', () => {
+    expect(getTourString('xx' as Language, 'welcomeTitle')).toBe(getTourString('en', 'welcomeTitle'));
+  });
+
+  it('provides a non-empty install-fallback and replay label', () => {
+    expect(getTourString('en', 'step8FallbackBody').length).toBeGreaterThan(0);
+    expect(getTourString('en', 'replayLabel').length).toBeGreaterThan(0);
+  });
+
+  it('the install-fallback fallback string mentions "install"', () => {
+    expect(getTourString('en', 'step8FallbackBody')).toMatch(/install/i);
+  });
+
+  it('falls back to English for an unsupported locale on the install-fallback key too', () => {
+    expect(getTourString('xx' as Language, 'step8FallbackBody')).toBe(getTourString('en', 'step8FallbackBody'));
   });
 });
