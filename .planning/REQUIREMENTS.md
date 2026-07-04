@@ -34,6 +34,10 @@ Deferred to future release. Tracked but not in current roadmap.
 - **TOUR-07**: Tour coverage for the `/chart` and `/convert/[pair]` routes
 - **TOUR-08**: Contextual/just-in-time tips triggered by feature discovery (beyond the linear tour)
 
+### Localization
+
+- **LANG-01**: App-wide default UI language auto-detected from the device (`navigator.languages` → nearest supported locale → English), beyond the onboarding tour. New capability — own future phase.
+
 ## Out of Scope
 
 Explicitly excluded. Documented to prevent scope creep.

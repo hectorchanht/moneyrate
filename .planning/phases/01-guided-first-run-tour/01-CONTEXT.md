@@ -26,6 +26,9 @@ Out of scope this phase: the persistent "?" replay control (Phase 2), full 30-lo
 ### Tour framing
 - **D-04:** Open with a centered welcome card before step 1 ("Welcome to moneyrate — quick ~30-sec tour?") giving context + an easy early exit. This is one intro popover in addition to the 8 feature steps; TOUR-06's "8 steps" still refers to the 8 anchored feature steps.
 
+### Tour language source
+- **D-05:** The onboarding tour picks its locale by **device language first**: resolve `navigator.languages` → nearest of the 30 supported locales in `src/lib/translations.ts` → English fallback. Device language wins even when the user has an explicit in-app language set (`languageAtom`). Precedence: **device > app choice > en**. (Refines I18N-01, whose full localization work lands in Phase 3.) Phase 1 scope note: only English copy exists until Phase 3, so build the language-resolution helper but expect no visible non-English text this phase — do NOT block Phase 1 on translations.
+
 ### Carried forward (locked upstream — do not re-decide)
 - Engine: **driver.js** (add to `package.json` — a Plan 1 task; not yet installed).
 - Anchors: dedicated `data-tour="..."` attributes ONLY, never translated `aria-label`/`title`.
@@ -89,7 +92,9 @@ No external ADRs/specs — requirements fully captured in the docs above.
 <deferred>
 ## Deferred Ideas
 
-None — discussion stayed within phase scope. (Replay control → Phase 2; i18n/a11y/theme/mobile hardening → Phase 3; other-route tours → v2 per REQUIREMENTS.md.)
+- **App-wide device-language auto-detect** — auto-detect the whole app's default UI language from the device (not just the onboarding tour). NEW capability beyond this milestone; logged to backlog (REQUIREMENTS.md v2, LANG-01) as its own future phase. NOT built in Phase 1.
+
+Other out-of-scope routing unchanged: replay control → Phase 2; full i18n/a11y/theme/mobile hardening → Phase 3; other-route tours → v2.
 </deferred>
 
 ---
