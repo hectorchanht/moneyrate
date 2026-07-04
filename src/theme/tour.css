@@ -93,3 +93,31 @@
   box-shadow: 0 0 0 2px oklch(var(--p));
   border-radius: 0.5rem;
 }
+
+/* Keyboard-only focus rings (A11Y-01, D-07 item 1) — :focus-visible only,
+   never bare :focus, so mouse/touch clicks don't show a ring. Same accent
+   token and width as the spotlight ring above for visual consistency. */
+.driver-popover-next-btn:focus-visible,
+.driver-popover-prev-btn:focus-visible,
+.driver-popover-done-btn:focus-visible,
+.driver-popover-close-btn:focus-visible {
+  outline: 2px solid oklch(var(--p));
+  outline-offset: 2px;
+}
+
+/* "?" replay button (src/app/page.tsx) — lives outside driver.js's popover
+   but is part of the same keyboard-accessibility surface (D-07 item 1). */
+.tour-replay-btn:focus-visible {
+  outline: 2px solid oklch(var(--p));
+  outline-offset: 2px;
+}
+
+/* prefers-reduced-motion (A11Y-01, D-07 item 3) — zero out driver.js's one
+   exposed custom property (see header comment) so the popover's own
+   transition duration collapses to 0ms. Paired with a JS-side animate/
+   smoothScroll: false in startTour() (src/app/page.tsx) as defense in depth. */
+@media (prefers-reduced-motion: reduce) {
+  .driver-popover {
+    --driver-animation-duration: 0ms;
+  }
+}
