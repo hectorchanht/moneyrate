@@ -29,15 +29,21 @@ A first-time visitor understands how to use moneyrate within seconds of landing 
 
 ### Active
 
-<!-- This milestone: the onboarding tour. Hypotheses until shipped. -->
+<!-- Onboarding-tour milestone (v1.0) shipped 2026-07-04 across Phases 1–3. No active hypotheses. -->
 
-- [ ] Tour auto-starts on a visitor's first load, gated by a persisted "seen" flag (never auto-runs twice)
-- [ ] A persistent `?`/help control lets any user replay the tour on demand
-- [ ] Tour highlights ~8 anchor points: set base (tap row), edit amount, add currency (search), manage list/settings, share link, theme toggle, historical-date picker, PWA install
-- [ ] Tour is skippable/dismissible at any step
-- [ ] Tour works on mobile / touch and respects the app's responsive layout
-- [ ] Tour copy is localized across all 30 supported languages via the existing translations system
-- [ ] Tour honors the active light/dark theme
+_None — onboarding-tour milestone complete. See Validated below._
+
+### Validated — Onboarding Tour (v1.0, shipped 2026-07-04)
+
+- [x] Tour auto-starts on a visitor's first load, gated by a persisted "seen" flag (never auto-runs twice) — Phase 1
+- [x] A persistent `?`/help control lets any user replay the tour on demand — Phase 2
+- [x] Tour highlights 8 anchor points: set base (tap row), edit amount, add currency (search), manage list/settings, share link, theme toggle, historical-date picker, PWA install — Phase 1
+- [x] Tour is skippable/dismissible at any step — Phase 1
+- [x] Tour works on mobile / touch and respects the app's responsive layout — Phase 3 (responsive popover width, 44px touch targets)
+- [x] Tour copy is localized across all 30 supported languages via the existing translations system — Phase 3 (`tour` namespace + `getTourString` per-key English fallback)
+- [x] Tour honors the active light/dark theme — Phase 3 (DaisyUI OKLCH tokens in `tour.css`; verified)
+- [x] Tour is fully keyboard-operable with visible focus states + honors `prefers-reduced-motion` — Phase 3 (A11Y-01)
+- [x] Tour locale unified on `languageAtom`; app defaults to device language on first load — Phase 3 (LANG-01, pulled forward from v2)
 
 ### Out of Scope
 
@@ -91,4 +97,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-07-04 after initialization*
+*Last updated: 2026-07-04 — onboarding-tour milestone (v1.0) complete: Phases 1–3 shipped, all requirements validated.*
