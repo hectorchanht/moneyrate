@@ -210,19 +210,36 @@ export default function Home() {
     // on theme change; popover colors themselves come from tour.css tokens.
     const isDarkTheme = document.documentElement.getAttribute('data-theme') !== 'light';
 
+    // One-time reduced-motion read (A11Y-01, D-07 item 3), same "read once
+    // per drive() call, do not subscribe" shape as isDarkTheme above. Paired
+    // with the CSS-side @media (prefers-reduced-motion: reduce) block in
+    // tour.css (defense in depth — JS flag disables driver.js's own
+    // animate/smoothScroll behavior, CSS zeroes its transition duration).
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     const driverObj: Driver = driver({
       steps: filteredSteps,
       allowClose: true,
       overlayClickBehavior: 'close',
       allowKeyboardControl: true,
       disableActiveInteraction: true,
-      smoothScroll: true,
+      animate: !prefersReducedMotion,
+      smoothScroll: !prefersReducedMotion,
       stagePadding: 4,
       showProgress: true,
       overlayColor: isDarkTheme ? 'rgba(0,0,0,0.65)' : 'rgba(0,0,0,0.45)',
       nextBtnText: getTourString(language, 'nextBtn'),
       prevBtnText: getTourString(language, 'prevBtn'),
       doneBtnText: getTourString(language, 'doneBtn'),
+      // Focus restoration (D-07 item 2): NO manual restore code here by
+      // design. driver.js 1.6.0 captures document.activeElement internally
+      // at drive()-time and restores it on every exit path below (Done,
+      // Close, Escape, overlay click) — verified via a keyboard-driven
+      // (Tab+Enter) Playwright baseline in e2e/tour.spec.ts BEFORE any of
+      // this task's code was written (03-RESEARCH.md Pitfall 3, 03-03-PLAN
+      // Task 1). The baseline passed against the pre-Task-3 code, so a
+      // second, redundant restore closure would only risk a double-focus
+      // event for zero accessibility gain. Do not add one.
       onDoneClick: () => {
         setTourSeen(true);
         driverObj.destroy();
