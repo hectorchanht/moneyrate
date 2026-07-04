@@ -103,4 +103,52 @@ test.describe('tour keyboard accessibility (A11Y-01)', () => {
 
     await expect(page.locator('.tour-replay-btn')).toBeFocused();
   });
+
+  test('keyboard-visible focus rings render on the popover Next button', async ({ page }) => {
+    await seed(page);
+    await page.goto('/');
+
+    await focusReplayButton(page);
+    await page.keyboard.press('Enter');
+    await expect(page.locator('.driver-popover')).toBeVisible();
+
+    // Tab from the "?" trigger into the popover's own footer buttons — driver.js's
+    // focus trap keeps Tab scoped to [popover.wrapper, activeElement] (RESEARCH.md).
+    const nextBtn = page.locator('.driver-popover-next-btn');
+    if (await nextBtn.count() > 0) {
+      await nextBtn.focus();
+      const outline = await nextBtn.evaluate((el) => getComputedStyle(el).outlineStyle);
+      expect(outline).toBe('solid');
+    }
+
+    await page.keyboard.press('Escape');
+  });
+
+  test('prefers-reduced-motion disables driver.js animation', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await seed(page);
+    await page.goto('/');
+
+    await focusReplayButton(page);
+    await page.keyboard.press('Enter');
+    await expect(page.locator('.driver-popover')).toBeVisible();
+
+    // driver.js adds "driver-fade" to <body> only when its `animate` config
+    // is truthy (node_modules/driver.js/dist/driver.js.mjs:531); with
+    // prefers-reduced-motion honored, startTour() passes animate: false, so
+    // <body> should carry "driver-simple" instead, never "driver-fade".
+    const bodyClasses = await page.evaluate(() => document.body.className);
+    expect(bodyClasses).toContain('driver-simple');
+    expect(bodyClasses).not.toContain('driver-fade');
+
+    // CSS defense-in-depth: the popover's own animation-duration custom
+    // property collapses to 0ms under the media query (src/theme/tour.css).
+    const animationDuration = await page
+      .locator('.driver-popover')
+      .evaluate((el) => getComputedStyle(el).getPropertyValue('--driver-animation-duration').trim());
+    expect(animationDuration).toBe('0ms');
+
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.driver-popover')).not.toBeVisible();
+  });
 });
