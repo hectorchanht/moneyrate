@@ -69,8 +69,8 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 03-02-PLAN.md — Author the `tour` namespace for all 29 non-English locales + character-budget/coverage test (I18N-01, D-06)
-- [ ] 03-03-PLAN.md — A11Y-01: verify-first focus-restoration e2e, `:focus-visible` rings, `prefers-reduced-motion`; document theme-following (D-07, SC2/SC3)
+- [x] 03-02-PLAN.md — Author the `tour` namespace for all 29 non-English locales + character-budget/coverage test (I18N-01, D-06)
+- [x] 03-03-PLAN.md — A11Y-01: verify-first focus-restoration e2e, `:focus-visible` rings, `prefers-reduced-motion`; document theme-following (D-07, SC2/SC3)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
@@ -84,7 +84,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Guided First-Run Tour | 3/3 | Complete   | 2026-07-04 |
 | 2. On-Demand Replay | 1/1 | Complete   | 2026-07-04 |
-| 3. Localized, Accessible, Theme-Aware Tour | 1/4 | In Progress|  |
+| 3. Localized, Accessible, Theme-Aware Tour | 3/4 | In Progress|  |
 
 ---
 *Roadmap created: 2026-07-04*

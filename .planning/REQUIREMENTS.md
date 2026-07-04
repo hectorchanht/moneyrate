@@ -22,7 +22,7 @@ Requirements for the onboarding-tour milestone. Each maps to a roadmap phase.
 
 ### Accessibility & Responsiveness
 
-- [ ] **A11Y-01**: Tour is fully keyboard-operable (advance, back, dismiss) and honors the active light/dark theme
+- [x] **A11Y-01**: Tour is fully keyboard-operable (advance, back, dismiss) and honors the active light/dark theme
 - [ ] **A11Y-02**: Tour renders correctly on mobile / touch viewports without breaking the responsive layout
 
 ## v2 Requirements
@@ -61,7 +61,7 @@ Which phases cover which requirements. Populated during roadmap creation.
 | TOUR-05 | Phase 1 - Guided First-Run Tour | Complete |
 | TOUR-06 | Phase 1 - Guided First-Run Tour | Complete |
 | I18N-01 | Phase 3 - Localized, Accessible, Theme-Aware Tour | Complete |
-| A11Y-01 | Phase 3 - Localized, Accessible, Theme-Aware Tour | Pending |
+| A11Y-01 | Phase 3 - Localized, Accessible, Theme-Aware Tour | Complete |
 | A11Y-02 | Phase 3 - Localized, Accessible, Theme-Aware Tour | Pending |
 | LANG-01 | Phase 3 - Localized, Accessible, Theme-Aware Tour (pulled forward from v2 per D-03) | Complete |
 

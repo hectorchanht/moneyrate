@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 3
+current_plan: 4
 status: executing
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-07-04T08:51:30.864Z"
+stopped_at: Completed 03-03-PLAN.md
+last_updated: "2026-07-04T10:16:12.905Z"
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 8
-  completed_plans: 5
-  percent: 63
+  completed_plans: 7
+  percent: 67
 ---
 
 # State: moneyrate — Onboarding Tour
@@ -31,13 +31,13 @@ progress:
 ## Current Position
 
 Phase: 3 (Localized, Accessible, Theme-Aware Tour) — EXECUTING
-Plan: 3 of 4
-Current Plan: 3
+Plan: 4 of 4
+Current Plan: 4
 Total Plans in Phase: 4
 **Phase:** 1 of 3 — Guided First-Run Tour
 **Plan:** 01-03 complete (tour wiring) — all 3 plans of Phase 1 done
 **Status:** Ready to execute
-**Progress:** [██████░░░░] 63%
+**Progress:** [█████████░] 88%
 
 ## Performance Metrics
 
@@ -51,6 +51,7 @@ Total Plans in Phase: 4
 | Phase 01 P03 | 14min | - tasks | - files |
 | Phase 3 P01 | 12min | 2 tasks | 6 files |
 | Phase 03 P02 | 22min | 2 tasks | 3 files |
+| Phase 03 P03 | 26min | 4 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,8 @@ Total Plans in Phase: 4
 - [Phase 3]: Reused getTourString's per-key en-fallback contract inside useTranslation() so i18n.tour.replayLabel type-checks and behaves correctly before 03-02 lands the remaining 29 locales
 - [Phase 3]: First-load device-language default effect placed directly above the tour auto-start effect, gated on hydrated, mirroring the existing link-hydration effect shape
 - [Phase 3]: Fixed en.tour.doneBtn and 8 locale doneBtn strings to comply with the UI-SPEC's own <=12-char button budget, caught by the new automated coverage test
+- [Phase 03-03]: No manual focus-restore closure written for the tour — driver.js 1.6.0's built-in activeElement capture/restore proven sufficient by a keyboard-driven Playwright baseline test (verify-first)
+- [Phase 03-03]: Reduced-motion detected via one-time window.matchMedia read inside startTour(), matching the existing isDarkTheme read pattern, not a subscribed listener
 
 ### Open Todos
 
@@ -91,8 +94,8 @@ Total Plans in Phase: 4
 
 ## Session Continuity
 
-**Last session:** 2026-07-04T08:51:30.857Z
-**Stopped At:** Completed 03-02-PLAN.md
+**Last session:** 2026-07-04T10:16:12.899Z
+**Stopped At:** Completed 03-03-PLAN.md
 **Resume File:** None
 **Resume with:** `/gsd:verify-phase 1`
 
