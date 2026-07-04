@@ -5,6 +5,7 @@ import localFont from "next/font/local";
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import ThemeApplier from '@/components/ThemeApplier';
 import { LanguageProvider } from '@/contexts/LanguageContext';
+import { SITE_URL } from '@/lib/pairs';
 import { Provider } from 'jotai';
 import Script from 'next/script';
 
@@ -20,8 +21,20 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Money Rate - Fiat Crypto Conversion",
   description: "Instantly fiat and crypto conversion for you and me.",
+  openGraph: {
+    title: "Money Rate - Fiat Crypto Conversion",
+    description: "Instantly fiat and crypto conversion for you and me.",
+    type: "website",
+    url: "/",
+  },
+  twitter: {
+    card: "summary",
+    title: "Money Rate - Fiat Crypto Conversion",
+    description: "Instantly fiat and crypto conversion for you and me.",
+  },
 };
 
 export default function RootLayout({
