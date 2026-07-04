@@ -36,7 +36,7 @@ Deferred to future release. Tracked but not in current roadmap.
 
 ### Localization
 
-- **LANG-01**: App-wide default UI language auto-detected from the device (`navigator.languages` → nearest supported locale → English), beyond the onboarding tour. New capability — own future phase.
+- **LANG-01**: App-wide default UI language auto-detected from the device (`navigator.languages` → nearest supported locale → English), beyond the onboarding tour. **Pulled forward into Phase 3** (per Phase-3 D-03) to eliminate the tour/app language conflict — no longer a separate future phase.
 
 ## Out of Scope
 
@@ -63,11 +63,13 @@ Which phases cover which requirements. Populated during roadmap creation.
 | I18N-01 | Phase 3 - Localized, Accessible, Theme-Aware Tour | Pending |
 | A11Y-01 | Phase 3 - Localized, Accessible, Theme-Aware Tour | Pending |
 | A11Y-02 | Phase 3 - Localized, Accessible, Theme-Aware Tour | Pending |
+| LANG-01 | Phase 3 - Localized, Accessible, Theme-Aware Tour (pulled forward from v2 per D-03) | Pending |
 
 **Coverage:**
 - v1 requirements: 9 total
 - Mapped to phases: 9/9 ✓
 - Unmapped: 0
+- LANG-01 (originally v2) pulled forward into Phase 3 per D-03 — now mapped.
 
 ---
 *Requirements defined: 2026-07-04*

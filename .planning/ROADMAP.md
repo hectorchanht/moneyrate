@@ -44,13 +44,18 @@ Plans:
 **Goal**: The tour is a first-class citizen of moneyrate's existing i18n, accessibility, and theming systems — not an English-only, mouse-only, light-mode-only bolt-on.
 **Mode:** mvp
 **Depends on**: Phase 1, Phase 2
-**Requirements**: I18N-01, A11Y-01, A11Y-02
+**Requirements**: I18N-01, A11Y-01, A11Y-02, LANG-01 (pulled forward from v2 per D-03)
 **Success Criteria** (what must be TRUE):
   1. Switching the app's active language changes all tour step titles/body copy accordingly, for all 30 supported locales, via `useTranslation()`/`translations.ts`, falling back to English for any missing string.
   2. A visitor can operate the entire tour — advance, go back, dismiss — using only the keyboard, with visible focus states throughout.
   3. The tour's popover/overlay styling follows the app's active light or dark theme (no unstyled or wrong-theme flash).
   4. On a mobile/touch viewport, all 8 tour steps render fully on-screen, remain tappable, and do not break or overflow the existing responsive layout.
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 03-01-PLAN.md — i18n plumbing: `getTourString` per-string fallback, localize `buildTourSteps`, English `tour` namespace, `startTour()` reads `languageAtom`, first-load device-language default (I18N-01, LANG-01, D-01/02/03/04/05)
+- [ ] 03-02-PLAN.md — Author the `tour` namespace for all 29 non-English locales + character-budget/coverage test (I18N-01, D-06)
+- [ ] 03-03-PLAN.md — A11Y-01: verify-first focus-restoration e2e, `:focus-visible` rings, `prefers-reduced-motion`; document theme-following (D-07, SC2/SC3)
+- [ ] 03-04-PLAN.md — A11Y-02: responsive popover width, 44px touch targets, popover-scoped RTL for ar/ur (D-08, SC4)
 **UI hint**: yes
 
 ## Progress
@@ -59,7 +64,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Guided First-Run Tour | 3/3 | Complete   | 2026-07-04 |
 | 2. On-Demand Replay | 1/1 | Complete   | 2026-07-04 |
-| 3. Localized, Accessible, Theme-Aware Tour | 0/? | Not started | - |
+| 3. Localized, Accessible, Theme-Aware Tour | 0/4 | Not started | - |
 
 ---
 *Roadmap created: 2026-07-04*
