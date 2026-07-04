@@ -1,4 +1,6 @@
 import "@/theme/globals.css";
+import "driver.js/dist/driver.css";
+import "@/theme/tour.css";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 // import Head from 'next/head';

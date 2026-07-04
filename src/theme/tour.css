@@ -1,0 +1,95 @@
+/* driver.js theme overrides using DaisyUI OKLCH tokens.
+   driver.js exposes exactly one CSS custom property of its own
+   (--driver-animation-duration); every other visual is hardcoded hex in its
+   shipped stylesheet, so theming must happen by overriding its documented
+   class selectors here, not by expecting it to consume DaisyUI's vars
+   natively. Loaded after driver.js/dist/driver.css and globals.css so these
+   overrides win. This file follows the live <html data-theme> flip
+   automatically via oklch(var(--token)) — never re-initialize driver.js on
+   theme toggle. */
+
+.driver-popover {
+  background: oklch(var(--b2));
+  color: oklch(var(--bc));
+  border: 1px solid oklch(var(--bc) / 0.15);
+  border-radius: 1rem;
+  max-width: 320px;
+  padding: 16px;
+  box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.3);
+}
+
+.driver-popover-title {
+  color: oklch(var(--bc));
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.driver-popover-description {
+  color: oklch(var(--bc));
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.driver-popover-progress-text {
+  color: oklch(var(--bc) / 0.7);
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.driver-popover-footer {
+  gap: 8px;
+}
+
+.driver-popover-footer-btn {
+  font-size: 14px;
+  font-weight: 600;
+  text-shadow: none;
+  border: none;
+}
+
+.driver-popover-next-btn,
+.driver-popover-done-btn {
+  background: oklch(var(--p));
+  color: oklch(var(--pc));
+}
+
+.driver-popover-prev-btn {
+  background: oklch(var(--b3));
+  color: oklch(var(--bc));
+}
+
+.driver-popover-close-btn {
+  color: oklch(var(--bc));
+  opacity: 0.7;
+  text-decoration: underline;
+}
+
+.driver-popover-close-btn:hover {
+  color: oklch(var(--bc));
+  opacity: 1;
+}
+
+.driver-popover-arrow-side-left.driver-popover-arrow {
+  border-left-color: oklch(var(--b2));
+}
+
+.driver-popover-arrow-side-right.driver-popover-arrow {
+  border-right-color: oklch(var(--b2));
+}
+
+.driver-popover-arrow-side-top.driver-popover-arrow {
+  border-top-color: oklch(var(--b2));
+}
+
+.driver-popover-arrow-side-bottom.driver-popover-arrow {
+  border-bottom-color: oklch(var(--b2));
+}
+
+/* Spotlight ring around the highlighted target — the only other accent-colored
+   element besides the Next button. Do not lower driver.js's default z-index
+   (1000000000) — the popover must sit above app chrome. */
+.driver-active-element {
+  box-shadow: 0 0 0 2px oklch(var(--p));
+  border-radius: 0.5rem;
+}
