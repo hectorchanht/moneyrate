@@ -8,7 +8,7 @@
 
 - [x] **Phase 1: Guided First-Run Tour** - A first-time visitor automatically sees a full 8-step guided tour of the home page, navigable and dismissible, that never repeats uninvited. (completed 2026-07-04)
 - [x] **Phase 2: On-Demand Replay** - Any visitor can reopen the same tour at any time via a persistent help control. (completed 2026-07-04)
-- [ ] **Phase 3: Localized, Accessible, Theme-Aware Tour** - The tour reads correctly in the visitor's language, is fully keyboard-operable, honors light/dark theme, and works on mobile/touch.
+- [x] **Phase 3: Localized, Accessible, Theme-Aware Tour** - The tour reads correctly in the visitor's language, is fully keyboard-operable, honors light/dark theme, and works on mobile/touch. (completed 2026-07-04)
 
 ## Phase Details
 
@@ -74,7 +74,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 03-04-PLAN.md — A11Y-02: responsive popover width, 44px touch targets, popover-scoped RTL for ar/ur (D-08, SC4)
+- [x] 03-04-PLAN.md — A11Y-02: responsive popover width, 44px touch targets, popover-scoped RTL for ar/ur (D-08, SC4)
 
 **UI hint**: yes
 
@@ -84,7 +84,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Guided First-Run Tour | 3/3 | Complete   | 2026-07-04 |
 | 2. On-Demand Replay | 1/1 | Complete   | 2026-07-04 |
-| 3. Localized, Accessible, Theme-Aware Tour | 3/4 | In Progress|  |
+| 3. Localized, Accessible, Theme-Aware Tour | 4/4 | Complete   | 2026-07-04 |
 
 ---
 *Roadmap created: 2026-07-04*
