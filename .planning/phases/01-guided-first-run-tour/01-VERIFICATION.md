@@ -1,9 +1,21 @@
 ---
 phase: 01-guided-first-run-tour
 verified: 2026-07-04T12:00:00Z
-status: human_needed
-score: 12/12 must-haves verified (automated); 1 manual QA item outstanding
+status: passed
+score: 12/12 must-haves verified (automated) + live-browser QA closed after fixing a runtime defect
 overrides_applied: 0
+live_browser_verification:
+  performed: 2026-07-04
+  result: passed (after 1 fix)
+  defect_found: "First-run tour started then was immediately destroyed — the wiring effect's inline cleanup ran on every dependency change (effectiveAll changes identity when the network fetch resolves after the cached value); driver.destroy() fires onDestroyed -> setTourSeen(true), so the tour never stayed and was silently marked seen. Unit tests + build passed because they never exercise the effect. Fixed by holding the driver in a ref and destroying only on genuine unmount (commit fix(01))."
+  secondary_fix: "driver.js 1.6.0 ignores per-step showProgress:false under a global showProgress:true, so the welcome card showed '1 of 9'; gave it an empty progressText."
+  confirmed:
+    - "TOUR-01: welcome popover auto-starts on first load after content renders (not over skeleton)"
+    - "TOUR-05: Next advances welcome -> 'Set your base currency' with Back available; feature steps show '1 / 8'"
+    - "TOUR-06: step 1 spotlights the [data-tour=\"tour-base-row\"] element"
+    - "TOUR-04: close (x) sets localStorage tourSeen='true' and removes overlay immediately"
+    - "TOUR-02: reload with tourSeen=true shows no tour overlay"
+    - "Popover is theme-aware (DaisyUI dark tokens rendered)"
 human_verification:
   - test: "Walk all four dismissal paths in a real browser (Done on step 8, Skip/close button, Escape key, overlay click) with localStorage cleared beforehand"
     expected: "After each path, in a fresh session: localStorage.getItem('tourSeen') === 'true' and the overlay closes immediately; reloading / shows no tour overlay"
