@@ -18,7 +18,7 @@ Requirements for the onboarding-tour milestone. Each maps to a roadmap phase.
 
 ### Localization
 
-- [ ] **I18N-01**: Tour copy renders in the user's active language across all 30 supported locales, via the existing `translations.ts` / `useTranslation()` system (falls back to English when a string is missing)
+- [x] **I18N-01**: Tour copy renders in the user's active language across all 30 supported locales, via the existing `translations.ts` / `useTranslation()` system (falls back to English when a string is missing)
 
 ### Accessibility & Responsiveness
 
@@ -60,7 +60,7 @@ Which phases cover which requirements. Populated during roadmap creation.
 | TOUR-04 | Phase 1 - Guided First-Run Tour | Complete |
 | TOUR-05 | Phase 1 - Guided First-Run Tour | Complete |
 | TOUR-06 | Phase 1 - Guided First-Run Tour | Complete |
-| I18N-01 | Phase 3 - Localized, Accessible, Theme-Aware Tour | Pending |
+| I18N-01 | Phase 3 - Localized, Accessible, Theme-Aware Tour | Complete |
 | A11Y-01 | Phase 3 - Localized, Accessible, Theme-Aware Tour | Pending |
 | A11Y-02 | Phase 3 - Localized, Accessible, Theme-Aware Tour | Pending |
 | LANG-01 | Phase 3 - Localized, Accessible, Theme-Aware Tour (pulled forward from v2 per D-03) | Complete |

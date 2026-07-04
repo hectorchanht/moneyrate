@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 2
+current_plan: 3
 status: executing
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-07-04T08:33:40.246Z"
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-07-04T08:51:30.864Z"
 progress:
   total_phases: 3
   completed_phases: 2
@@ -31,8 +31,8 @@ progress:
 ## Current Position
 
 Phase: 3 (Localized, Accessible, Theme-Aware Tour) — EXECUTING
-Plan: 2 of 4
-Current Plan: 2
+Plan: 3 of 4
+Current Plan: 3
 Total Plans in Phase: 4
 **Phase:** 1 of 3 — Guided First-Run Tour
 **Plan:** 01-03 complete (tour wiring) — all 3 plans of Phase 1 done
@@ -50,6 +50,7 @@ Total Plans in Phase: 4
 | Phase 01 P02 | 3min | 3 tasks | 6 files |
 | Phase 01 P03 | 14min | - tasks | - files |
 | Phase 3 P01 | 12min | 2 tasks | 6 files |
+| Phase 03 P02 | 22min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,7 @@ Total Plans in Phase: 4
 - [Phase 01]: Combined Task 1 (scaffold) and Task 2 (driver config) into a single 01-03 commit since they fill the same useEffect body and splitting would produce a non-compiling intermediate commit
 - [Phase 3]: Reused getTourString's per-key en-fallback contract inside useTranslation() so i18n.tour.replayLabel type-checks and behaves correctly before 03-02 lands the remaining 29 locales
 - [Phase 3]: First-load device-language default effect placed directly above the tour auto-start effect, gated on hydrated, mirroring the existing link-hydration effect shape
+- [Phase 3]: Fixed en.tour.doneBtn and 8 locale doneBtn strings to comply with the UI-SPEC's own <=12-char button budget, caught by the new automated coverage test
 
 ### Open Todos
 
@@ -89,8 +91,8 @@ Total Plans in Phase: 4
 
 ## Session Continuity
 
-**Last session:** 2026-07-04T08:33:40.240Z
-**Stopped At:** Completed 03-01-PLAN.md
+**Last session:** 2026-07-04T08:51:30.857Z
+**Stopped At:** Completed 03-02-PLAN.md
 **Resume File:** None
 **Resume with:** `/gsd:verify-phase 1`
 
