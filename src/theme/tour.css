@@ -13,7 +13,11 @@
   color: oklch(var(--bc));
   border: 1px solid oklch(var(--bc) / 0.15);
   border-radius: 1rem;
-  max-width: 320px;
+  /* A11Y-02/D-08: responsive cap — desktop keeps the flat 320px, narrow
+     viewports (~320-375px) get a 16px-per-side margin (calc(100vw - 2rem))
+     matching the app's own p-4 content gutter, so the popover never touches
+     or overflows the viewport edge. */
+  max-width: min(320px, calc(100vw - 2rem));
   padding: 16px;
   box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.3);
 }
@@ -46,6 +50,12 @@
   font-weight: 600;
   text-shadow: none;
   border: none;
+  /* A11Y-02/D-08, Pitfall 4: driver.js's shipped base is padding:3px 7px at
+     12px font — well under the WCAG 2.5.5 / iOS HIG 44px touch-target floor.
+     min-height plus horizontal-only padding restores a comfortable tap area
+     without changing the button's visual proportions. */
+  min-height: 44px;
+  padding: 0 16px;
 }
 
 .driver-popover-next-btn,
@@ -120,4 +130,17 @@
   .driver-popover {
     --driver-animation-duration: 0ms;
   }
+}
+
+/* RTL Contract (scoped to the tour popover only, ar/ur) — mirrors ONLY the
+   visual order of the footer buttons so Next/Done lands on the visual left
+   and Back on the visual right, matching RTL reading-order expectations.
+   Underlying DOM/tab order is untouched (Back still comes before Next in
+   document order) — this is a flex-order flip, not a DOM reorder. `dir` is
+   set imperatively on this element via onPopoverRender in src/app/page.tsx,
+   never on <html>/<body> (no app-wide RTL this phase). Arrow rules above are
+   physical-direction (viewport geometry), not text-direction, and are
+   correct regardless of dir — left untouched. */
+[dir="rtl"] .driver-popover-footer {
+  flex-direction: row-reverse;
 }
