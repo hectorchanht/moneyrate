@@ -85,7 +85,13 @@ export const buildTourSteps = (locale: Language): DriveStep[] => {
       title: 'Welcome to moneyrate',
       description: 'A quick ~30-second tour of the essentials?',
       showButtons: ['next', 'close'],
+      // driver.js 1.6.0 ignores per-step `showProgress: false` when the driver
+      // is globally configured with showProgress: true, so it falls back to the
+      // default "1 of N" counter on the welcome card. An empty progressText
+      // renders nothing, keeping the welcome free of a step counter (the "8
+      // steps" of TOUR-06 are the anchored feature steps only).
       showProgress: false,
+      progressText: ' ',
     },
   };
 

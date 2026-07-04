@@ -85,6 +85,7 @@ export default function Home() {
 
   const currencyItemOnDrag = useRef<string>('');
   const tourStartedRef = useRef(false);
+  const tourDriverRef = useRef<Driver | null>(null);
   const windowWidth = useWindowWidth();
   const [baseCur, setBaseCur] = useAtom(baseCurAtom);
   const [currency2Display, setCurrency2Display] = useAtom(currency2DisplayAtom);
@@ -184,7 +185,7 @@ export default function Home() {
     // on theme change; popover colors themselves come from tour.css tokens.
     const isDarkTheme = document.documentElement.getAttribute('data-theme') !== 'light';
 
-    let driverObj: Driver | null = driver({
+    const driverObj: Driver = driver({
       steps: filteredSteps,
       allowClose: true,
       overlayClickBehavior: 'close',
@@ -199,24 +200,28 @@ export default function Home() {
       doneBtnText: "Got it, let's go",
       onDoneClick: () => {
         setTourSeen(true);
-        driverObj?.destroy();
+        driverObj.destroy();
       },
       onCloseClick: () => {
         setTourSeen(true);
-        driverObj?.destroy();
+        driverObj.destroy();
       },
       onDestroyed: () => {
         setTourSeen(true);
       },
     });
 
+    // Hold the instance in a ref so ONLY a real unmount tears it down (below).
+    // Do NOT destroy in this effect's cleanup: effectiveAll changes identity when
+    // the network fetch resolves after the cached value, which would re-run this
+    // effect and destroy the tour milliseconds after it starts (→ onDestroyed
+    // sets tourSeen, so it never reappears).
+    tourDriverRef.current = driverObj;
     driverObj.drive();
-
-    return () => {
-      driverObj?.destroy();
-      driverObj = null;
-    };
   }, [hydrated, tourSeen, effectiveAll]);
+
+  // Destroy the tour only on genuine unmount, never on dependency-change re-runs.
+  useEffect(() => () => { tourDriverRef.current?.destroy(); tourDriverRef.current = null; }, []);
 
   const effectiveBaseCur = useMemo<CurrencyRate4BaseCur | undefined>(
     () => data4BaseCur ?? (hydrated ? getDataFromLocalStorage(rateCacheKey(baseCur), undefined) : undefined),
