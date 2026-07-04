@@ -15,6 +15,7 @@ import {
   defaultCurrencyValueDpAtom,
   isDefaultCurrencyValueAtom,
   isEditingAtom,
+  showDatePickerAtom,
   sortModeAtom,
   tourSeenAtom
 } from '@/lib/atoms';
@@ -96,6 +97,7 @@ export default function Home() {
   const [defaultCurrencyValueDp] = useAtom(defaultCurrencyValueDpAtom);
   const [sortMode] = useAtom(sortModeAtom);
   const [tourSeen, setTourSeen] = useAtom(tourSeenAtom);
+  const [showDatePicker] = useAtom(showDatePickerAtom);
 
   // Optional historical date ('' = latest). Session-only; not persisted.
   const [historicalDate, setHistoricalDate] = useState('');
@@ -382,17 +384,21 @@ export default function Home() {
               {ratesDate ? ` ${ratesDate}` : ''}
               {usingStale ? ' — live data unavailable' : ''}
             </span>
-            <input
-              type="date"
-              max={todayStr}
-              value={historicalDate}
-              onChange={(e) => setHistoricalDate(e.target.value)}
-              aria-label="View rates as of a past date"
-              data-tour="tour-historical-date"
-              className="bg-base-200 rounded px-1"
-            />
-            {historicalDate && (
-              <button type="button" className="underline" onClick={() => setHistoricalDate('')}>today</button>
+            {showDatePicker && (
+              <>
+                <input
+                  type="date"
+                  max={todayStr}
+                  value={historicalDate || ratesDate || todayStr}
+                  onChange={(e) => setHistoricalDate(e.target.value)}
+                  aria-label="View rates as of a past date"
+                  data-tour="tour-historical-date"
+                  className="bg-base-200 rounded px-1"
+                />
+                {historicalDate && (
+                  <button type="button" className="underline" onClick={() => setHistoricalDate('')}>today</button>
+                )}
+              </>
             )}
           </div>
 

@@ -14,3 +14,4 @@ export const languageAtom = atomWithStorage<Language>('language', 'en');
 export const sortModeAtom = atomWithStorage<SortMode>('sortMode', 'custom');
 export const themeAtom = atomWithStorage<Theme>('theme', 'dark');
 export const tourSeenAtom = atomWithStorage<boolean>('tourSeen', false);
+export const showDatePickerAtom = atomWithStorage<boolean>('showDatePicker', false);

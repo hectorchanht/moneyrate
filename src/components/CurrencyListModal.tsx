@@ -6,6 +6,7 @@ import {
   isDefaultCurrencyValueAtom,
   isEditingAtom,
   languageAtom,
+  showDatePickerAtom,
   sortModeAtom
 } from '@/lib/atoms';
 import { DefaultCurrency2Display } from '@/lib/constants';
@@ -70,6 +71,7 @@ const CurrencySetting: React.FC = () => {
   const [currency2Display, setCurrency2Display] = useAtom(currency2DisplayAtom);
   const [language, setLanguage] = useAtom(languageAtom);
   const [sortMode, setSortMode] = useAtom(sortModeAtom);
+  const [showDatePicker, setShowDatePicker] = useAtom(showDatePickerAtom);
   const t = useTranslation();
 
   const sortOptions: { value: SortMode; label: string }[] = [
@@ -88,6 +90,17 @@ const CurrencySetting: React.FC = () => {
           }} className="checkbox" />
           <span className="label-text px-2">
             {t.settings.enableDeleteDragAndDrop}
+          </span>
+        </label>
+
+        <div className="divider m-0" />
+
+        <label className="label cursor-pointer">
+          <input type="checkbox" checked={showDatePicker} onChange={() => {
+            setShowDatePicker(!showDatePicker);
+          }} className="checkbox" />
+          <span className="label-text px-2">
+            Show historical date picker
           </span>
         </label>
 
