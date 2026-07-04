@@ -24,7 +24,7 @@ import {
 import { getDataFromLocalStorage, getDropIndex, resolveTourLocale, setDataToLocalStorage, showASCIIArt, sortCurrencyPairs } from '@/lib/fns';
 import { QuestionSvg, ShareSvg } from '@/lib/svgs';
 import { buildTourSteps, getTourString, SUPPORTED_LOCALES } from '@/lib/tourSteps';
-import { CurrencyCode } from '@/lib/types';
+import { CurrencyCode, Language } from '@/lib/types';
 import { driver, type Driver } from 'driver.js';
 import { useAtom } from 'jotai';
 import { pick } from 'lodash';
@@ -36,6 +36,10 @@ const LS_CURRENCIES = 'lastGood:currencies';
 const rateCacheKey = (base: string) => `lastGood:rates:${base}`;
 const VIRTUALIZE_THRESHOLD = 40; // rows; below this the natural flow (and drag-drop) is kept
 const ROW_HEIGHT = 68; // px, used only in virtualized mode (fits value + 24h change line)
+// RTL Contract: only ar/ur among the 30 supported locales use a right-to-left
+// script (confirmed via translations.ts). Scoped to the tour popover only —
+// never drives an app-wide dir change.
+const RTL_LOCALES = new Set<Language>(['ar', 'ur']);
 
 declare global {
   interface DragDropTouch {
@@ -231,6 +235,16 @@ export default function Home() {
       nextBtnText: getTourString(language, 'nextBtn'),
       prevBtnText: getTourString(language, 'prevBtn'),
       doneBtnText: getTourString(language, 'doneBtn'),
+      // RTL Contract: popover is a detached DOM node outside React's tree, so
+      // `dir` must be set imperatively. Fires once per step (Pitfall 5) —
+      // body stays a single idempotent attribute write, no listeners. Only
+      // the popover node gets `dir`; <html>/<body> are never touched (no
+      // app-wide RTL this phase). Footer button visual mirroring is CSS-only
+      // ([dir="rtl"] .driver-popover-footer in tour.css) — DOM/tab order and
+      // next/prev click handlers are untouched (Pitfall 6).
+      onPopoverRender: (popoverDom) => {
+        popoverDom.wrapper.dir = RTL_LOCALES.has(language) ? 'rtl' : 'ltr';
+      },
       // Focus restoration (D-07 item 2): NO manual restore code here by
       // design. driver.js 1.6.0 captures document.activeElement internally
       // at drive()-time and restores it on every exit path below (Done,
