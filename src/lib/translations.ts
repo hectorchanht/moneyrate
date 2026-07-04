@@ -40,7 +40,7 @@ export const translations = {
       step8FallbackBody: "Look for an install option in your browser's menu — moneyrate works offline once installed.",
       nextBtn: 'Next',
       prevBtn: 'Back',
-      doneBtn: "Got it, let's go",
+      doneBtn: "Let's go",
       replayLabel: 'Replay tour'
     }
   },
@@ -265,7 +265,7 @@ export const translations = {
       step8FallbackBody: 'Cherchez l\'option d\'installation dans le menu du navigateur — ça marche aussi hors ligne.',
       nextBtn: 'Suivant',
       prevBtn: 'Retour',
-      doneBtn: 'Compris, allons-y',
+      doneBtn: 'Allons-y',
       replayLabel: 'Revoir la visite'
     }
   },
@@ -400,7 +400,7 @@ export const translations = {
       step8FallbackBody: 'Cerca l\'opzione di installazione nel menu del browser — funziona anche offline.',
       nextBtn: 'Avanti',
       prevBtn: 'Indietro',
-      doneBtn: 'Capito, si va',
+      doneBtn: 'Perfetto',
       replayLabel: 'Rivedi il tour'
     }
   },
@@ -445,7 +445,7 @@ export const translations = {
       step8FallbackBody: 'Procure a opção de instalar no menu do navegador — funciona offline depois.',
       nextBtn: 'Avançar',
       prevBtn: 'Voltar',
-      doneBtn: 'Entendi, vamos',
+      doneBtn: 'Entendi',
       replayLabel: 'Repetir o tour'
     }
   },
@@ -580,7 +580,7 @@ export const translations = {
       step8FallbackBody: 'ब्राउज़र मेनू में इंस्टॉल विकल्प देखें — इंस्टॉल के बाद ऑफ़लाइन भी चलेगा।',
       nextBtn: 'आगे',
       prevBtn: 'पीछे',
-      doneBtn: 'समझ गया, चलें',
+      doneBtn: 'समझ गया',
       replayLabel: 'टूर दोहराएं'
     }
   },
@@ -670,7 +670,7 @@ export const translations = {
       step8FallbackBody: 'ਬ੍ਰਾਊਜ਼ਰ ਮੀਨੂ ਵਿੱਚ ਇੰਸਟਾਲ ਵਿਕਲਪ ਲੱਭੋ — ਇੰਸਟਾਲ ਬਾਅਦ ਆਫਲਾਈਨ ਵੀ ਚੱਲੇਗਾ।',
       nextBtn: 'ਅੱਗੇ',
       prevBtn: 'ਪਿੱਛੇ',
-      doneBtn: 'ਸਮਝ ਗਿਆ, ਚੱਲੋ',
+      doneBtn: 'ਸਮਝ ਗਿਆ',
       replayLabel: 'ਟੂਰ ਦੁਹਰਾਓ'
     }
   },
@@ -715,7 +715,7 @@ export const translations = {
       step8FallbackBody: 'براؤزر مینو میں انسٹال کا آپشن دیکھیں — انسٹال کے بعد آف لائن بھی چلے گا۔',
       nextBtn: 'اگلا',
       prevBtn: 'پچھلا',
-      doneBtn: 'سمجھ گیا، چلیں',
+      doneBtn: 'سمجھ گیا',
       replayLabel: 'ٹور دہرائیں'
     }
   },
@@ -760,7 +760,7 @@ export const translations = {
       step8FallbackBody: 'Tìm tùy chọn cài đặt trong menu trình duyệt — sau đó dùng được cả khi ngoại tuyến.',
       nextBtn: 'Tiếp',
       prevBtn: 'Quay lại',
-      doneBtn: 'Rõ rồi, đi thôi',
+      doneBtn: 'Bắt đầu',
       replayLabel: 'Xem lại tour'
     }
   },
@@ -940,7 +940,7 @@ export const translations = {
       step8FallbackBody: 'Zoek de installatieoptie in het browsermenu — werkt daarna ook offline.',
       nextBtn: 'Volgende',
       prevBtn: 'Terug',
-      doneBtn: 'Begrepen, gaan',
+      doneBtn: 'Begrepen',
       replayLabel: 'Tour herhalen'
     }
   },
