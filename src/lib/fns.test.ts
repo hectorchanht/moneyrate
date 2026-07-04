@@ -191,4 +191,16 @@ describe('resolveTourLocale', () => {
   it('falls back to default when navLangs is empty', () => {
     expect(resolveTourLocale([], ['en', 'fr'], 'en')).toBe('en');
   });
+
+  // D-03 call-site decision logic: the first-load device-language default in
+  // page.tsx calls resolveTourLocale(navigator.languages, SUPPORTED_LOCALES, 'en').
+  // These cases document that specific decision, not resolveTourLocale's own
+  // internals (already covered above).
+  it('device tag resolves to the nearest supported locale for the first-load default', () => {
+    expect(resolveTourLocale(['de-DE'], ['en', 'de', 'fr'], 'en')).toBe('de');
+  });
+
+  it('an empty navigator.languages list defaults to en for the first-load default', () => {
+    expect(resolveTourLocale([], ['en', 'de', 'fr'], 'en')).toBe('en');
+  });
 });

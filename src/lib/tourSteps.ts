@@ -10,12 +10,6 @@ export const TOUR_STEP_COUNT = 8;
 // locales) rather than hand-duplicated, to avoid drift.
 export const SUPPORTED_LOCALES = Object.keys(translations) as Language[];
 
-// Fallback copy for step 8 when the InstallButton has no captured
-// `beforeinstallprompt` event (desktop Safari/Firefox, already-installed PWAs).
-// Still imported by page.tsx until Task 2 migrates that call site to
-// getTourString(language, 'step8FallbackBody') and deletes this export.
-export const TOUR_INSTALL_FALLBACK_DESCRIPTION = translations.en.tour.step8FallbackBody;
-
 type TourNamespace = typeof translations.en.tour;
 
 // Not every locale object has a `tour` namespace yet (30-locale authoring is

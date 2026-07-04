@@ -16,13 +16,14 @@ import {
   defaultCurrencyValueDpAtom,
   isDefaultCurrencyValueAtom,
   isEditingAtom,
+  languageAtom,
   showDatePickerAtom,
   sortModeAtom,
   tourSeenAtom
 } from '@/lib/atoms';
 import { getDataFromLocalStorage, getDropIndex, resolveTourLocale, setDataToLocalStorage, showASCIIArt, sortCurrencyPairs } from '@/lib/fns';
 import { QuestionSvg, ShareSvg } from '@/lib/svgs';
-import { buildTourSteps, SUPPORTED_LOCALES, TOUR_INSTALL_FALLBACK_DESCRIPTION } from '@/lib/tourSteps';
+import { buildTourSteps, getTourString, SUPPORTED_LOCALES } from '@/lib/tourSteps';
 import { CurrencyCode } from '@/lib/types';
 import { driver, type Driver } from 'driver.js';
 import { useAtom } from 'jotai';
@@ -99,6 +100,7 @@ export default function Home() {
   const [sortMode] = useAtom(sortModeAtom);
   const [tourSeen, setTourSeen] = useAtom(tourSeenAtom);
   const [showDatePicker] = useAtom(showDatePickerAtom);
+  const [language, setLanguage] = useAtom(languageAtom);
   const i18n = useTranslation();
 
   // Optional historical date ('' = latest). Session-only; not persisted.
@@ -140,6 +142,22 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // LANG-01/D-03: on first load only (no stored 'language' key yet), default
+  // languageAtom to the device locale so the app UI *and* the tour render in
+  // the visitor's device language. A stored user choice always wins
+  // thereafter — this must never fire again once a value has been written.
+  // Gated behind `hydrated` (never at module-eval time in atoms.ts) to avoid
+  // an SSR/CSR hydration mismatch, same pattern as the link-hydration effect
+  // above. Placed above the tour auto-start effect so the very first tour
+  // render already reflects the device-derived language.
+  useEffect(() => {
+    if (!hydrated) return;
+    if (getDataFromLocalStorage('language', null) === null) {
+      setLanguage(resolveTourLocale(typeof navigator !== 'undefined' ? navigator.languages : [], SUPPORTED_LOCALES, 'en'));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
+
   const [shareCopied, setShareCopied] = useState(false);
   const onShare = useCallback(async () => {
     const params = new URLSearchParams({ base: baseCur, amount: String(currencyValue), show: currency2Display.join(',') });
@@ -167,9 +185,11 @@ export default function Home() {
   const startTour = useCallback(() => {
     tourDriverRef.current?.destroy(); tourDriverRef.current = null;
 
-    const locale = resolveTourLocale(typeof navigator !== 'undefined' ? navigator.languages : [], SUPPORTED_LOCALES, 'en');
-
-    const steps = buildTourSteps(locale);
+    // D-01/D-02: tour locale is the app's single source of truth (languageAtom),
+    // not navigator.languages — switching language in Settings then replaying
+    // the tour must show the new language. The navigator-based resolver is
+    // reused only for the first-load device-default effect above (D-03).
+    const steps = buildTourSteps(language);
 
     // Pre-filter steps whose anchor selector isn't present in the DOM (silent
     // skip — driver.js throws at drive-time on an unresolvable selector).
@@ -183,7 +203,7 @@ export default function Home() {
         // the original step object; never drop step 8 (TOUR-06).
         const hasInstallButton = document.querySelector('[data-tour="tour-install"] button');
         if (hasInstallButton) return step;
-        return { ...step, popover: { ...step.popover, description: TOUR_INSTALL_FALLBACK_DESCRIPTION } };
+        return { ...step, popover: { ...step.popover, description: getTourString(language, 'step8FallbackBody') } };
       });
 
     // One-time theme read for the overlay scrim only — do NOT re-init driver
@@ -200,9 +220,9 @@ export default function Home() {
       stagePadding: 4,
       showProgress: true,
       overlayColor: isDarkTheme ? 'rgba(0,0,0,0.65)' : 'rgba(0,0,0,0.45)',
-      nextBtnText: 'Next',
-      prevBtnText: 'Back',
-      doneBtnText: "Got it, let's go",
+      nextBtnText: getTourString(language, 'nextBtn'),
+      prevBtnText: getTourString(language, 'prevBtn'),
+      doneBtnText: getTourString(language, 'doneBtn'),
       onDoneClick: () => {
         setTourSeen(true);
         driverObj.destroy();
@@ -224,7 +244,13 @@ export default function Home() {
     // tourSeen, so it never reappears).
     tourDriverRef.current = driverObj;
     driverObj.drive();
-  }, [setTourSeen]);
+    // `language` must stay in this dependency array (Pitfall 1): omitting it
+    // would let startTour close over a stale locale after a Settings language
+    // switch, since useCallback only recreates the function when a listed dep
+    // changes. This is safe against the a818626 teardown bug — destruction
+    // only happens inside this function body and the unmount-only cleanup
+    // effect below; the dep-array change affects function identity only.
+  }, [language, setTourSeen]);
 
   // First-run guided tour: auto-starts once hydrated, real content is rendered
   // (not the skeleton), and the tour hasn't been seen yet. Guarded against
@@ -387,9 +413,9 @@ export default function Home() {
             <button
               type="button"
               onClick={() => startTour()}
-              title="Replay tour"
-              aria-label="Replay tour"
-              className="h-[52px] w-[30px] shrink-0 flex items-center justify-center"
+              title={i18n.tour.replayLabel}
+              aria-label={i18n.tour.replayLabel}
+              className="tour-replay-btn h-[52px] w-[30px] shrink-0 flex items-center justify-center"
             >
               <QuestionSvg />
             </button>
