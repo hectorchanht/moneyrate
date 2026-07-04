@@ -6,7 +6,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: Guided First-Run Tour** - A first-time visitor automatically sees a full 8-step guided tour of the home page, navigable and dismissible, that never repeats uninvited.
+- [x] **Phase 1: Guided First-Run Tour** - A first-time visitor automatically sees a full 8-step guided tour of the home page, navigable and dismissible, that never repeats uninvited. (completed 2026-07-04)
 - [ ] **Phase 2: On-Demand Replay** - Any visitor can reopen the same tour at any time via a persistent help control.
 - [ ] **Phase 3: Localized, Accessible, Theme-Aware Tour** - The tour reads correctly in the visitor's language, is fully keyboard-operable, honors light/dark theme, and works on mobile/touch.
 
@@ -55,7 +55,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Guided First-Run Tour | 2/3 | In Progress|  |
+| 1. Guided First-Run Tour | 3/3 | Complete   | 2026-07-04 |
 | 2. On-Demand Replay | 0/? | Not started | - |
 | 3. Localized, Accessible, Theme-Aware Tour | 0/? | Not started | - |
 
