@@ -70,7 +70,7 @@ const CurrencyRow = ({
   };
 
   return (
-    <div id='currencyItem' style={style}>
+    <div id='currencyItem' data-tour={isBase ? 'tour-base-row' : undefined} style={style}>
       <div className='flex gap-2 h-42 items-center'>
         <div className='flex w-full justify-between items-center gap-2'>
           {isEditing && <DragHandle onDragStart={() => onDragStart(cur)} />}
@@ -94,6 +94,7 @@ const CurrencyRow = ({
               onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
               placeholder="100"
               aria-label={`${cur.toUpperCase()} amount (supports math, e.g. 5+3)`}
+              data-tour="tour-amount-input"
               className={`bg-base-200 h-[2em] w-[inherit] max-w-[240px] text-end`}
             />
           ) : (
