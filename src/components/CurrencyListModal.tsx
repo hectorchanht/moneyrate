@@ -6,6 +6,7 @@ import {
   isDefaultCurrencyValueAtom,
   isEditingAtom,
   languageAtom,
+  PERSISTED_ATOM_KEYS,
   showDatePickerAtom,
   sortModeAtom
 } from '@/lib/atoms';
@@ -185,8 +186,7 @@ const CurrencySetting: React.FC = () => {
 
         <button className="btn btn-primary w-full mt-2" onClick={() => {
           // Remove only this app's persisted keys instead of nuking all same-origin localStorage.
-          ['baseCur', 'currency2Display', 'currencyValue', 'isEditing', 'isDefaultCurrencyValue', 'defaultCurrencyValue', 'defaultCurrencyValueDp', 'language', 'sortMode', 'theme']
-            .forEach((key) => localStorage.removeItem(key));
+          PERSISTED_ATOM_KEYS.forEach((key) => localStorage.removeItem(key));
           setCurrency2Display(DefaultCurrency2Display);
           setLanguage('en');
           setSortMode('custom');

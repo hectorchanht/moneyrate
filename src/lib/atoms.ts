@@ -15,3 +15,10 @@ export const sortModeAtom = atomWithStorage<SortMode>('sortMode', 'custom');
 export const themeAtom = atomWithStorage<Theme>('theme', 'dark');
 export const tourSeenAtom = atomWithStorage<boolean>('tourSeen', false);
 export const showDatePickerAtom = atomWithStorage<boolean>('showDatePicker', false);
+
+// Single source of truth for every persisted localStorage key above.
+// MUST stay in sync (same keys, same declaration order) with the atomWithStorage
+// calls above — the drift-guard test in atoms.test.ts fails if they diverge.
+// Consumed by the settings Reset handler so no persisted key (e.g. tourSeen,
+// showDatePicker) is ever left behind.
+export const PERSISTED_ATOM_KEYS = ['baseCur', 'currency2Display', 'currencyValue', 'isEditing', 'isDefaultCurrencyValue', 'defaultCurrencyValue', 'defaultCurrencyValueDp', 'language', 'sortMode', 'theme', 'tourSeen', 'showDatePicker'] as const;
