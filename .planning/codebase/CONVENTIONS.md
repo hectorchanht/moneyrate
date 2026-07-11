@@ -1,128 +1,104 @@
 # Coding Conventions
 
-**Analysis Date:** 2026-07-03
+**Analysis Date:** 2026-07-11
 
 ## Naming Patterns
 
 **Files:**
-- React components: `PascalCase.tsx` — `src/components/CountryImg.tsx`, `src/components/CurrencyListModal.tsx`, `src/components/DragHandle.tsx`, `src/components/SearchBar.tsx`
-- Next.js App Router special files: lowercase, framework-mandated — `src/app/page.tsx`, `src/app/layout.tsx`, `src/app/loading.tsx`, `src/app/api/currencyChart/route.ts`
-- Hooks: `camelCase.ts` prefixed with `use` — `src/hooks/useTranslation.ts`, `src/hooks/useWindowWidth.ts`
-- Contexts: `PascalCase.tsx` suffixed with `Context` — `src/contexts/LanguageContext.tsx`
-- Library/utility modules: `camelCase.ts` — `src/lib/atoms.ts`, `src/lib/api.ts`, `src/lib/constants.ts`, `src/lib/fns.ts`, `src/lib/types.ts`, `src/lib/translations.ts`, `src/lib/svgs.tsx`
-- One dead file exists: `src/lib/func.ts` is completely empty (0 bytes) — do not add code here; either delete it or repurpose deliberately.
+- React components: `PascalCase.tsx` — `src/components/CurrencyRow.tsx`, `src/components/InstallButton.tsx`, `src/components/ThemeToggle.tsx`, `src/components/SearchBar.tsx`
+- Co-located tests: `<Name>.test.tsx` / `<Name>.test.ts` next to the file under test — `src/components/CurrencyRow.test.tsx`, `src/lib/fns.test.ts`, `src/app/api/currencyChart/route.test.ts`
+- E2E specs: `<feature>.spec.ts` under `e2e/` — `e2e/home.spec.ts`, `e2e/tour.spec.ts`
+- Hooks: `use<Name>.ts` (camelCase) — `src/hooks/useTranslation.ts`, `src/hooks/useWindowWidth.ts`
+- Contexts: `<Name>Context.tsx` — `src/contexts/LanguageContext.tsx`
+- Library/utility modules: `camelCase.ts` — `src/lib/atoms.ts`, `src/lib/api.ts`, `src/lib/fns.ts`, `src/lib/tourSteps.ts`, `src/lib/pairs.ts`, `src/lib/types.ts`
+- Next.js App Router special files: lowercase, framework-mandated — `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `global-error.tsx`, `route.ts`, `robots.ts`, `sitemap.ts`
 
 **Functions:**
-- `camelCase` throughout: `debounce`, `showASCIIArt`, `getDataFromLocalStorage` (`src/lib/fns.ts`), `getCurrencyRateApiUrl`, `getCurrencyChartApiUrl` (`src/lib/api.ts`).
-- Event handlers use `on`/`handle` prefixes: `onBaseCurChange`, `handleDrop`, `handleCurrencyValueChange` in `src/app/page.tsx`; `onSelect`, `escFunction`, `clearQuery` in `src/components/SearchBar.tsx`.
-- Boolean-returning helpers use `is`/custom comparator names: `areEqual` in `src/components/CountryImg.tsx`.
+- `camelCase` for all functions and helpers: `evalMathExpression`, `getResponsiveCryptoDp`, `sortCurrencyPairs`, `getDataFromLocalStorage`, `resolveTourLocale` (`src/lib/fns.ts`); `getCurrencyRateApiUrl`, `fetchWithFallback`, `fetcher` (`src/lib/api.ts`)
+- URL/string builders are prefixed with `get`: `getCurrencyRateApiUrl`, `getCurrencyRateApiUrls`, `getTourString` (`src/lib/tourSteps.ts`)
+- Event handlers use `on`/`handle` prefixes: `onBaseChange`, `onCopy`, `onSelectBase`, `onValueChange` (`src/components/CurrencyRow.tsx`); `onBeforeInstall`, `onInstalled` (`src/components/InstallButton.tsx`)
+- Builder/factory functions read as verbs: `buildTourSteps` (`src/lib/tourSteps.ts`)
+- Boolean helpers/vars use `is` prefix: `isBase`, `isEditing`, `isFocused`
 
 **Variables:**
-- `camelCase` for local variables and state: `currencyValue`, `baseCur`, `isEditing`.
-- Jotai atoms are suffixed with `Atom`: `baseCurAtom`, `currency2DisplayAtom`, `isEditingAtom`, `defaultCurrencyValueDpAtom` (`src/lib/atoms.ts`).
-- Constants intended as fixed defaults use `PascalCase` with a `Default` prefix: `DefaultBaseCur`, `DefaultCurrency2Display`, `DefaultCurrencyValue` (`src/lib/constants.ts`). This deviates from typical `UPPER_SNAKE_CASE` — follow the existing `PascalCase` convention for new default constants in this file, and note `Currency2country` (a large lookup object) also uses `PascalCase`.
+- `camelCase` for locals and state: `currencyValue`, `baseCur`, `valMultiplied`, `dp2Show`, `deferred`
+- Jotai atoms are suffixed with `Atom`: `baseCurAtom`, `currency2DisplayAtom`, `isEditingAtom` (`src/lib/atoms.ts`)
+- Module-level constants use `UPPER_SNAKE_CASE` in newer code: `TOUR_STEP_COUNT`, `SUPPORTED_LOCALES`, `TOUR_FEATURE_STEPS` (`src/lib/tourSteps.ts`), `EXPECTED_SELECTORS`, `TOUR_KEYS`, `CJK_LOCALES` (`src/lib/tourSteps.test.ts`)
+- Legacy default constants in `src/lib/constants.ts` use `PascalCase` with a `Default` prefix: `DefaultBaseCur`, `DefaultCurrency2Display`. Follow the file's existing style when adding to `constants.ts`; prefer `UPPER_SNAKE_CASE` for new module constants elsewhere (matches `tourSteps.ts`).
 
 **Types:**
-- `PascalCase` for types and interfaces, no `I` prefix: `SearchItem`, `CurrencyRates`, `LanguageContextType`, `CurrencyCode` (`src/lib/types.ts`).
-- Component prop types are named `<ComponentName>Props` and declared as `interface`: `CurrencyListModalProps`, `CurrencyListTableProps` (`src/components/CurrencyListModal.tsx`), `SearchBarProps` (`src/components/SearchBar.tsx`), `CountryImgProps` (`src/components/CountryImg.tsx`).
-- Branded primitive types are used for domain identifiers: `CurrencyCode` and `LanguageCode` are `string & { readonly __brand: '...' }` (`src/lib/types.ts:20-22`). Cast with `as CurrencyCode` / `as LanguageCode` at the boundary where a raw string enters the domain (see `src/app/page.tsx:112`, `src/components/CurrencyListModal.tsx:124-127`).
-- Locally-scoped types are sometimes redeclared per-file instead of imported (e.g., `CurrencyRates` is defined both in `src/lib/types.ts` and redeclared locally in `src/app/page.tsx:66-68`). Prefer importing the shared type from `src/lib/types.ts` for new code instead of redeclaring.
+- `PascalCase`, no `I` prefix: `SearchItem`, `CurrencyRates`, `LanguageContextType`, `SortMode`, `Theme` (`src/lib/types.ts`)
+- Component prop types are `<ComponentName>Props`, declared as `interface`, and exported: `export interface CurrencyRowProps` (`src/components/CurrencyRow.tsx:7`)
+- Local event-shape types declared inline as `interface`: `BeforeInstallPromptEvent` (`src/components/InstallButton.tsx:5`)
+- `Language` is a 30-member string-literal union (`src/lib/types.ts:10-13`) — the canonical locale type used across the tour code. Branded primitive types `CurrencyCode` and `LanguageCode` (`string & { readonly __brand: '...' }`) also exist (`src/lib/types.ts:24-26`); cast with `as CurrencyCode` at the boundary where a raw string enters the domain.
 
 ## Code Style
 
 **Formatting:**
-- No Prettier config present in the repo (`.prettierrc*` not found). Formatting is whatever ESLint/Next defaults produce plus manual author style.
+- No Prettier config in the repo. Style is ESLint/Next defaults plus author convention.
 - Indentation: 2 spaces, consistently.
-- Quotes: single quotes are dominant in `.tsx`/`.ts` files (`import ... from '@/lib/atoms'`), though double quotes appear in a few places (e.g., `src/lib/fns.ts:47` uses double quotes). Prefer single quotes for new code to match majority pattern.
+- Quotes: single quotes dominate in `.ts`/`.tsx`. Prefer single quotes for new code. (Some legacy double quotes remain, e.g. `src/lib/fns.ts:166`.)
 - Semicolons: used consistently at statement ends.
-- No trailing commas convention is uniformly enforced; both styles appear.
 
 **Linting:**
-- ESLint config: `.eslintrc.json` (root) extends `next/core-web-vitals` and `next/typescript`.
-- Custom rule override: `@typescript-eslint/no-explicit-any` is turned **off**, so `any` is explicitly allowed project-wide (see `func: (...args: any[]) => void` in `src/lib/fns.ts:2`, and `getDataFromLocalStorage(name: string, defaultValue: any)` in `src/lib/fns.ts:46`). New code may use `any` but should prefer specific types where feasible since this is an explicit relaxation, not an endorsement.
-- Run via `npm run lint` (`next lint`), defined in `package.json`.
+- `.eslintrc.json` extends `next/core-web-vitals` and `next/typescript`.
+- One override: `@typescript-eslint/no-explicit-any` is turned **off** — `any` is allowed project-wide (used in `debounce` and `getDataFromLocalStorage`, `src/lib/fns.ts:4,165`). Prefer specific types for new code; reserve `any` for genuinely dynamic boundaries.
+- Inline disables are used surgically where a rule fights a test shim, e.g. `// eslint-disable-next-line @next/next/no-img-element` when mocking `next/image` (`src/components/CurrencyRow.test.tsx:9`).
+- Run via `npm run lint` (`next lint`).
 
 ## Import Organization
 
-**Order:**
-Imports are generally grouped in this order (not enforced by tooling, but consistently observed):
-1. External packages (`react`, `next/image`, `jotai`, `lodash`, `swr`, `recharts`)
-2. Internal absolute imports via the `@/` alias (`@/components/...`, `@/lib/...`, `@/hooks/...`, `@/contexts/...`)
-3. Relative imports for same-directory siblings (e.g., `import CountryImg from './CountryImg';` in `src/components/CurrencyListModal.tsx:15`)
-
-Example from `src/app/page.tsx:1-24`:
-```typescript
-"use client";
-
-import CountryImg from '@/components/CountryImg';
-import CurrencyListModal from '@/components/CurrencyListModal';
-import DragHandle from '@/components/DragHandle';
-import SearchBar from '@/components/SearchBar';
-import useWindowWidth from '@/hooks/useWindowWidth';
-import { CurrencyRate4All, CurrencyRate4BaseCur, fetcher, getCurrencyRateApiUrl } from '@/lib/api';
-import { baseCurAtom, currency2DisplayAtom, ... } from '@/lib/atoms';
-import { useAtom } from 'jotai';
-import { pick } from 'lodash';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
-import useSWR from 'swr';
-```
-Named imports from the same module are alphabetized within multi-line import blocks.
-
-**Path Aliases:**
-- `@/*` maps to `./src/*` (configured in `tsconfig.json` `compilerOptions.paths`). Always use `@/lib/...`, `@/components/...`, `@/hooks/...`, `@/contexts/...` for cross-directory imports rather than relative `../../` paths. Relative imports (`./`) are reserved for files within the same directory only.
+- Path alias `@/*` → `./src/*` (`tsconfig.json`). Vitest mirrors this alias in `vitest.config.ts:12-16`. Always use `@/lib/...`, `@/components/...`, `@/contexts/...`, `@/hooks/...` for cross-directory imports; reserve relative `./` for same-directory imports (e.g. a test importing its subject: `import CurrencyRow from './CurrencyRow'`).
+- Observed grouping order (top to bottom), no blank lines between groups:
+  1. Third-party packages (`@testing-library/react`, `jotai`, `vitest`, `react`, `driver.js`)
+  2. `@/` alias imports (`@/contexts/...`, `@/lib/...`)
+  3. Same-directory relative imports (`./SearchBar`)
+- Type-only imports use `import type`: `import type { Language } from './types'` (`src/lib/tourSteps.ts:3`), `import { expect, test, type Page } from '@playwright/test'` (`e2e/home.spec.ts:1`).
 
 ## Error Handling
 
-**Patterns:**
-- Client data-fetching errors from SWR are checked directly from the hook's `error` field and rendered as a plain error message, not thrown: `if (err1 || err2) return <div className="text-center">Error fetching data. Please try again later.</div>;` (`src/app/page.tsx:146`). Same pattern in `src/app/chart/page.tsx:41`.
-- `src/lib/fns.ts:getDataFromLocalStorage` wraps `JSON.parse` in try/catch and falls back to the raw string on parse failure — a defensive pattern to follow when parsing localStorage or other untrusted string data.
-- API routes (`src/app/api/currencyChart/route.ts`) validate required query params early and return a `NextResponse.json({ error: ... })` with a user-facing message rather than throwing (`route.ts:22-24`). Note this specific route does not set an HTTP error status code on the response — new API routes should improve on this by adding `{ status: 400 }` or similar.
-- Custom React context hooks throw explicit `Error`s when used outside their provider: `useLanguage` throws `new Error('useLanguage must be used within a LanguageProvider')` if context is `undefined` (`src/contexts/LanguageContext.tsx:22-24`). Follow this pattern for any new context.
-- No centralized error boundary, error-tracking SDK, or global error handler exists in the codebase.
+- **Best-effort try/catch with silent (commented) fallbacks** for browser-API calls that may be unavailable: clipboard writes (`src/components/CurrencyRow.tsx:63-69`), `localStorage` writes (`src/lib/fns.ts:178-185`), and malformed locale tags (`src/lib/fns.ts:203,213`). Each empty `catch` carries a one-line comment explaining why it's safe to swallow.
+- **Pure helpers return `null` on invalid input** rather than throwing: `evalMathExpression` returns `null` for empty/invalid/non-finite input (`src/lib/fns.ts:70-144`); callers branch on the result (`src/components/CurrencyRow.tsx:57`).
+- **SSR guards** precede any `window`/`localStorage` access: `if (typeof window === 'undefined' || !window || !window.localStorage) return defaultValue;` (`src/lib/fns.ts:166,179`).
+- **Fetch layer throws on non-2xx** so SWR surfaces the error: `fetcher` throws `Error('... status <code>')` on `!res.ok` (`src/lib/api.ts`, verified by `src/lib/api.test.ts:81-87`); `fetchWithFallback` tries URLs in order and rejects only when all fail.
+- **API routes validate params early and return a real HTTP status:** the chart route returns `400` for a missing/malformed `q` and `404` when no data resolves (confirmed by `src/app/api/currencyChart/route.test.ts:21-63`). This improves on the older "200 with error body" pattern — new route handlers should set explicit status codes.
+- **Context hooks throw when used outside their provider:** `useLanguage` throws `Error('useLanguage must be used within a LanguageProvider')` (`src/contexts/LanguageContext.tsx`). Follow this for any new context.
+- **App Router error boundaries exist:** `src/app/error.tsx` (route-level) and `src/app/global-error.tsx` (root) — use these rather than adding ad-hoc try/catch in render.
 
 ## Logging
 
-**Framework:** Plain `console.log` / `console.error`. No structured logging library.
+**Framework:** `console` only — no logging library.
 
 **Patterns:**
-- `console.log` is used for one-off debug/informational messages, e.g., ASCII art banner on load (`src/lib/fns.ts:showASCIIArt`, called from `src/app/page.tsx:58` and `src/app/chart/page.tsx:32`) and confirmation that a dynamically-loaded script initialized (`src/app/page.tsx:46`).
-- `console.error` is used for failure paths of dynamically loaded external scripts (`src/app/page.tsx:48,54`).
-- No logging exists in API routes (`src/app/api/currencyChart/route.ts`) — failures during upstream fetches are not logged.
+- `console.log` for one-off informational output (ASCII-art banner in `showASCIIArt`, `src/lib/fns.ts:45`).
+- No logging inside route handlers or fetch fallbacks — failures propagate as thrown errors / HTTP status codes instead.
 
 ## Comments
 
 **When to Comment:**
-- Comments are used sparingly and mostly to explain non-obvious business logic or format assumptions, e.g., `// date can be YYYY-MM-DD: 2024-03-06` above `GetCurrencyRateParams` in `src/lib/api.ts:3`, and `// it is [targetCur]-[baseCur]` in `src/app/api/currencyChart/route.ts:17`.
-- Commented-out code blocks are left in place rather than deleted, e.g., the "AI Stock Banner" JSX block in `src/app/page.tsx:169-185` and the mtfxgroup fetch logic in `src/app/api/currencyChart/route.ts:3-12`. Do not treat this as a pattern to emulate for new code — remove dead code instead of commenting it out; only pre-existing commented blocks remain for historical/reference reasons.
-- No file-level header comments or license banners.
+- Explain *why*, not *what*: non-obvious business rules (`// Base-amount field supports math expressions ...`, `src/components/CurrencyRow.tsx:52`), security constraints (`// No eval()/Function() — those are blocked by the production CSP`, `src/lib/fns.ts:68`), and the reason an error is swallowed.
+- Function-level lead comments describe intent and edge behavior above exported helpers (`src/lib/fns.ts:48-49,61-62,187-191`).
+- Requirement/decision IDs are referenced in comments to trace code to spec (e.g. `TOUR-06`, `D-04`, `A11Y-01`, `RESEARCH Pitfall 2`) in `src/lib/tourSteps.ts` and `e2e/tour.spec.ts`.
 
 **JSDoc/TSDoc:**
-- Not used anywhere in the codebase. Type signatures alone document intent (interfaces/types declared directly above usage).
+- Not used. Plain `//` comments and TypeScript type signatures document intent. Do not introduce JSDoc block tags.
 
 ## Function Design
 
-**Size:** No enforced limit. Component render functions can be large and contain significant inline logic (e.g., `Home` in `src/app/page.tsx` is ~190 lines including JSX, and `CurrencyChart` in `src/app/chart/page.tsx` is ~115 lines). Prefer extracting inline computation into `useMemo`/helper functions when a component's body exceeds ~100 lines, consistent with existing use of `useMemo` for derived values (`curObj`, `currencyRatesPairs2Display` in `src/app/page.tsx:86-92`).
-
-**Parameters:**
-- Functions taking more than 1-2 arguments use a single destructured options object with defaults, typed via a dedicated `Params` type: `getCurrencyRateApiUrl({ baseCurrencyCode = '', date = 'latest', apiVersion = 'v1' }: GetCurrencyRateParams)` (`src/lib/api.ts:16`).
-- React component props are always destructured in the function signature: `const CountryImg: React.FC<CountryImgProps> = ({ code = '', alt = '' }) => {...}` (`src/components/CountryImg.tsx:37`).
-
-**Return Values:**
-- Components with loading/error states return early with a simple conditional JSX block before the main return (`src/app/page.tsx:146-161`, `src/app/chart/page.tsx:41-55`). Follow this early-return-for-loading/error pattern for new data-fetching components rather than nesting ternaries in the main JSX return.
+- **Multi-arg functions take a single destructured options object** typed by a dedicated `Params` type with defaults: `getCurrencyRateApiUrl({ baseCurrencyCode = '', date = 'latest', apiVersion = 'v1' })` (`src/lib/api.ts`).
+- **Pure, side-effect-free helpers are extracted for unit testing** and documented as such: `getResponsiveCryptoDp`, `getDropIndex`, `evalMathExpression`, `resolveTourLocale` are all pulled out of render/call sites specifically so they can be tested in isolation (`src/lib/fns.ts:48-49,189-191`). Prefer this pattern — extract logic into a pure `src/lib` function rather than embedding it in a component render body.
+- **React component props are destructured in the signature** with defaults where relevant (`src/components/CurrencyRow.tsx:25-41`).
+- **Loading/error states return early** with a simple conditional block before the main JSX return.
 
 ## Module Design
 
-**Exports:**
-- Components: `default export` at the bottom of the file after declaration, e.g. `export default CurrencyListModal;` (`src/components/CurrencyListModal.tsx:257`), `export default DragHandle;` (`src/components/DragHandle.tsx:21`). Page components (`src/app/page.tsx`, `src/app/chart/page.tsx`) use `export default function Home()` / assign-then-export.
-- Utilities, atoms, constants, and types: named exports only, no default export — `src/lib/atoms.ts`, `src/lib/constants.ts`, `src/lib/fns.ts`, `src/lib/api.ts`, `src/lib/types.ts`, `src/lib/svgs.tsx`.
-- Hooks: mixed — `useTranslation` is a named export (`src/hooks/useTranslation.ts`), `useWindowWidth` is a default export (`src/hooks/useWindowWidth.ts`). No strict convention enforced; prefer named exports for new hooks for consistency with `useTranslation` and easier tree-shaking/refactor tooling.
-
-**Barrel Files:**
-- Not used. No `index.ts` re-export files exist anywhere under `src/`. Import directly from the specific module path (e.g., `@/lib/atoms`, `@/components/CountryImg`), not from a directory-level barrel.
-
-**Client/Server Boundary:**
-- Next.js App Router `"use client"` directive is placed as the first line of files that use browser APIs, hooks, or interactivity: `src/app/page.tsx:1`, `src/app/chart/page.tsx:1`, `src/hooks/useWindowWidth.ts:1`, `src/contexts/LanguageContext.tsx:1`. API routes (`src/app/api/currencyChart/route.ts`) and `src/app/layout.tsx` are server components/route handlers and omit the directive.
+- **Components:** `default export`. Either `export default function InstallButton() {...}` (`src/components/InstallButton.tsx:12`) or a `const` declaration exported at the bottom, optionally wrapped: `export default memo(CurrencyRow);` (`src/components/CurrencyRow.tsx:144`). Prop interfaces are `export`ed as named exports alongside the default.
+- **Utilities, atoms, constants, types, tour logic:** named exports only, no default — `src/lib/fns.ts`, `src/lib/api.ts`, `src/lib/atoms.ts`, `src/lib/tourSteps.ts`, `src/lib/types.ts`.
+- **Hooks:** mixed (`useTranslation` named, `useWindowWidth` default). Prefer named exports for new hooks.
+- **No barrel files** — no `index.ts` re-exports anywhere under `src/`. Import directly from the specific module path.
+- **`"use client"` directive** is the first line of any file using browser APIs, hooks, or interactivity (`src/components/InstallButton.tsx:1`, `src/contexts/LanguageContext.tsx:1`). Server components (`layout.tsx`) and route handlers (`route.ts`) omit it.
+- **Derive, don't duplicate:** shared constants are derived from a single source of truth to avoid drift, e.g. `SUPPORTED_LOCALES = Object.keys(translations)` (`src/lib/tourSteps.ts:11`). A test enforces the derivation stays correct (`src/lib/tourSteps.test.ts:62-66`).
 
 ---
 
-*Convention analysis: 2026-07-03*
+*Convention analysis: 2026-07-11*

@@ -1,203 +1,212 @@
 # Codebase Structure
 
-**Analysis Date:** 2026-07-03
+**Analysis Date:** 2026-07-11
 
 ## Directory Layout
 
 ```
 moneyrate/
 ├── src/
-│   ├── app/                     # Next.js App Router: routes, layouts, API handlers
-│   │   ├── api/
-│   │   │   └── currencyChart/
-│   │   │       └── route.ts     # GET /api/currencyChart — proxies Yahoo Finance
+│   ├── app/                          # Next.js App Router routes
+│   │   ├── layout.tsx                # Root layout (providers, fonts, SW, Clarity)
+│   │   ├── page.tsx                  # Home — editable currency list + tour
+│   │   ├── loading.tsx               # Route-level loading bar
+│   │   ├── error.tsx                 # Route error boundary
+│   │   ├── global-error.tsx          # Root-layout error boundary
+│   │   ├── robots.ts                 # /robots.txt metadata route
+│   │   ├── sitemap.ts                # /sitemap.xml metadata route
+│   │   ├── fonts/                    # Local Geist woff fonts
 │   │   ├── chart/
-│   │   │   └── page.tsx         # /chart route — historical rate chart
-│   │   ├── fonts/
-│   │   │   ├── GeistVF.woff
-│   │   │   └── GeistMonoVF.woff
-│   │   ├── layout.tsx           # Root layout (html/head/body, providers, fonts)
-│   │   ├── loading.tsx          # App Router loading fallback (progress bar)
-│   │   └── page.tsx             # / route — main currency rate list
-│   ├── components/               # Reusable React components (flat, no subfolders)
-│   │   ├── CountryImg.tsx        # Flag/crypto icon with fallback chain
-│   │   ├── CurrencyListModal.tsx # Modal: currency table tab + settings tab
-│   │   ├── DragHandle.tsx        # Drag affordance icon for reordering
-│   │   └── SearchBar.tsx         # Currency search/typeahead + add-to-list
+│   │   │   └── page.tsx              # Historical chart page (Recharts)
+│   │   ├── convert/
+│   │   │   └── [pair]/page.tsx       # SEO convert landing (server/ISR)
+│   │   └── api/
+│   │       └── currencyChart/
+│   │           ├── route.ts          # Yahoo Finance chart proxy (only server compute)
+│   │           └── route.test.ts     # Route unit tests (vitest)
+│   ├── components/                   # 9 UI components (+ co-located tests)
+│   │   ├── CountryImg.tsx
+│   │   ├── CurrencyListModal.tsx
+│   │   ├── CurrencyRow.tsx  (+ .test.tsx)
+│   │   ├── DragHandle.tsx
+│   │   ├── InstallButton.tsx (+ .test.tsx)
+│   │   ├── SearchBar.tsx    (+ .test.tsx)
+│   │   ├── ServiceWorkerRegister.tsx
+│   │   ├── ThemeApplier.tsx
+│   │   └── ThemeToggle.tsx
 │   ├── contexts/
-│   │   └── LanguageContext.tsx   # React Context wrapper over languageAtom
+│   │   └── LanguageContext.tsx        # Context over languageAtom
 │   ├── hooks/
-│   │   ├── useTranslation.ts     # Returns translation dict for active language
-│   │   └── useWindowWidth.ts     # Tracks window.innerWidth (responsive logic)
-│   ├── lib/                      # Framework-agnostic shared code
-│   │   ├── api.ts                # SWR fetcher + external API URL builders
-│   │   ├── atoms.ts               # All Jotai global state atoms (localStorage-backed)
-│   │   ├── constants.ts           # Default values + Currency2country flag map
-│   │   ├── fns.ts                 # debounce, showASCIIArt, getDataFromLocalStorage
-│   │   ├── func.ts                # Effectively empty (1 line) — unused
-│   │   ├── svgs.tsx                # Inline SVG icon components
-│   │   ├── translations.ts        # i18n string dictionaries (30 languages)
-│   │   └── types.ts                # Shared TS types (branded CurrencyCode, etc.)
+│   │   ├── useTranslation.ts          # i18n dictionary lookup
+│   │   └── useWindowWidth.ts          # Debounced responsive width
+│   ├── lib/                          # Pure logic, state, config
+│   │   ├── api.ts    (+ .test.ts)     # SWR fetchers + rate URL builders
+│   │   ├── atoms.ts                   # 12 localStorage-backed Jotai atoms
+│   │   ├── constants.ts               # Defaults + Currency2country map
+│   │   ├── fns.ts   (+ .test.ts)      # Utils: math eval, sort, LS, locale
+│   │   ├── pairs.ts                   # SEO pairs, slug helpers, SITE_URL
+│   │   ├── svgs.tsx                   # Inline SVG icons
+│   │   ├── tourSteps.ts (+ .test.ts)  # driver.js step builder + i18n
+│   │   ├── translations.ts            # 30-language dictionaries
+│   │   └── types.ts                   # Shared + branded types
 │   └── theme/
-│       ├── globals.css            # Tailwind directives + DaisyUI dark theme + custom CSS
-│       └── theme.ts                # Tailwind theme.extend config object
-├── public/                       # Static assets served at site root
-│   ├── country-flags/            # 273 SVG flag icons, named by ISO country code
-│   ├── crypto-icons/              # 437 crypto icon assets (svg/png), named by ticker
-│   ├── img/
-│   │   └── q.svg                  # Placeholder/unknown-currency icon
-│   ├── ads.txt                    # Google AdSense verification
-│   ├── clarity.js                 # Microsoft Clarity analytics snippet
-│   ├── site.webmanifest
-│   ├── favicon.ico / favicon.svg / favicon-48x48.png / apple-touch-icon.png
-│   └── web-app-manifest-192x192.png / web-app-manifest-512x512.png
-├── .planning/
-│   └── codebase/                  # GSD-generated codebase map docs (this directory)
-├── next.config.mjs                # Next.js config (remote image patterns for coincap.io)
-├── tailwind.config.ts             # Tailwind config; imports theme from src/theme/theme.ts
-├── postcss.config.mjs             # PostCSS config (Tailwind + autoprefixer)
-├── tsconfig.json                  # TypeScript config; path alias @/* -> ./src/*
-├── .eslintrc.json                 # ESLint config (extends next/core-web-vitals presumably)
-├── package.json                   # Scripts (dev/build/start/lint), deps, yarn packageManager
-└── README.md
+│       ├── globals.css                # Tailwind directives + base CSS
+│       ├── theme.ts                   # Tailwind theme.extend
+│       └── tour.css                   # driver.js popover theming + RTL
+├── e2e/                              # Playwright end-to-end specs
+├── public/                          # Static assets
+│   ├── sw.js                         # Service worker (offline)
+│   ├── site.webmanifest              # PWA manifest
+│   ├── vendor/                       # Vendored drag-drop-touch polyfill
+│   ├── country-flags/                # Flag SVGs
+│   ├── crypto-icons/                 # Crypto icon assets
+│   ├── img/                          # Misc images (q.svg)
+│   ├── fns.js                        # Static script asset
+│   └── favicon*/apple-touch/web-app-manifest icons
+├── next.config.mjs                   # CSP + security headers
+├── tailwind.config.ts                # Tailwind + DaisyUI config
+├── postcss.config.mjs
+├── tsconfig.json                     # Strict TS, @/* → ./src/*
+├── playwright.config.ts              # E2E config
+├── vitest.config.ts                  # Unit test config
+├── .eslintrc.json                    # next/core-web-vitals + next/typescript
+├── .env.example                      # Documents optional env vars (no secrets)
+└── package-lock.json                 # Active lockfile (npm)
 ```
 
 ## Directory Purposes
 
 **`src/app/`:**
-- Purpose: Next.js App Router file-system routing root — every folder maps to a URL segment, every `page.tsx`/`route.ts`/`layout.tsx` has framework-defined meaning.
-- Contains: Page components (`page.tsx`), the root layout, a loading fallback, and one API route handler.
-- Key files: `src/app/layout.tsx`, `src/app/page.tsx`, `src/app/chart/page.tsx`, `src/app/api/currencyChart/route.ts`
+- Purpose: All routes and framework special files (App Router).
+- Contains: Page components, layout, loading/error boundaries, metadata routes, the single API route.
+- Key files: `page.tsx` (home), `layout.tsx` (providers), `api/currencyChart/route.ts` (only server compute), `convert/[pair]/page.tsx` (server SEO page).
 
 **`src/components/`:**
-- Purpose: Shared, reusable UI components consumed by pages. Flat structure — no nesting by feature or atomic-design tiers.
-- Contains: Four `.tsx` files, each a default-exported React component (plus `CountryImg.tsx` also named-exports `ImageWithFallback`).
-- Key files: `src/components/CountryImg.tsx`, `src/components/CurrencyListModal.tsx`, `src/components/SearchBar.tsx`, `src/components/DragHandle.tsx`
-
-**`src/contexts/`:**
-- Purpose: React Context providers. Currently holds a single context that is a thin wrapper over a Jotai atom (kept for `useContext`-style ergonomics, notably in `useTranslation`).
-- Contains: `LanguageContext.tsx` only.
-- Key files: `src/contexts/LanguageContext.tsx`
+- Purpose: Reusable UI, mostly presentational with local state.
+- Contains: 9 `PascalCase.tsx` components; some render nothing (`ThemeApplier`, `ServiceWorkerRegister`).
+- Key files: `CurrencyRow.tsx` (memoized row + math input), `CurrencyListModal.tsx` (table + settings), `SearchBar.tsx`.
 
 **`src/hooks/`:**
-- Purpose: Reusable stateful logic not tied to a specific component.
-- Contains: Two hooks — one for i18n lookup, one for responsive width tracking.
-- Key files: `src/hooks/useTranslation.ts`, `src/hooks/useWindowWidth.ts`
+- Purpose: Cross-cutting stateful logic.
+- Key files: `useTranslation.ts` (named export), `useWindowWidth.ts` (default export).
+
+**`src/contexts/`:**
+- Purpose: React context adapters over atoms.
+- Key files: `LanguageContext.tsx`.
 
 **`src/lib/`:**
-- Purpose: Catch-all for framework-agnostic shared code — types, constants, pure utility functions, external API clients, and all global state (Jotai atoms).
-- Contains: `api.ts`, `atoms.ts`, `constants.ts`, `fns.ts`, `func.ts` (unused), `svgs.tsx`, `translations.ts`, `types.ts`.
-- Key files: `src/lib/atoms.ts` (state), `src/lib/api.ts` (data fetching), `src/lib/types.ts` (shared types)
+- Purpose: Pure functions, constants, types, atoms, i18n, tour config. No React lifecycle except `atomWithStorage` calls.
+- Key files: `atoms.ts`, `api.ts`, `fns.ts`, `tourSteps.ts`, `pairs.ts`, `types.ts`, `translations.ts`.
 
 **`src/theme/`:**
-- Purpose: Tailwind/DaisyUI theming — both the CSS entry point and the JS theme-extension object consumed by `tailwind.config.ts`.
-- Contains: `globals.css`, `theme.ts`.
-- Key files: `src/theme/globals.css` (imported once in `src/app/layout.tsx:1`), `src/theme/theme.ts` (imported by `tailwind.config.ts`)
+- Purpose: Styling config and global CSS.
+- Key files: `globals.css`, `theme.ts`, `tour.css`.
+
+**`e2e/`:**
+- Purpose: Playwright end-to-end specs (tour keyboard/focus baselines, flows).
 
 **`public/`:**
-- Purpose: Static assets served verbatim at the site root by Next.js.
-- Contains: Icon sets (`country-flags/`, `crypto-icons/`), a placeholder image (`img/q.svg`), PWA manifest/icons, and third-party scripts (`clarity.js`, `ads.txt`).
-- Key files: `public/country-flags/` (273 files), `public/crypto-icons/` (437 files)
+- Purpose: Static assets served from root. Includes the PWA service worker, manifest, vendored polyfill, flag/crypto icons.
 
 ## Key File Locations
 
 **Entry Points:**
-- `src/app/layout.tsx`: Root HTML shell, global providers (Jotai `Provider`, `LanguageProvider`), font loading.
-- `src/app/page.tsx`: Home route (`/`) — main currency conversion UI.
-- `src/app/chart/page.tsx`: Chart route (`/chart`) — historical rate visualization.
-- `src/app/api/currencyChart/route.ts`: Only API route in the app.
+- `src/app/layout.tsx`: Root layout, providers, fonts, SW, Clarity.
+- `src/app/page.tsx`: Home page.
+- `src/app/chart/page.tsx`: Chart page.
+- `src/app/convert/[pair]/page.tsx`: SEO landing (server/ISR).
+- `src/app/api/currencyChart/route.ts`: Chart data proxy.
+- `src/app/robots.ts`, `src/app/sitemap.ts`: SEO metadata routes.
 
 **Configuration:**
-- `tsconfig.json`: TypeScript compiler options; defines the `@/*` → `src/*` path alias used in every import.
-- `tailwind.config.ts` + `src/theme/theme.ts`: Styling configuration (content globs, theme extension, DaisyUI plugin/themes).
-- `next.config.mjs`: Next.js config — currently only configures `images.remotePatterns` for `assets.coincap.io`.
-- `.eslintrc.json`: Lint rules, run via `yarn lint` / `next lint`.
-- `postcss.config.mjs`: PostCSS plugin pipeline for Tailwind.
+- `next.config.mjs`: CSP and security headers.
+- `tailwind.config.ts` / `postcss.config.mjs`: Styling.
+- `tsconfig.json`: Strict TS, `@/*` alias.
+- `.eslintrc.json`: Lint rules.
+- `playwright.config.ts` / `vitest.config.ts`: Test runners.
+- `.env.example`: Documents optional env vars (`NEXT_PUBLIC_CLARITY_ID`, `NEXT_PUBLIC_CURRENCY_API_HOST`, `NEXT_PUBLIC_SITE_URL`, `YAHOO_FINANCE_HOST`).
 
 **Core Logic:**
-- `src/lib/atoms.ts`: All persisted global state — the closest thing this app has to a "state management layer."
-- `src/lib/api.ts`: All external API URL construction + the shared SWR `fetcher`.
-- `src/app/api/currencyChart/route.ts`: Server-side data normalization logic (fiat vs. crypto vs. flipped-pair resolution).
-- `src/lib/constants.ts`: Default currencies to display, default base currency, and the ISO-currency-to-country-flag map.
+- `src/lib/atoms.ts`: Global state (12 persisted atoms).
+- `src/lib/api.ts`: Fetchers + rate URL builders.
+- `src/lib/fns.ts`: Pure utilities (math eval, sort, localStorage, locale resolver).
+- `src/lib/tourSteps.ts`: Tour step definitions.
+- `src/lib/pairs.ts`: SEO pairs + `SITE_URL`.
 
 **Testing:**
-- Not applicable — no test files, test runner, or test config exist anywhere in the repository (see `.planning/codebase/TESTING.md` if generated, otherwise treat as "no tests present").
+- Unit (vitest): co-located `*.test.ts(x)` next to source (`src/lib/*.test.ts`, `src/components/*.test.tsx`, `src/app/api/currencyChart/route.test.ts`).
+- E2E (playwright): `e2e/`.
 
 ## Naming Conventions
 
 **Files:**
-- React components: PascalCase matching the default export, e.g. `CountryImg.tsx` exports `CountryImg`, `CurrencyListModal.tsx` exports `CurrencyListModal`.
-- Hooks: camelCase prefixed with `use`, e.g. `useTranslation.ts`, `useWindowWidth.ts`.
-- Library/utility modules: lowercase, short, noun-based, e.g. `atoms.ts`, `constants.ts`, `types.ts`, `fns.ts`, `api.ts`.
-- Route files: fixed Next.js App Router names (`page.tsx`, `layout.tsx`, `loading.tsx`, `route.ts`) — not free-form.
+- React components: `PascalCase.tsx` — `CurrencyRow.tsx`, `ThemeToggle.tsx`.
+- App Router special files: lowercase, framework-mandated — `page.tsx`, `layout.tsx`, `route.ts`, `error.tsx`, `robots.ts`.
+- Hooks: `camelCase.ts` prefixed `use` — `useTranslation.ts`.
+- Contexts: `PascalCase.tsx` suffixed `Context` — `LanguageContext.tsx`.
+- Lib/utilities: `camelCase.ts` — `atoms.ts`, `tourSteps.ts`, `pairs.ts`.
+- Tests: co-located, `<name>.test.ts(x)` mirroring the source file.
+
+**Symbols:**
+- Jotai atoms suffixed `Atom` — `themeAtom`, `tourSeenAtom`, `showDatePickerAtom`.
+- Default constants use `PascalCase` with `Default` prefix — `DefaultBaseCur` (`src/lib/constants.ts`).
+- Types/interfaces: `PascalCase`, no `I` prefix; component props are `<Name>Props` interfaces.
+- Branded primitives: `CurrencyCode`, `LanguageCode` (`src/lib/types.ts`).
 
 **Directories:**
-- Lowercase, plural for collections of similar things: `components/`, `hooks/`, `contexts/`.
-- Lowercase, singular for conceptual groupings: `lib/`, `theme/`, `app/`.
-- Route segments under `src/app/` are lowercase and match the URL path exactly (`chart/` → `/chart`, `api/currencyChart/` → `/api/currencyChart`).
-
-**Import style:**
-- All internal imports use the `@/` path alias (e.g. `import CountryImg from '@/components/CountryImg'`) rather than relative paths, except for same-directory imports (`import CountryImg from './CountryImg'` inside `src/components/CurrencyListModal.tsx:15`).
-
-**Atom naming:**
-- Jotai atoms are suffixed with `Atom` and named after the value they hold, e.g. `baseCurAtom`, `currency2DisplayAtom`, `isEditingAtom` (`src/lib/atoms.ts`).
+- Lowercase, single-word feature/layer names: `components`, `hooks`, `contexts`, `lib`, `theme`, `app`.
+- Dynamic route segments in brackets: `convert/[pair]`.
 
 ## Where to Add New Code
 
 **New page/route:**
-- Add a new folder under `src/app/<route-name>/page.tsx` following the existing pattern in `src/app/chart/page.tsx` (top-of-file `"use client"` if it needs interactivity/hooks, `useSWR` for data fetching, `showASCIIArt()` call on mount if consistency with existing pages is desired).
+- Add a directory under `src/app/<route>/page.tsx`. Mark `"use client"` only if it uses browser APIs/hooks; keep it a server component for SEO/ISR pages (mirror `convert/[pair]/page.tsx`).
 
-**New API route:**
-- Add `src/app/api/<name>/route.ts` exporting a `GET`/`POST`/etc. function returning `NextResponse.json(...)`, following the shape of `src/app/api/currencyChart/route.ts`.
+**New UI component:**
+- Implementation: `src/components/<PascalCase>.tsx`, `default export` at the bottom.
+- Co-located test: `src/components/<PascalCase>.test.tsx`.
+- Consume state via `useAtom(...)` from `@/lib/atoms`, i18n via `useTranslation` from `@/hooks/useTranslation`.
+- If it anchors a tour step, add a `data-tour="..."` attribute (never anchor on a translated `aria-label`).
 
-**New shared component:**
-- Add to `src/components/<ComponentName>.tsx` as a default export, flat (no subfolders currently exist). Co-locate tightly-related sub-components in the same file if they are not reused elsewhere (see `CurrencySetting` and `CurrencyListTable` living inside `src/components/CurrencyListModal.tsx`).
+**New persisted setting/state:**
+- Add an `atomWithStorage<T>('key', default)` to `src/lib/atoms.ts`; add its key to the reset list in `src/components/CurrencyListModal.tsx:188` and the `lastGood`/reset teardown as appropriate.
 
-**New global/persisted state:**
-- Add an `atomWithStorage<T>('key', default)` export to `src/lib/atoms.ts`, following the existing naming convention (`xyzAtom`). Import the default value from `src/lib/constants.ts` if it needs to be reused (e.g. for a "reset" action).
-
-**New hook:**
-- Add `src/hooks/use<Name>.ts`, add `'use client'` at the top if it touches `window`/DOM (see `src/hooks/useWindowWidth.ts:1`).
+**New pure logic:**
+- Add to `src/lib/fns.ts` (or a new `src/lib/<name>.ts`) as a named export with a co-located `*.test.ts`. Keep it free of React and of direct `navigator`/`window` reads where possible (pass them in), following `resolveTourLocale`.
 
 **New shared type:**
-- Add to `src/lib/types.ts`. Use the branded-string pattern (`type X = string & { readonly __brand: 'X' }`) for domain-specific string identifiers, consistent with `CurrencyCode`/`LanguageCode`.
-
-**New translation strings:**
-- Add the key to every language block in `src/lib/translations.ts`; `useTranslation()` falls back to `translations.en` if a language is missing a key/dictionary, so partial rollout is tolerated but should be avoided for consistency.
+- `src/lib/types.ts` (named export). Import it rather than redeclaring locally.
 
 **New icon:**
-- Add an inline SVG component to `src/lib/svgs.tsx` following the `({ ...props }) => <svg ... {...props}>...</svg>` pattern, so callers can pass `className`/`onClick` directly.
+- Add an inline SVG component to `src/lib/svgs.tsx` (named export).
 
-**Static assets (flags/crypto icons):**
-- Add SVG/PNG files to `public/country-flags/` or `public/crypto-icons/`, named by the exact code used in `Currency2country` (`src/lib/constants.ts`) or the raw currency ticker respectively — `CountryImg.tsx` derives the path directly from the code string.
+**New tour step / copy:**
+- Selector in `TOUR_FEATURE_STEPS` (`src/lib/tourSteps.ts`); copy keys in all 30 locale `tour` namespaces in `src/lib/translations.ts` (with `en` as the mandatory fallback).
+
+**New API route:**
+- `src/app/api/<name>/route.ts` exporting `GET`/`POST`. Validate input early and return `NextResponse.json(..., { status })` with a real 4xx/5xx code (follow `currencyChart/route.ts`).
+
+**Cross-directory imports:**
+- Always use the `@/*` alias (`@/lib/...`, `@/components/...`, `@/hooks/...`). Reserve relative `./` for same-directory imports.
 
 ## Special Directories
 
-**`.next/`:**
-- Purpose: Next.js build output/cache.
-- Generated: Yes.
-- Committed: No (in `.gitignore`).
+**`public/vendor/`:**
+- Purpose: Vendored `drag-drop-touch` polyfill loaded same-origin (avoids unpinned third-party script / CSP violation).
+- Generated: No. Committed: Yes.
 
-**`.history/`:**
-- Purpose: VS Code "Local History" extension snapshots of edited files.
-- Generated: Yes (by editor tooling, not the build).
-- Committed: No (in `.gitignore`).
+**`public/` (icons/manifest/sw):**
+- Purpose: PWA assets — `sw.js`, `site.webmanifest`, favicons, `web-app-manifest-*`.
+- Generated: No (hand-maintained). Committed: Yes.
+
+**`.next/`, `test-results/`, `.history/`, `scratchpad/`:**
+- Purpose: Build output / test artifacts / editor history / scratch.
+- Generated: Yes. Committed: No (git-ignored) — do not add source here.
 
 **`.planning/`:**
-- Purpose: GSD workflow planning artifacts, including this codebase map (`.planning/codebase/`).
-- Generated: Yes (by GSD tooling).
-- Committed: Depends on project convention — check `.gitignore` before assuming.
-
-**`public/country-flags/` and `public/crypto-icons/`:**
-- Purpose: Static icon assets referenced by filename convention from `src/components/CountryImg.tsx` and `src/lib/constants.ts`.
-- Generated: No — manually curated asset sets (273 and 437 files respectively).
-- Committed: Yes.
-
-**`src/app/fonts/`:**
-- Purpose: Local variable font files (`.woff`) loaded via `next/font/local` in `src/app/layout.tsx:8-17`.
-- Generated: No.
+- Purpose: GSD workflow artifacts (phases, codebase maps).
 - Committed: Yes.
 
 ---
 
-*Structure analysis: 2026-07-03*
+*Structure analysis: 2026-07-11*
