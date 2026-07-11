@@ -88,6 +88,12 @@ Total Plans in Phase: 4
 
 - None.
 
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260711-r2h | Fix Reset button not clearing tourSeen and showDatePicker keys (tour never replays after reset) | 2026-07-11 | e10fbe1 | [260711-r2h-fix-reset-button-not-clearing-tourseen-a](./quick/260711-r2h-fix-reset-button-not-clearing-tourseen-a/) |
+
 ### Notes for Future Phases
 
 - Only `#currencyList` has a stable id today; all other Phase 1 tour anchors (base row, amount input, search, settings modal trigger, share button, theme toggle, historical-date picker, PWA install button) need new `data-tour="..."` attributes added across `src/app/page.tsx` and relevant components (`CurrencyListModal.tsx`, `SearchBar.tsx`, etc.).
