@@ -25,7 +25,7 @@ import { getDataFromLocalStorage, getDropIndex, resolveTourLocale, setDataToLoca
 import { QuestionSvg, ShareSvg } from '@/lib/svgs';
 import { buildTourSteps, getTourString, SUPPORTED_LOCALES } from '@/lib/tourSteps';
 import { CurrencyCode, Language } from '@/lib/types';
-import { driver, type Driver } from 'driver.js';
+import type { Driver } from 'driver.js';
 import { useAtom } from 'jotai';
 import { pick } from 'lodash';
 import { CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -164,7 +164,9 @@ export default function Home() {
   // first so a replay never stacks two overlays / leaks the previous driver.
   // Does NOT read or write tourSeenAtom (D-03) and does NOT check any gates —
   // gating is the caller's responsibility.
-  const startTour = useCallback(() => {
+  const startTour = useCallback(async () => {
+    // Lazy-loaded: keeps driver.js out of the initial bundle (returning visitors never need it).
+    const { driver } = await import('driver.js');
     tourDriverRef.current?.destroy(); tourDriverRef.current = null;
 
     // D-01/D-02: tour locale is the app's single source of truth (languageAtom),
@@ -270,11 +272,19 @@ export default function Home() {
 
   // First-run guided tour: auto-starts once hydrated, real content is rendered
   // (not the skeleton), and the tour hasn't been seen yet. Guarded against
-  // React Strict Mode's dev double-invoke by tourStartedRef.
+  // React Strict Mode's dev double-invoke by tourStartedRef. Deferred to browser
+  // idle so driver.js's layout reads don't force reflows inside the hydration
+  // long task. tourStartedRef is set in the callback, not here: a dep re-run
+  // cancels the pending callback and reschedules, so the tour can't be skipped.
   useEffect(() => {
     if (!hydrated || tourSeen || !effectiveAll || tourStartedRef.current) return;
-    tourStartedRef.current = true;
-    startTour();
+    const run = () => { tourStartedRef.current = true; startTour(); };
+    if ('requestIdleCallback' in window) {
+      const id = window.requestIdleCallback(run, { timeout: 2000 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = setTimeout(run, 200);
+    return () => clearTimeout(id);
   }, [hydrated, tourSeen, effectiveAll, startTour]);
 
   // Destroy the tour only on genuine unmount, never on dependency-change re-runs.
