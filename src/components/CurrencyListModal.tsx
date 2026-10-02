@@ -140,10 +140,11 @@ const CurrencySetting: React.FC = () => {
 
         <div className="divider m-0" />
 
-        <label className="label">
+        <label className="label" htmlFor="settings-language">
           <span className="label-text">{t.settings.changeLanguage}</span>
         </label>
         <select
+          id="settings-language"
           className="select select-bordered w-full mt-2"
           value={language}
           onChange={(e) => {
@@ -160,10 +161,11 @@ const CurrencySetting: React.FC = () => {
 
         <div className="divider m-0" />
 
-        <label className="label">
+        <label className="label" htmlFor="settings-sort">
           <span className="label-text">Sort by</span>
         </label>
         <select
+          id="settings-sort"
           className="select select-bordered w-full mt-2"
           value={sortMode}
           onChange={(e) => setSortMode(e.target.value as SortMode)}

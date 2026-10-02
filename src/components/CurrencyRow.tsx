@@ -110,7 +110,7 @@ const CurrencyRow = ({
             >
               <div>{val2Show}</div>
               {!isEditing && typeof changePct === 'number' && isFinite(changePct) && (
-                <div className={`text-[10px] leading-none ${changePct >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                <div className={`text-[10px] leading-none ${changePct >= 0 ? 'text-green-700 [[data-theme=dark]_&]:text-green-500' : 'text-red-600 [[data-theme=dark]_&]:text-red-400'}`}>
                   {changePct >= 0 ? '▲' : '▼'} {Math.abs(changePct).toFixed(2)}%
                 </div>
               )}

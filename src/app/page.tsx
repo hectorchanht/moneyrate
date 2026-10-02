@@ -41,18 +41,6 @@ const ROW_HEIGHT = 68; // px, used only in virtualized mode (fits value + 24h ch
 // never drives an app-wide dir change.
 const RTL_LOCALES = new Set<Language>(['ar', 'ur']);
 
-declare global {
-  interface DragDropTouch {
-    enable: () => void;
-    // Add other methods or properties if needed
-  }
-
-  interface Window {
-    DragDropTouch?: DragDropTouch;
-    enableDragDropTouch?: () => void;
-  }
-}
-
 const useDragDropTouch = () => {
   useEffect(() => {
     const script = document.createElement('script');
@@ -60,16 +48,6 @@ const useDragDropTouch = () => {
     // (removes the unpinned third-party script / missing-SRI risk).
     script.src = '/vendor/drag-drop-touch.esm.min.js?autoload';
     script.type = 'module';
-    script.onload = () => {
-      if (typeof window.enableDragDropTouch === 'function') {
-        window.enableDragDropTouch(); // Initialize the polyfill
-        console.log('drag-drop-touch initialized via custom hook.');
-      } else {
-        console.error('enableDragDropTouch is not available on window.');
-      }
-
-      window.DragDropTouch?.enable();
-    };
     script.onerror = () => {
       console.error('Failed to load drag-drop-touch script.');
     };
@@ -244,6 +222,13 @@ export default function Home() {
       // next/prev click handlers are untouched (Pitfall 6).
       onPopoverRender: (popoverDom) => {
         popoverDom.wrapper.dir = RTL_LOCALES.has(language) ? 'rtl' : 'ltr';
+      },
+      // driver sets aria-haspopup/expanded/controls on the role-less dummy element
+      // used for element-less steps. With animate:false it does so after
+      // onPopoverRender, so strip them here (onHighlighted always fires later).
+      onHighlighted: () => {
+        const dummy = document.getElementById('driver-dummy-element');
+        ['aria-haspopup', 'aria-expanded', 'aria-controls'].forEach((a) => dummy?.removeAttribute(a));
       },
       // Focus restoration (D-07 item 2): NO manual restore code here by
       // design. driver.js 1.6.0 captures document.activeElement internally
