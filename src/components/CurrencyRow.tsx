@@ -109,11 +109,12 @@ const CurrencyRow = ({
               title="Tap to edit this currency"
             >
               <div>{val2Show}</div>
-              {!isEditing && typeof changePct === 'number' && isFinite(changePct) && (
+              {/* Line space is reserved while yesterday's rates load, so their arrival doesn't shift the row (CLS). */}
+              {!isEditing && (typeof changePct === 'number' && isFinite(changePct) ? (
                 <div className={`text-[10px] leading-none ${changePct >= 0 ? 'text-green-700 [[data-theme=dark]_&]:text-green-500' : 'text-red-600 [[data-theme=dark]_&]:text-red-400'}`}>
                   {changePct >= 0 ? '▲' : '▼'} {Math.abs(changePct).toFixed(2)}%
                 </div>
-              )}
+              ) : <div className="h-[10px]" aria-hidden="true" />)}
             </div>
           )}
 

@@ -90,7 +90,7 @@ export default function Home() {
   const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   // Exchange rates update ~daily, so don't refetch both full tables on every window focus.
-  const { data: data4BaseCur, error: err2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrls({ baseCurrencyCode: baseCur, date: historicalDate || 'latest' }), fetchWithFallback, { keepPreviousData: true, revalidateOnFocus: false });
+  const { data: data4BaseCur, error: err2, isLoading: isLoad2 } = useSWR<CurrencyRate4BaseCur>(getCurrencyRateApiUrls({ baseCurrencyCode: baseCur, date: historicalDate || 'latest' }), fetchWithFallback, { keepPreviousData: true, revalidateOnFocus: false });
   const { data: data4All, error: err1, isLoading: isLoad1 } = useSWR<CurrencyRate4All>(getCurrencyRateApiUrls({}), fetchWithFallback, { keepPreviousData: true, revalidateOnFocus: false });
 
   // Yesterday's table for the same base, to compute a 24h change per currency.
@@ -400,7 +400,8 @@ export default function Home() {
   );
 
   if ((err1 || err2) && !effectiveBaseCur) return <div className="text-center">Error fetching data. Please try again later.</div>;
-  const showSkeleton = isLoad1 && !effectiveAll;
+  // Rows need both tables; ending the skeleton when only one has arrived empties the list and jumps the footer (CLS).
+  const showSkeleton = (isLoad1 && !effectiveAll) || (isLoad2 && !effectiveBaseCur);
 
   return (
     <div className="flex flex-col min-h-screen">
