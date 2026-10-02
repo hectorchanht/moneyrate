@@ -94,6 +94,7 @@ Total Plans in Phase: 4
 |---|-------------|------|--------|-----------|
 | 260711-r2h | Fix Reset button not clearing tourSeen and showDatePicker keys (tour never replays after reset) | 2026-07-11 | e10fbe1 | [260711-r2h-fix-reset-button-not-clearing-tourseen-a](./quick/260711-r2h-fix-reset-button-not-clearing-tourseen-a/) |
 | 260711-rdn | Fix SearchBar.test.tsx localStorage mock (Node 25 built-in shadows jsdom; suite now 81/81 green) | 2026-07-11 | 3ca0494 | [260711-rdn-fix-searchbar-test-tsx-localstorage-mock](./quick/260711-rdn-fix-searchbar-test-tsx-localstorage-mock/) |
+| 261002-imo | Fix PageSpeed mobile findings: a11y labels/contrast/driver aria, header-first render + preconnect, HSTS/COOP/CSP beacon | 2026-10-02 | e64c397 | [261002-imo-fix-pagespeed-mobile-findings-perf-a11y-](./quick/261002-imo-fix-pagespeed-mobile-findings-perf-a11y-/) |
 
 ### Notes for Future Phases
 
