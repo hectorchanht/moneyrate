@@ -7,25 +7,30 @@ const isDev = process.env.NODE_ENV !== 'production';
 // - 'unsafe-eval' in dev only: webpack HMR / react-refresh need it; never shipped to production.
 // - connect-src: browser-side SWR hits the currency-api hosts directly; the chart route is same-origin.
 // - clarity.ms: allowed for the Microsoft Clarity analytics snippet loaded from /clarity.js.
+// - static.cloudflareinsights.com / cloudflareinsights.com: Cloudflare Web Analytics beacon auto-injected by the Cloudflare proxy.
 const csp = [
   `default-src 'self'`,
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.clarity.ms https://*.clarity.ms`,
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.clarity.ms https://*.clarity.ms https://static.cloudflareinsights.com`,
   `style-src 'self' 'unsafe-inline'`,
   `worker-src 'self'`,
   `img-src 'self' data:`,
   `font-src 'self'`,
-  `connect-src 'self' https://*.currency-api.pages.dev https://cdn.jsdelivr.net https://*.clarity.ms`,
+  `connect-src 'self' https://*.currency-api.pages.dev https://cdn.jsdelivr.net https://*.clarity.ms https://cloudflareinsights.com`,
   `frame-ancestors 'none'`,
   `base-uri 'self'`,
   `object-src 'none'`,
   `form-action 'self'`,
 ].join('; ');
 
+// If Cloudflare edge HSTS is enabled in the dashboard it takes precedence; keep it matching.
+// Manual follow-up: submit the domain at hstspreload.org.
 const securityHeaders = [
   { key: 'Content-Security-Policy', value: csp },
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   { key: 'X-Frame-Options', value: 'DENY' },
+  { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+  { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
 ];
 
