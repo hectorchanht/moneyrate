@@ -96,6 +96,7 @@ Total Plans in Phase: 4
 | 260711-rdn | Fix SearchBar.test.tsx localStorage mock (Node 25 built-in shadows jsdom; suite now 81/81 green) | 2026-07-11 | 3ca0494 | [260711-rdn-fix-searchbar-test-tsx-localstorage-mock](./quick/260711-rdn-fix-searchbar-test-tsx-localstorage-mock/) |
 | 261002-imo | Fix PageSpeed mobile findings: a11y labels/contrast/driver aria, header-first render + preconnect, HSTS/COOP/CSP beacon | 2026-10-02 | e64c397 | [261002-imo-fix-pagespeed-mobile-findings-perf-a11y-](./quick/261002-imo-fix-pagespeed-mobile-findings-perf-a11y-/) |
 | fast | Lazy-load driver.js + start tour on browser idle (PSI forced reflow / long task) | 2026-10-02 | f2a5bb7 | — |
+| fast | Fix CLS footer shift: skeleton waits for both rate tables, reserve 24h change line | 2026-10-02 | 3e5f0a3 | — |
 
 ### Notes for Future Phases
 
