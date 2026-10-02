@@ -138,3 +138,8 @@ input[type="number"] {
 .drag-handle {
   transition: transform 0.2s ease;
 }
+/* DaisyUI's checkmark keyframe animates background-position (non-composited). */
+.checkbox:checked,
+.checkbox[aria-checked="true"] {
+  animation: none;
+}

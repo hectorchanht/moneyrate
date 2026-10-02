@@ -7,6 +7,7 @@ import localFont from "next/font/local";
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import ThemeApplier from '@/components/ThemeApplier';
 import { LanguageProvider } from '@/contexts/LanguageContext';
+import { CURRENCY_API_HOST } from '@/lib/api';
 import { SITE_URL } from '@/lib/pairs';
 import { Provider } from 'jotai';
 import Script from 'next/script';
@@ -57,6 +58,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <meta name="apple-mobile-web-app-title" content="Money Rate - Fiat Crypto Conversion" />
         <link rel="manifest" href="/site.webmanifest" />
+        <link rel="preconnect" href={`https://latest.${CURRENCY_API_HOST}`} crossOrigin="anonymous" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

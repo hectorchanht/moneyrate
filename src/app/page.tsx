@@ -390,21 +390,7 @@ export default function Home() {
   );
 
   if ((err1 || err2) && !effectiveBaseCur) return <div className="text-center">Error fetching data. Please try again later.</div>;
-  if (isLoad1 && !effectiveAll) return <div className="h-full p-4 grid grid-cols-1 justify-between m-auto max-w-[800px]">
-    <div className="skeleton h-[51px] w-full rounded-none"></div>
-    <br />
-    {Array.from({ length: 12 }, (_, index) => <div className="flex flex-col" key={index}>
-      <div className='flex items-center justify-between w-full ' >
-        <div className='flex items-center justify-center gap-2'>
-          <div className="skeleton h-[42px] w-[42px] shrink-0 rounded-none" />
-          <div className="skeleton h-[42px] w-[94px] rounded-none"></div>
-        </div>
-
-        <div className="skeleton h-[42px] w-[200px] rounded-none"></div>
-      </div>
-      {index < 11 ? <div className="divider my-2" /> : <br />}
-    </div>)}
-  </div>;
+  const showSkeleton = isLoad1 && !effectiveAll;
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -459,7 +445,21 @@ export default function Home() {
             </div>
           )}
 
-          {shouldVirtualize ? (
+          {showSkeleton ? (
+            <div>
+              {Array.from({ length: 12 }, (_, index) => <div className="flex flex-col" key={index}>
+                <div className='flex items-center justify-between w-full ' >
+                  <div className='flex items-center justify-center gap-2'>
+                    <div className="skeleton h-[42px] w-[42px] shrink-0 rounded-none" />
+                    <div className="skeleton h-[42px] w-[94px] rounded-none"></div>
+                  </div>
+
+                  <div className="skeleton h-[42px] w-[200px] rounded-none"></div>
+                </div>
+                {index < 11 ? <div className="divider my-2" /> : <br />}
+              </div>)}
+            </div>
+          ) : shouldVirtualize ? (
             <FixedSizeList
               height={Math.min(rows.length * ROW_HEIGHT, 640)}
               itemCount={rows.length}

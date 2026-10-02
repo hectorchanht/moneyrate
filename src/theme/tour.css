@@ -144,3 +144,7 @@
 [dir="rtl"] .driver-popover-footer {
   flex-direction: row-reverse;
 }
+
+.driver-popover-close-btn {
+  transition: none;
+}

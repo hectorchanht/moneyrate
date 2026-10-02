@@ -22,7 +22,7 @@ export const fetchWithFallback = async (urls: string | string[]) => {
 };
 
 // Host of the fawazahmed0/currency-api pages.dev mirror; overridable per environment.
-const CURRENCY_API_HOST = process.env.NEXT_PUBLIC_CURRENCY_API_HOST || 'currency-api.pages.dev';
+export const CURRENCY_API_HOST = process.env.NEXT_PUBLIC_CURRENCY_API_HOST || 'currency-api.pages.dev';
 
 // date can be YYYY-MM-DD: 2024-03-06
 type GetCurrencyRateParams = {
