@@ -437,7 +437,7 @@ export default function Home() {
             <SearchBar data={effectiveAll ?? {}} />
           </span>
 
-          <br />
+          <AffiliateLinks />
 
           {showDatePicker && (
             <div className="text-center text-xs opacity-60 mb-2 flex flex-wrap items-center justify-center gap-2">
@@ -494,10 +494,6 @@ export default function Home() {
             </div>
           )}
 
-        </div>
-
-        <div className="m-auto w-full max-w-[800px] px-4">
-          <AffiliateLinks />
         </div>
       </main>
 

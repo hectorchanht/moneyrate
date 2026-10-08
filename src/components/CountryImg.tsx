@@ -19,6 +19,9 @@ export const ImageWithFallback = (props: ImageWithFallbackProps) => {
       {...rest}
       src={imgSrc}
       alt={rest.alt ?? imgSrc}
+      // Flags are display-only: never start a native image drag, even when
+      // the list's reorder mode is on (reorder uses the DragHandle instead).
+      draggable={false}
       onError={() => {
         setImgSrc(fallbackSrc?.[imgIndex]);
         setImgIndex(imgIndex + 1);
