@@ -6,7 +6,7 @@
 //   1. Wise invite/referral link      -> WISE_REFERRAL_URL
 //   2. Coinbase (or other on-ramp) referral link -> COINBASE_REFERRAL_URL
 
-export const WISE_REFERRAL_URL = "";
+export const WISE_REFERRAL_URL = "https://wise.com/invite/dic/hotungc3";
 export const COINBASE_REFERRAL_URL = "";
 
 export const hasWiseLink = () => WISE_REFERRAL_URL.startsWith("http");
