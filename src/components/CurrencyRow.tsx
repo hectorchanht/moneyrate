@@ -78,6 +78,9 @@ const CurrencyRow = ({
             href={isBase ? undefined : `/chart?q=${(baseCur + '-' + cur).toUpperCase()}`}
             className="text-start tooltip flex items-center gap-2 h-[42px] w-[300px]"
             data-tip={name ?? ''}
+            // The flag/link is display-only: never start a native drag (the
+            // <img> inside is already draggable={false}; links drag by default too).
+            draggable={false}
           >
             <CountryImg code={cur} />
             {cur.toUpperCase()}
