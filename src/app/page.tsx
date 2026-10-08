@@ -282,6 +282,12 @@ export default function Home() {
       },
       onDestroyed: () => {
         setTourSeen(true);
+        // Defensive: driver.js locks body scroll while driving; the Escape
+        // path has intermittently left it locked (seen live 2026-10-08 — the
+        // page stopped scrolling until reload). destroy() should restore it,
+        // but never trust it: force-clear both locks here.
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
       },
     });
 
