@@ -216,3 +216,13 @@ export const resolveTourLocale = (
   }
   return fallback;
 };
+// Haptic tap feedback (Android). No-op when the setting is off, when the
+// Vibration API is absent (iOS/desktop), or when it throws (denied).
+export const vibrate = (enabled: boolean, ms = 12): void => {
+  if (!enabled) return;
+  try {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(ms);
+  } catch {
+    // ignore — haptics are best-effort
+  }
+};

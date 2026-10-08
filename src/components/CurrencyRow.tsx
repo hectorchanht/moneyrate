@@ -1,7 +1,8 @@
 import CountryImg from '@/components/CountryImg';
 import DragHandle from '@/components/DragHandle';
-import { evalMathExpression, getResponsiveCryptoDp } from '@/lib/fns';
-import { CheckSvg, CopySvg, CrossSvg, EmptySvg } from '@/lib/svgs';
+import { evalMathExpression, getResponsiveCryptoDp, vibrate } from '@/lib/fns';
+import { CheckSvg, CopySvg, CrossSvg, EmptySvg, PinFilledSvg, PinSvg } from '@/lib/svgs';
+import type { CopyFormat } from '@/lib/types';
 import { CSSProperties, memo, useState } from 'react';
 
 export interface CurrencyRowProps {
@@ -16,10 +17,17 @@ export interface CurrencyRowProps {
   changePct?: number;
   showDivider: boolean;
   style?: CSSProperties;
+  // Display prefs (settings tab)
+  showChangePct: boolean;
+  compact: boolean;
+  copyFormat: CopyFormat;
+  haptics: boolean;
+  isPinned: boolean;
   onDragStart: (cur: string) => void;
   onSelectBase: (cur: string) => void;
   onRemove: (cur: string) => void;
   onValueChange: (value: number) => void;
+  onTogglePin: (cur: string) => void;
 }
 
 const CurrencyRow = ({
@@ -34,10 +42,16 @@ const CurrencyRow = ({
   changePct,
   showDivider,
   style,
+  showChangePct,
+  compact,
+  copyFormat,
+  haptics,
+  isPinned,
   onDragStart,
   onSelectBase,
   onRemove,
   onValueChange,
+  onTogglePin,
 }: CurrencyRowProps) => {
   const isBase = cur === baseCur;
   const valMultiplied = val * currencyValue;
@@ -60,13 +74,23 @@ const CurrencyRow = ({
   const [copied, setCopied] = useState(false);
   const onCopy = async (e: React.MouseEvent) => {
     e.stopPropagation(); // don't also trigger the row's set-as-base click
+    vibrate(haptics);
     try {
-      await navigator.clipboard.writeText(`${val2Show} ${cur.toUpperCase()}`);
+      const text = copyFormat === 'full'
+        ? `${currencyValue} ${baseCur.toUpperCase()} = ${val2Show} ${cur.toUpperCase()}`
+        : `${val2Show} ${cur.toUpperCase()}`;
+      await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 1200);
     } catch {
       // clipboard unavailable (insecure context / denied)
     }
+  };
+
+  const onPin = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    vibrate(haptics);
+    onTogglePin(cur);
   };
 
   return (
@@ -90,7 +114,7 @@ const CurrencyRow = ({
           {isEditing && <DragHandle onDragStart={() => onDragStart(cur)} />}
           <a
             href={isBase ? undefined : `/chart?q=${(baseCur + '-' + cur).toUpperCase()}`}
-            className="text-start tooltip flex items-center gap-2 h-[42px] w-[300px]"
+            className={`text-start tooltip flex items-center gap-2 w-[300px] ${compact ? 'h-[34px]' : 'h-[42px]'}`}
             data-tip={name ?? ''}
             // The flag/link is display-only: never start a native drag (the
             // <img> inside is already draggable={false}; links drag by default too).
@@ -129,7 +153,7 @@ const CurrencyRow = ({
             >
               <div>{val2Show}</div>
               {/* Line space is reserved while yesterday's rates load, so their arrival doesn't shift the row (CLS). */}
-              {!isEditing && (typeof changePct === 'number' && isFinite(changePct) ? (
+              {!isEditing && showChangePct && (typeof changePct === 'number' && isFinite(changePct) ? (
                 <div className={`text-[11px] leading-none tabular-nums ${changePct >= 0 ? 'text-green-700 [[data-theme=dark]_&]:text-green-500' : 'text-red-600 [[data-theme=dark]_&]:text-red-400'}`}>
                   {changePct >= 0 ? '▲' : '▼'} {Math.abs(changePct).toFixed(2)}%
                 </div>
@@ -144,22 +168,35 @@ const CurrencyRow = ({
                   <CrossSvg className={'cursor-pointer size-6'} />
                 </button>
               : (
-                <button
-                  type="button"
-                  onClick={onCopy}
-                  title="Copy value"
-                  aria-label={`Copy ${cur.toUpperCase()} value`}
-                  // Visual icon stays small; the hit area is expanded to ~44px
-                  // via the pseudo-element so it's tappable on phones.
-                  className="shrink-0 relative opacity-40 hover:opacity-100 before:absolute before:-inset-3 before:content-['']"
-                >
-                  {copied ? <CheckSvg className="size-5" /> : <CopySvg className="size-5" />}
-                </button>
+                <>
+                  {/* Pin to top — hidden in editing mode (drag handles own that space). */}
+                  <button
+                    type="button"
+                    onClick={onPin}
+                    title={isPinned ? `Unpin ${cur.toUpperCase()}` : `Pin ${cur.toUpperCase()} to top`}
+                    aria-label={isPinned ? `Unpin ${cur.toUpperCase()}` : `Pin ${cur.toUpperCase()} to top`}
+                    aria-pressed={isPinned}
+                    className={`shrink-0 relative ${isPinned ? 'opacity-100 text-primary' : 'opacity-40 hover:opacity-100'} before:absolute before:-inset-3 before:content-['']`}
+                  >
+                    {isPinned ? <PinFilledSvg className="size-5" /> : <PinSvg className="size-5" />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onCopy}
+                    title="Copy value"
+                    aria-label={`Copy ${cur.toUpperCase()} value`}
+                    // Visual icon stays small; the hit area is expanded to ~44px
+                    // via the pseudo-element so it's tappable on phones.
+                    className="shrink-0 relative opacity-40 hover:opacity-100 before:absolute before:-inset-3 before:content-['']"
+                  >
+                    {copied ? <CheckSvg className="size-5" /> : <CopySvg className="size-5" />}
+                  </button>
+                </>
               ))}
         </div>
       </div>
       </div>
-      {showDivider ? <div className="divider my-2" aria-hidden="true" /> : null}
+      {showDivider ? <div className={`divider ${compact ? 'my-1' : 'my-2'}`} aria-hidden="true" /> : null}
     </div>
   );
 };

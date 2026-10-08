@@ -18,10 +18,16 @@ const baseProps = {
   windowWidth: 888,
   defaultCurrencyValueDp: 2,
   showDivider: true,
+  showChangePct: true,
+  compact: false,
+  copyFormat: 'value' as const,
+  haptics: false,
+  isPinned: false,
   onDragStart: vi.fn(),
   onSelectBase: vi.fn(),
   onRemove: vi.fn(),
   onValueChange: vi.fn(),
+  onTogglePin: vi.fn(),
 };
 
 afterEach(() => {
@@ -75,5 +81,34 @@ describe('CurrencyRow', () => {
     await user.click(screen.getByRole('button', { name: /copy eur value/i }));
 
     expect(writeText).toHaveBeenCalledWith('90.00 EUR');
+  });
+
+  it('copies the full "amount BASE = value CODE" text when copyFormat is full', async () => {
+    const user = userEvent.setup();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+
+    render(<CurrencyRow {...baseProps} cur="EUR" val={0.9} name="Euro" copyFormat="full" />);
+    await user.click(screen.getByRole('button', { name: /copy eur value/i }));
+
+    expect(writeText).toHaveBeenCalledWith('100 USD = 90.00 EUR');
+  });
+
+  it('hides the 24h change badge when showChangePct is false', () => {
+    render(<CurrencyRow {...baseProps} cur="EUR" val={0.9} name="Euro" changePct={1.5} showChangePct={false} />);
+    expect(screen.queryByText(/1\.50%/)).toBeNull();
+  });
+
+  it('toggles pin on pin-button click', async () => {
+    const user = userEvent.setup();
+    const onTogglePin = vi.fn();
+    render(<CurrencyRow {...baseProps} cur="EUR" val={0.9} name="Euro" onTogglePin={onTogglePin} />);
+    await user.click(screen.getByRole('button', { name: /pin eur to top/i }));
+    expect(onTogglePin).toHaveBeenCalledWith('EUR');
+  });
+
+  it('shows the filled pin state when pinned', () => {
+    render(<CurrencyRow {...baseProps} cur="EUR" val={0.9} name="Euro" isPinned />);
+    expect(screen.getByRole('button', { name: /unpin eur/i })).toBeTruthy();
   });
 });

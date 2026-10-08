@@ -1,17 +1,24 @@
 import { useTranslation } from '@/hooks/useTranslation';
 import {
+  compactRowsAtom,
+  copyFormatAtom,
   currency2DisplayAtom,
   defaultCurrencyValueAtom,
   defaultCurrencyValueDpAtom,
+  hapticsAtom,
   isDefaultCurrencyValueAtom,
   isEditingAtom,
   languageAtom,
   PERSISTED_ATOM_KEYS,
-  sortModeAtom
+  rateAlertsAtom,
+  showChangePctAtom,
+  sortModeAtom,
+  themeModeAtom
 } from '@/lib/atoms';
 import { DefaultCurrency2Display } from '@/lib/constants';
-import { AddSvg, CrossSvg, ListSvg, SettingSvg, TableSvg, XSvg } from '@/lib/svgs';
-import { Language, LanguageCode, SortMode } from '@/lib/types';
+import { vibrate } from '@/lib/fns';
+import { AddSvg, BellSvg, CrossSvg, ListSvg, SettingSvg, TableSvg, XSvg } from '@/lib/svgs';
+import { AlertDirection, CopyFormat, Language, LanguageCode, RateAlert, SortMode, ThemeMode } from '@/lib/types';
 import { useAtom } from 'jotai';
 import React, { useMemo, useState } from 'react';
 import CountryImg from './CountryImg';
@@ -57,13 +64,136 @@ const languageOptions: LanguageOption[] = [
 
 interface CurrencyListModalProps {
   data: Record<string, string>;
+  baseCur: string;
 }
 
 interface CurrencyListTableProps {
   data: Record<string, string>;
 }
 
-const CurrencySetting: React.FC = () => {
+// Rate alerts manager (settings tab). Alerts are evaluated in page.tsx
+// whenever fresh rates arrive; this component is CRUD + permission only.
+const RateAlertsSettings: React.FC<{ currencies: string[]; baseCur: string; names: Record<string, string> }> = ({ currencies, baseCur, names }) => {
+  const [alerts, setAlerts] = useAtom(rateAlertsAtom);
+  const [haptics] = useAtom(hapticsAtom);
+  const t = useTranslation();
+  const [from, setFrom] = useState(baseCur);
+  const [to, setTo] = useState(currencies.find(c => c !== baseCur) ?? '');
+  const [target, setTarget] = useState('');
+  const [direction, setDirection] = useState<AlertDirection>('above');
+  const [perm, setPerm] = useState<string>(typeof Notification !== 'undefined' ? Notification.permission : 'unsupported');
+
+  const label = (c: string) => `${c.toUpperCase()}${names[c] ? ` — ${names[c]}` : ''}`;
+
+  const addAlert = () => {
+    const targetNum = parseFloat(target);
+    if (!from || !to || from === to || !(targetNum > 0)) return;
+    vibrate(haptics);
+    const alert: RateAlert = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      from, to, target: targetNum, direction,
+      triggered: false, createdAt: Date.now(),
+    };
+    setAlerts(prev => [...prev, alert]);
+    setTarget('');
+  };
+
+  const requestPermission = async () => {
+    try {
+      const p = await Notification.requestPermission();
+      setPerm(p);
+      vibrate(haptics);
+    } catch { /* Notification API unsupported */ }
+  };
+
+  return (
+    <div>
+      <div className="label">
+        <span className="label-text flex items-center gap-2"><BellSvg className="size-5" />{t.settings.rateAlerts}</span>
+      </div>
+
+      {perm !== 'granted' && perm !== 'unsupported' && (
+        <button type="button" className="btn btn-outline btn-sm w-full mb-2" onClick={requestPermission}>
+          {t.settings.alertEnableNotifications}{perm === 'denied' ? ' (blocked — allow in browser settings)' : ''}
+        </button>
+      )}
+
+      <div className="grid grid-cols-2 gap-2 mb-2">
+        <label className="flex flex-col gap-1">
+          <span className="text-xs opacity-70">{t.settings.alertFrom}</span>
+          <select className="select select-bordered select-sm w-full" value={from} onChange={(e) => setFrom(e.target.value)} aria-label={t.settings.alertFrom}>
+            {currencies.map(c => <option key={c} value={c}>{label(c)}</option>)}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-xs opacity-70">{t.settings.alertTo}</span>
+          <select className="select select-bordered select-sm w-full" value={to} onChange={(e) => setTo(e.target.value)} aria-label={t.settings.alertTo}>
+            {currencies.map(c => <option key={c} value={c}>{label(c)}</option>)}
+          </select>
+        </label>
+      </div>
+      <div className="grid grid-cols-[1fr_auto_auto] gap-2 mb-2">
+        <label className="flex flex-col gap-1">
+          <span className="text-xs opacity-70">{t.settings.alertTarget}</span>
+          <input
+            type="number" inputMode="decimal" min="0" step="any"
+            className="input input-bordered input-sm w-full"
+            placeholder="160"
+            value={target}
+            onChange={(e) => setTarget(e.target.value)}
+            aria-label={t.settings.alertTarget}
+          />
+        </label>
+        <div className="flex flex-col gap-1">
+          <span className="text-xs opacity-70">&nbsp;</span>
+          <div className="join">
+            <button type="button" className={`btn btn-sm join-item ${direction === 'above' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setDirection('above')} aria-pressed={direction === 'above'}>
+              {t.settings.alertAbove} ↑
+            </button>
+            <button type="button" className={`btn btn-sm join-item ${direction === 'below' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setDirection('below')} aria-pressed={direction === 'below'}>
+              {t.settings.alertBelow} ↓
+            </button>
+          </div>
+        </div>
+        <div className="flex flex-col gap-1">
+          <span className="text-xs opacity-70">&nbsp;</span>
+          <button type="button" className="btn btn-primary btn-sm" onClick={addAlert} disabled={!(parseFloat(target) > 0) || !from || !to || from === to}>
+            {t.settings.alertAdd}
+          </button>
+        </div>
+      </div>
+
+      {alerts.length === 0 ? (
+        <p className="text-xs opacity-50 mb-1">{t.settings.alertNoAlerts}</p>
+      ) : (
+        <ul className="flex flex-col gap-1 mb-1">
+          {alerts.map(a => (
+            <li key={a.id} className="flex items-center gap-2 text-sm bg-base-200 rounded px-2 py-1.5">
+              <span className="flex-1 tabular-nums">
+                1 {a.from.toUpperCase()} {a.direction === 'above' ? '≥' : '≤'} {a.target} {a.to.toUpperCase()}
+                {a.triggered && <span className="badge badge-success badge-sm ml-2">{t.settings.alertTriggered}</span>}
+              </span>
+              {a.triggered && (
+                <button type="button" className="btn btn-ghost btn-xs" onClick={() => { vibrate(haptics); setAlerts(prev => prev.map(x => x.id === a.id ? { ...x, triggered: false } : x)); }}>
+                  {t.settings.alertRearm}
+                </button>
+              )}
+              <button type="button" className="btn btn-ghost btn-xs" aria-label={`${t.settings.alertDelete} 1 ${a.from.toUpperCase()} ${a.to.toUpperCase()}`} onClick={() => { vibrate(haptics); setAlerts(prev => prev.filter(x => x.id !== a.id)); }}>
+                <CrossSvg className="size-4" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
+interface CurrencyListTableProps {
+  data: Record<string, string>;
+}
+
+const CurrencySetting: React.FC<{ data: Record<string, string>; baseCur: string }> = ({ data, baseCur }) => {
   const [isDefaultCurrencyValue, setIsDefaultCurrencyValue] = useAtom(isDefaultCurrencyValueAtom);
   const [defaultCurrencyValue, setDefaultCurrencyValue] = useAtom(defaultCurrencyValueAtom);
   const [defaultCurrencyValueDp, setDefaultCurrencyValueDp] = useAtom(defaultCurrencyValueDpAtom);
@@ -71,6 +201,11 @@ const CurrencySetting: React.FC = () => {
   const [currency2Display, setCurrency2Display] = useAtom(currency2DisplayAtom);
   const [language, setLanguage] = useAtom(languageAtom);
   const [sortMode, setSortMode] = useAtom(sortModeAtom);
+  const [themeMode, setThemeMode] = useAtom(themeModeAtom);
+  const [showChangePct, setShowChangePct] = useAtom(showChangePctAtom);
+  const [compactRows, setCompactRows] = useAtom(compactRowsAtom);
+  const [copyFormat, setCopyFormat] = useAtom(copyFormatAtom);
+  const [haptics, setHaptics] = useAtom(hapticsAtom);
   const t = useTranslation();
 
   const sortOptions: { value: SortMode; label: string }[] = [
@@ -78,6 +213,17 @@ const CurrencySetting: React.FC = () => {
     { value: 'name', label: 'Name (A–Z)' },
     { value: 'value', label: 'Value (high → low)' },
     { value: 'change', label: '24h change (high → low)' },
+  ];
+
+  const themeOptions: { value: ThemeMode; label: string }[] = [
+    { value: 'dark', label: t.settings.themeDark },
+    { value: 'light', label: t.settings.themeLight },
+    { value: 'system', label: t.settings.themeSystem },
+  ];
+
+  const copyFormatOptions: { value: CopyFormat; label: string }[] = [
+    { value: 'full', label: t.settings.copyFormatFull },
+    { value: 'value', label: t.settings.copyFormatValue },
   ];
 
   return (
@@ -165,6 +311,69 @@ const CurrencySetting: React.FC = () => {
 
         <div className="divider m-0" />
 
+        <label className="label" htmlFor="settings-theme">
+          <span className="label-text">{t.settings.themeMode}</span>
+        </label>
+        <select
+          id="settings-theme"
+          className="select select-bordered w-full mt-2"
+          value={themeMode}
+          onChange={(e) => { vibrate(haptics); setThemeMode(e.target.value as ThemeMode); }}
+        >
+          {themeOptions.map(({ value, label }) => (
+            <option value={value} key={value}>{label}</option>
+          ))}
+        </select>
+
+        <div className="divider m-0" />
+
+        <label className="label cursor-pointer">
+          <input type="checkbox" checked={showChangePct} onChange={() => { vibrate(haptics); setShowChangePct(!showChangePct); }} className="checkbox" />
+          <span className="label-text px-2">
+            {t.settings.showChangePct}
+          </span>
+        </label>
+
+        <div className="divider m-0" />
+
+        <label className="label cursor-pointer">
+          <input type="checkbox" checked={compactRows} onChange={() => { vibrate(haptics); setCompactRows(!compactRows); }} className="checkbox" />
+          <span className="label-text px-2">
+            {t.settings.compactRows}
+          </span>
+        </label>
+
+        <div className="divider m-0" />
+
+        <label className="label" htmlFor="settings-copy-format">
+          <span className="label-text">{t.settings.copyFormat}</span>
+        </label>
+        <select
+          id="settings-copy-format"
+          className="select select-bordered w-full mt-2"
+          value={copyFormat}
+          onChange={(e) => { vibrate(haptics); setCopyFormat(e.target.value as CopyFormat); }}
+        >
+          {copyFormatOptions.map(({ value, label }) => (
+            <option value={value} key={value}>{label}</option>
+          ))}
+        </select>
+
+        <div className="divider m-0" />
+
+        <label className="label cursor-pointer">
+          <input type="checkbox" checked={haptics} onChange={() => { setHaptics(!haptics); vibrate(!haptics); }} className="checkbox" />
+          <span className="label-text px-2">
+            {t.settings.haptics}
+          </span>
+        </label>
+
+        <div className="divider m-0" />
+
+        <RateAlertsSettings currencies={currency2Display} baseCur={baseCur} names={data} />
+
+        <div className="divider m-0" />
+
         <label className="label">
           <span className="label-text">{t.settings.currenciesToDisplay}</span>
         </label>
@@ -180,6 +389,11 @@ const CurrencySetting: React.FC = () => {
           setCurrency2Display(DefaultCurrency2Display);
           setLanguage('en');
           setSortMode('custom');
+          setThemeMode('system');
+          setShowChangePct(true);
+          setCompactRows(false);
+          setCopyFormat('full');
+          setHaptics(true);
           window.location.reload();
         }}>
           {t.settings.reset}
@@ -261,7 +475,7 @@ const CurrencyListTable: React.FC<CurrencyListTableProps> = ({ data }) => {
   </div>
 };
 
-const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data }) => {
+const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data, baseCur }) => {
   // Default to the currency list tab (1): the toolbar icon is a list icon,
   // so users expect the list — not Settings — on open.
   const [activeTab, setActiveTab] = useState(1);
@@ -303,7 +517,7 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data }) => {
             <CurrencyListTable data={data} />
           </div>}
           {activeTab === 2 && <div>
-            <CurrencySetting />
+            <CurrencySetting data={data} baseCur={baseCur} />
           </div>}
           {/* {activeTab === 3 && <div>Content for Tab 3</div>} */}
 

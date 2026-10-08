@@ -11,22 +11,29 @@ import useWindowWidth from '@/hooks/useWindowWidth';
 import { CurrencyRate4All, CurrencyRate4BaseCur, fetchWithFallback, getCurrencyRateApiUrls } from '@/lib/api';
 import {
   baseCurAtom,
+  compactRowsAtom,
+  copyFormatAtom,
   currency2DisplayAtom,
   currencyValueAtom,
   defaultCurrencyValueAtom,
   defaultCurrencyValueDpAtom,
+  hapticsAtom,
   isDefaultCurrencyValueAtom,
   isEditingAtom,
   languageAtom,
+  pinnedCurrenciesAtom,
+  rateAlertsAtom,
+  showChangePctAtom,
   showDatePickerAtom,
   sortModeAtom,
   tourSeenAtom
 } from '@/lib/atoms';
-import { getDataFromLocalStorage, getDropIndex, resolveTourLocale, setDataToLocalStorage, showASCIIArt, sortCurrencyPairs } from '@/lib/fns';
+import { getDataFromLocalStorage, getDropIndex, resolveTourLocale, setDataToLocalStorage, showASCIIArt, sortCurrencyPairs, vibrate } from '@/lib/fns';
 import { CurrencyNameOverrides } from '@/lib/constants';
-import { QuestionSvg, ShareSvg, CalendarSvg } from '@/lib/svgs';
+import { BellSvg, ImageSvg, QuestionSvg, ShareSvg, CalendarSvg } from '@/lib/svgs';
 import { buildTourSteps, getTourString, SUPPORTED_LOCALES } from '@/lib/tourSteps';
-import { CurrencyCode, Language } from '@/lib/types';
+import { shareRateCard } from '@/lib/shareCard';
+import { CurrencyCode, Language, RateAlert } from '@/lib/types';
 import type { Driver } from 'driver.js';
 import { useAtom } from 'jotai';
 import { pick } from 'lodash';
@@ -85,6 +92,13 @@ export default function Home() {
   const [tourSeen, setTourSeen] = useAtom(tourSeenAtom);
   const [showDatePicker, setShowDatePicker] = useAtom(showDatePickerAtom);
   const [language, setLanguage] = useAtom(languageAtom);
+  // Display prefs + features (settings tab, 2026-10-08 batch)
+  const [showChangePct] = useAtom(showChangePctAtom);
+  const [compactRows] = useAtom(compactRowsAtom);
+  const [copyFormat] = useAtom(copyFormatAtom);
+  const [haptics] = useAtom(hapticsAtom);
+  const [pinnedCurrencies, setPinnedCurrencies] = useAtom(pinnedCurrenciesAtom);
+  const [rateAlerts, setRateAlerts] = useAtom(rateAlertsAtom);
   const i18n = useTranslation();
 
   // Optional historical date ('' = latest). Session-only; not persisted.
@@ -143,6 +157,9 @@ export default function Home() {
   }, [hydrated]);
 
   const [shareCopied, setShareCopied] = useState(false);
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const [firedAlert, setFiredAlert] = useState<RateAlert | null>(null);
+
   const onShare = useCallback(async () => {
     const params = new URLSearchParams({ base: baseCur, amount: String(currencyValue), show: currency2Display.join(',') });
     const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
@@ -357,6 +374,11 @@ export default function Home() {
   // Stable ref setter so memoized rows don't re-render on every parent render.
   const onDragStart = useCallback((cur: string) => { currencyItemOnDrag.current = cur; }, []);
 
+  // Pin/unpin a currency — pinned rows float above the sort order (C).
+  const onTogglePin = useCallback((cur: string) => {
+    setPinnedCurrencies(prev => prev.includes(cur) ? prev.filter(c => c !== cur) : [...prev, cur]);
+  }, [setPinnedCurrencies]);
+
   // Handle currency value changes
   const handleCurrencyValueChange = useCallback((value: number) => {
     setCurrencyValue(value);
@@ -385,12 +407,85 @@ export default function Home() {
   };
 
   // Apply the chosen sort for the read-only view; editing always shows the custom (draggable) order.
-  const rows = useMemo(
-    () => sortCurrencyPairs(currencyRatesPairs2Display, isEditing ? 'custom' : sortMode, (c) => changePctByCur[c]),
-    [currencyRatesPairs2Display, isEditing, sortMode, changePctByCur]
+  // Pinned currencies float to the top in pin order, ahead of the sort (C).
+  const rows = useMemo(() => {
+    const sorted = sortCurrencyPairs(currencyRatesPairs2Display, isEditing ? 'custom' : sortMode, (c) => changePctByCur[c]);
+    if (isEditing || pinnedCurrencies.length === 0) return sorted;
+    const byCode = new Map(sorted.map(pair => [pair[0], pair]));
+    const pinned = pinnedCurrencies.flatMap(c => byCode.has(c) ? [byCode.get(c)!] : []);
+    const pinnedSet = new Set(pinnedCurrencies);
+    return [...pinned, ...sorted.filter(([code]) => !pinnedSet.has(code))];
+  },
+    [currencyRatesPairs2Display, isEditing, sortMode, changePctByCur, pinnedCurrencies]
   );
   // Drag-drop needs natural flow, so only virtualize large, read-only (non-editing) lists.
   const shouldVirtualize = !isEditing && rows.length > VIRTUALIZE_THRESHOLD;
+
+  // Rate alerts (A): evaluate every untriggered alert whenever fresh rates
+  // arrive. Same-base alerts read the already-fetched table; cross-base ones
+  // go through the app's own /api/convert (one request per alert).
+  useEffect(() => {
+    const pending = rateAlerts.filter(a => !a.triggered);
+    if (pending.length === 0 || !effectiveBaseCur) return;
+    let cancelled = false;
+
+    const getRate = async (a: RateAlert): Promise<number | undefined> => {
+      if (a.from.toLowerCase() === baseCur.toLowerCase()) {
+        const t = (effectiveBaseCur?.[baseCur] as CurrencyRates | undefined)?.[a.to];
+        if (typeof t === 'number') return t;
+      }
+      try {
+        const res = await fetch(`/api/convert?from=${encodeURIComponent(a.from)}&to=${encodeURIComponent(a.to)}&amount=1`);
+        if (!res.ok) return undefined;
+        const j = await res.json();
+        return typeof j.rate === 'number' ? j.rate : undefined;
+      } catch {
+        return undefined; // offline — skip this round
+      }
+    };
+
+    (async () => {
+      const fired: { alert: RateAlert; rate: number }[] = [];
+      for (const a of pending) {
+        const rate = await getRate(a);
+        if (rate === undefined) continue;
+        if (a.direction === 'above' ? rate >= a.target : rate <= a.target) fired.push({ alert: a, rate });
+      }
+      if (cancelled || fired.length === 0) return;
+      const ids = new Set(fired.map(f => f.alert.id));
+      setRateAlerts(prev => prev.map(a => (ids.has(a.id) ? { ...a, triggered: true } : a)));
+      const { alert, rate } = fired[0];
+      setFiredAlert(alert);
+      vibrate(haptics, 40);
+      try {
+        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+          new Notification('💱 Rate alert', {
+            body: `1 ${alert.from.toUpperCase()} = ${rate} ${alert.to.toUpperCase()} (${alert.direction === 'above' ? '≥' : '≤'} ${alert.target})`,
+          });
+        }
+      } catch { /* notifications best-effort */ }
+    })();
+
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [effectiveBaseCur, rateAlerts]);
+
+  // Share-as-image (D): render a rate-card PNG and share it (Web Share files)
+  // or download it when sharing isn't available.
+  const doShareImage = useCallback(async () => {
+    setShareMenuOpen(false);
+    vibrate(haptics);
+    const cardRows = rows
+      .filter(([c]) => c !== baseCur)
+      .slice(0, 8)
+      .map(([c, v]) => ({
+        code: c,
+        text: (v * currencyValue).toLocaleString(undefined, { minimumFractionDigits: defaultCurrencyValueDp, maximumFractionDigits: defaultCurrencyValueDp }),
+      }));
+    const dateStr = (ratesDate ? new Date(ratesDate + 'T00:00:00') : new Date())
+      .toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    await shareRateCard({ baseCur, amount: String(currencyValue), rows: cardRows, footerDate: `Rates as of ${dateStr}` });
+  }, [rows, baseCur, currencyValue, defaultCurrencyValueDp, ratesDate, haptics]);
 
   const renderRow = (cur: string, val: number, index: number, style?: CSSProperties) => (
     <CurrencyRow
@@ -406,10 +501,16 @@ export default function Home() {
       changePct={historicalDate ? undefined : changePctByCur[cur]}
       showDivider={index < rows.length - 1}
       style={style}
+      showChangePct={showChangePct}
+      compact={compactRows}
+      copyFormat={copyFormat}
+      haptics={haptics}
+      isPinned={pinnedCurrencies.includes(cur)}
       onDragStart={onDragStart}
       onSelectBase={onBaseCurChange}
       onRemove={removeCurrency2Display}
       onValueChange={handleCurrencyValueChange}
+      onTogglePin={onTogglePin}
     />
   );
 
@@ -433,20 +534,48 @@ export default function Home() {
               five 44px buttons plus a search input never fit one 360px row. */}
           <div className='w-full'>
             <div className='flex gap-2 w-full items-center mb-2'>
-              <CurrencyListModal data={displayNames} />
-              <button
-                type="button"
-                onClick={onShare}
-                title="Copy shareable link"
-                aria-label="Copy shareable link"
-                data-tour="tour-share"
-                className="h-[44px] w-[44px] shrink-0 flex items-center justify-center relative"
-              >
-                <ShareSvg />
-                {shareCopied && (
-                  <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 text-[10px] whitespace-nowrap opacity-70">Copied!</span>
+              <CurrencyListModal data={displayNames} baseCur={baseCur} />
+              {/* Share menu: copy link (existing) + share-as-image rate card (D). */}
+              <div className="relative shrink-0">
+                <button
+                  type="button"
+                  onClick={() => { vibrate(haptics); setShareMenuOpen(v => !v); }}
+                  title={i18n.settings.shareTitle}
+                  aria-label={i18n.settings.shareTitle}
+                  aria-expanded={shareMenuOpen}
+                  aria-haspopup="menu"
+                  data-tour="tour-share"
+                  className="h-[44px] w-[44px] flex items-center justify-center relative"
+                >
+                  <ShareSvg />
+                  {shareCopied && (
+                    <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 text-[10px] whitespace-nowrap opacity-70">Copied!</span>
+                  )}
+                </button>
+                {shareMenuOpen && (
+                  <>
+                    <button type="button" aria-hidden tabIndex={-1} className="fixed inset-0 z-40 cursor-default" onClick={() => setShareMenuOpen(false)} />
+                    <div className="absolute left-0 top-full mt-1 z-50 w-44 rounded-box bg-base-200 shadow-lg p-1 flex flex-col" role="menu">
+                      <button
+                        type="button"
+                        role="menuitem"
+                        className="btn btn-ghost btn-sm justify-start gap-2"
+                        onClick={() => { setShareMenuOpen(false); vibrate(haptics); onShare(); }}
+                      >
+                        <ShareSvg className="size-5" />{i18n.settings.shareCopyLink}
+                      </button>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        className="btn btn-ghost btn-sm justify-start gap-2"
+                        onClick={doShareImage}
+                      >
+                        <ImageSvg className="size-5" />{i18n.settings.shareImage}
+                      </button>
+                    </div>
+                  </>
                 )}
-              </button>
+              </div>
               <button
                 type="button"
                 onClick={() => startTour()}
@@ -500,6 +629,34 @@ export default function Home() {
               {historicalDate && (
                 <button type="button" className="underline" onClick={() => setHistoricalDate('')}>{i18n.home.today}</button>
               )}
+            </div>
+          )}
+
+          {/* Quick amounts (B) — one tap instead of typing. */}
+          <div className="flex gap-2 overflow-x-auto no-scrollbar mb-2" role="group" aria-label="Quick amounts">
+            {[10, 50, 100, 500, 1000].map(v => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => { vibrate(haptics); handleCurrencyValueChange(v); }}
+                aria-pressed={currencyValue === v}
+                className={`btn btn-sm shrink-0 tabular-nums ${currencyValue === v ? 'btn-primary' : 'btn-ghost'}`}
+              >
+                {v.toLocaleString()}
+              </button>
+            ))}
+          </div>
+
+          {/* Fired rate alert banner (A) — the atom already marks it triggered. */}
+          {firedAlert && (
+            <div className="alert alert-success mb-2 py-2 px-3" role="status">
+              <BellSvg className="size-5 shrink-0" />
+              <span className="text-sm flex-1 tabular-nums">
+                1 {firedAlert.from.toUpperCase()} {firedAlert.direction === 'above' ? '≥' : '≤'} {firedAlert.target} {firedAlert.to.toUpperCase()} — {i18n.settings.alertTargetHit}
+              </span>
+              <button type="button" className="btn btn-ghost btn-xs shrink-0" onClick={() => setFiredAlert(null)}>
+                {i18n.settings.dismiss}
+              </button>
             </div>
           )}
 

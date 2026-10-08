@@ -1,29 +1,35 @@
 'use client';
 
-import { themeAtom } from '@/lib/atoms';
-import { MoonSvg, SunSvg } from '@/lib/svgs';
-import { useAtom } from 'jotai';
+import { hapticsAtom, themeModeAtom } from '@/lib/atoms';
+import { vibrate } from '@/lib/fns';
+import { MonitorSvg, MoonSvg, SunSvg } from '@/lib/svgs';
+import type { ThemeMode } from '@/lib/types';
+import { useAtom, useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 
+const NEXT_MODE: Record<ThemeMode, ThemeMode> = { dark: 'light', light: 'system', system: 'dark' };
+
+// One-tap theme cycler: dark -> light -> system -> dark.
 export default function ThemeToggle() {
-  const [theme, setTheme] = useAtom(themeAtom);
-  // Avoid a hydration mismatch: render the default (dark -> sun) until mounted,
-  // then reflect the persisted theme.
+  const [themeMode, setThemeMode] = useAtom(themeModeAtom);
+  const haptics = useAtomValue(hapticsAtom);
+  // Avoid a hydration mismatch: render the default until mounted,
+  // then reflect the persisted preference.
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const isLight = mounted && theme === 'light';
+  const mode: ThemeMode = mounted ? themeMode : 'dark';
 
   return (
     <button
       type="button"
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      title="Toggle light/dark theme"
-      aria-label="Toggle light/dark theme"
+      onClick={() => { vibrate(haptics); setThemeMode(NEXT_MODE[themeMode]); }}
+      title={`Theme: ${mode} (tap to change)`}
+      aria-label={`Theme: ${mode} (tap to change)`}
       data-tour="tour-theme-toggle"
       className="h-[44px] w-[44px] shrink-0 flex items-center justify-center"
     >
-      {isLight ? <MoonSvg /> : <SunSvg />}
+      {mode === 'light' ? <MoonSvg /> : mode === 'system' ? <MonitorSvg /> : <SunSvg />}
     </button>
   );
 }
