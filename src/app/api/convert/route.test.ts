@@ -1,5 +1,6 @@
 import { describe, expect, it, vi, afterEach } from 'vitest';
-import { GET, __resetRateLimits } from './route';
+import { GET } from './route';
+import { __resetRateLimits } from '@/lib/rateLimit';
 
 // Mock upstream: fawazahmed0 currency-api shape for base=usd.
 const usdTable = () => ({
