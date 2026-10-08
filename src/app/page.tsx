@@ -1,6 +1,7 @@
 "use client";
 
 import CurrencyListModal from '@/components/CurrencyListModal';
+import AffiliateLinks from '@/components/AffiliateLinks';
 import CurrencyRow from '@/components/CurrencyRow';
 import InstallButton from '@/components/InstallButton';
 import SearchBar from '@/components/SearchBar';
@@ -493,6 +494,10 @@ export default function Home() {
             </div>
           )}
 
+        </div>
+
+        <div className="m-auto w-full max-w-[800px] px-4">
+          <AffiliateLinks />
         </div>
       </main>
 
