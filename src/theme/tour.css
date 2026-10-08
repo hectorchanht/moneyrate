@@ -122,6 +122,19 @@
   outline-offset: 2px;
 }
 
+/* Narrow viewports: driver.js's auto-positioning can push the popover
+   off-screen (seen live on a ~360px phone — the step-2 card was cut off at
+   the right edge). Pin the card to the viewport gutters instead; the arrow
+   may misalign slightly, but the card is always fully readable. Inline
+   left/top set by driver.js lose to !important here by design. */
+@media (max-width: 520px) {
+  .driver-popover {
+    left: 1rem !important;
+    right: 1rem !important;
+    transform: none !important;
+  }
+}
+
 /* prefers-reduced-motion (A11Y-01, D-07 item 3) — zero out driver.js's one
    exposed custom property (see header comment) so the popover's own
    transition duration collapses to 0ms. Paired with a JS-side animate/

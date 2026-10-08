@@ -193,10 +193,15 @@ export default function Home() {
         if (step.element !== '[data-tour="tour-install"]') return step;
         // Install anchor may be present with no button rendered (no captured
         // beforeinstallprompt). Swap in the fallback copy without mutating
-        // the original step object; never drop step 8 (TOUR-06).
+        // the original step object; never drop step 8 (TOUR-06). ALSO drop
+        // the element anchor in that case: spotlighting the empty div drew a
+        // stray ring at the foot of the page on phones (seen live 2026-10-08)
+        // — an anchor-less step renders as a centered card instead.
         const hasInstallButton = document.querySelector('[data-tour="tour-install"] button');
         if (hasInstallButton) return step;
-        return { ...step, popover: { ...step.popover, description: getTourString(language, 'step8FallbackBody') } };
+        const stepWithoutAnchor = { ...step };
+        delete stepWithoutAnchor.element;
+        return { ...stepWithoutAnchor, popover: { ...step.popover, description: getTourString(language, 'step8FallbackBody') } };
       });
 
     // One-time theme read for the overlay scrim only — do NOT re-init driver
@@ -424,45 +429,49 @@ export default function Home() {
       <main className="flex-grow">
 
         <div className='grid grid-cols-1 justify-between m-auto max-w-[800px] p-4'>
-          <span className='flex gap-2 w-full items-start'>
-            <CurrencyListModal data={displayNames} />
-            <button
-              type="button"
-              onClick={onShare}
-              title="Copy shareable link"
-              aria-label="Copy shareable link"
-              data-tour="tour-share"
-              className="h-[52px] w-[44px] shrink-0 flex items-center justify-center relative"
-            >
-              <ShareSvg />
-              {shareCopied && (
-                <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 text-[10px] whitespace-nowrap opacity-70">Copied!</span>
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={() => startTour()}
-              title={i18n.tour.replayLabel}
-              aria-label={i18n.tour.replayLabel}
-              className="tour-replay-btn h-[52px] w-[44px] shrink-0 flex items-center justify-center"
-            >
-              <QuestionSvg />
-            </button>
-            <ThemeToggle />
-            {/* One-tap historical rates — the picker used to hide behind a
-                settings checkbox nobody found (moved out of settings 2026-10-08). */}
-            <button
-              type="button"
-              onClick={() => setShowDatePicker(!showDatePicker)}
-              title="Historical rates"
-              aria-label="Historical rates"
-              aria-pressed={showDatePicker}
-              className={`h-[52px] w-[44px] shrink-0 flex items-center justify-center ${showDatePicker ? 'text-primary' : ''}`}
-            >
-              <CalendarSvg />
-            </button>
+          {/* Icon row, then the search on its own full-width line below —
+              five 44px buttons plus a search input never fit one 360px row. */}
+          <div className='w-full'>
+            <div className='flex gap-2 w-full items-center mb-2'>
+              <CurrencyListModal data={displayNames} />
+              <button
+                type="button"
+                onClick={onShare}
+                title="Copy shareable link"
+                aria-label="Copy shareable link"
+                data-tour="tour-share"
+                className="h-[44px] w-[44px] shrink-0 flex items-center justify-center relative"
+              >
+                <ShareSvg />
+                {shareCopied && (
+                  <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 text-[10px] whitespace-nowrap opacity-70">Copied!</span>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => startTour()}
+                title={i18n.tour.replayLabel}
+                aria-label={i18n.tour.replayLabel}
+                className="tour-replay-btn h-[44px] w-[44px] shrink-0 flex items-center justify-center"
+              >
+                <QuestionSvg />
+              </button>
+              <ThemeToggle />
+              {/* One-tap historical rates — the picker used to hide behind a
+                  settings checkbox nobody found (moved out of settings 2026-10-08). */}
+              <button
+                type="button"
+                onClick={() => setShowDatePicker(!showDatePicker)}
+                title="Historical rates"
+                aria-label="Historical rates"
+                aria-pressed={showDatePicker}
+                className={`h-[44px] w-[44px] shrink-0 flex items-center justify-center ${showDatePicker ? 'text-primary' : ''}`}
+              >
+                <CalendarSvg />
+              </button>
+            </div>
             <SearchBar data={displayNames} />
-          </span>
+          </div>
 
           {/* Data freshness — the API only gives day precision, so show the
               date rather than fake "x minutes ago" precision. Hidden while the

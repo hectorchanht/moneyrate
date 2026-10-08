@@ -73,12 +73,14 @@ const CurrencyRow = ({
     // The highlight box wraps ONLY the row content — the divider renders
     // after it (outside), so the box never swallows the divider line or
     // leaves dead space inside it (seen live 2026-10-08).
+    // The tour anchor lives on the INNER content box, so the tour spotlight
+    // circles the row itself — never the divider below it.
     <div
       id='currencyItem'
-      data-tour={isBase ? 'tour-base-row' : undefined}
       style={style}
     >
       <div
+        data-tour={isBase ? 'tour-base-row' : undefined}
         // The base row (the amount you're converting FROM) gets a soft highlight
         // so it stands out from the converted rows.
         className={isBase ? 'rounded-xl bg-primary/10 px-3 -mx-3 ring-1 ring-inset ring-primary/25' : undefined}

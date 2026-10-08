@@ -21,7 +21,7 @@ export default function ThemeToggle() {
       title="Toggle light/dark theme"
       aria-label="Toggle light/dark theme"
       data-tour="tour-theme-toggle"
-      className="h-[52px] w-[44px] shrink-0 flex items-center justify-center"
+      className="h-[44px] w-[44px] shrink-0 flex items-center justify-center"
     >
       {isLight ? <MoonSvg /> : <SunSvg />}
     </button>

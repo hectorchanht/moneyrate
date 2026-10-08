@@ -277,7 +277,7 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data }) => {
   };
 
   return (
-    <div className='h-[52px] w-[44px] flex items-center justify-center'>
+    <div className='h-[44px] w-[44px] flex items-center justify-center'>
       <button type="button" onClick={openModal} aria-label="Open currency list and settings" data-tour="tour-list-settings">
         <ListSvg />
       </button>
