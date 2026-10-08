@@ -27,16 +27,19 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Money Rate - Fiat Crypto Conversion",
   description: "Instantly fiat and crypto conversion for you and me.",
+  alternates: { canonical: "/" },
   openGraph: {
     title: "Money Rate - Fiat Crypto Conversion",
     description: "Instantly fiat and crypto conversion for you and me.",
     type: "website",
     url: "/",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Money Rate — Fiat + Crypto Conversion" }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Money Rate - Fiat Crypto Conversion",
     description: "Instantly fiat and crypto conversion for you and me.",
+    images: ["/og-image.png"],
   },
 };
 

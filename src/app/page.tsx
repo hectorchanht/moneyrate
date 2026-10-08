@@ -594,6 +594,11 @@ export default function Home() {
                 title="Historical rates"
                 aria-label="Historical rates"
                 aria-pressed={showDatePicker}
+                // The tour's "Look up past rates" step anchors here (always in
+                // the DOM) instead of the date input below, which only renders
+                // while the picker is open — the pre-filter used to drop the
+                // step on every auto-run tour.
+                data-tour="tour-historical-date"
                 className={`h-[44px] w-[44px] shrink-0 flex items-center justify-center ${showDatePicker ? 'text-primary' : ''}`}
               >
                 <CalendarSvg />
@@ -623,7 +628,6 @@ export default function Home() {
                 value={historicalDate || ratesDate || todayStr}
                 onChange={(e) => setHistoricalDate(e.target.value)}
                 aria-label={i18n.home.ratesAsOf}
-                data-tour="tour-historical-date"
                 className="bg-base-200 rounded px-1"
               />
               {historicalDate && (

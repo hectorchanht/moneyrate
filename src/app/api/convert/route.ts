@@ -18,6 +18,20 @@ import {
 //         GUMROAD_PRODUCT_PERMALINK env vars; paid tier is inert until set).
 
 const CODE_RE = /^[A-Za-z]{2,6}$/;
+// Sanity cap: above this, amount * rate overflows to Infinity and the JSON
+// body ships result: null. 1e15 is far beyond any real conversion.
+const MAX_AMOUNT = 1e15;
+
+// Verified-license cache: one Gumroad API call per key per hour, not one per
+// request. Both positive and negative results are cached. Bounded so a flood
+// of random keys can't grow the map without limit.
+const LICENSE_CACHE_TTL_MS = 60 * 60 * 1000;
+const LICENSE_CACHE_MAX = 5000;
+const licenseCache = new Map<string, { valid: boolean; exp: number }>();
+// Per-IP daily budget for Gumroad verification attempts — without this,
+// random keys burn unlimited Gumroad API calls BEFORE the main rate-limit
+// check ever runs.
+const VERIFY_DAILY_LIMIT = 10;
 
 async function verifyGumroadLicense(key: string): Promise<boolean> {
   const token = process.env.GUMROAD_ACCESS_TOKEN;
@@ -57,17 +71,34 @@ export async function GET(request: Request) {
   if (from === to) {
     return NextResponse.json({ error: "'from' and 'to' must differ." }, { status: 400 });
   }
-  if (!isFinite(amount) || amount <= 0) {
-    return NextResponse.json({ error: "'amount' must be a positive number." }, { status: 400 });
+  if (!isFinite(amount) || amount <= 0 || amount > MAX_AMOUNT) {
+    return NextResponse.json({ error: `'amount' must be a positive number up to ${MAX_AMOUNT.toLocaleString()}.` }, { status: 400 });
   }
+
+  const ip = clientIp(request);
 
   // Tier: paid only with a valid Gumroad license key; invalid keys fall back
   // to free silently (friendly API, no hard error).
   let tier: 'free' | 'paid' = 'free';
-  if (licenseKey && (await verifyGumroadLicense(licenseKey))) tier = 'paid';
+  if (licenseKey) {
+    const cached = licenseCache.get(licenseKey);
+    if (cached && Date.now() <= cached.exp) {
+      if (cached.valid) tier = 'paid';
+    } else {
+      // Verification calls Gumroad's API, so it gets its own per-IP budget —
+      // checked BEFORE the main rate limit, so junk keys can't burn it freely.
+      const vb = checkLimit('verify:' + ip, VERIFY_DAILY_LIMIT);
+      if (vb.allowed) {
+        const valid = await verifyGumroadLicense(licenseKey);
+        if (licenseCache.size >= LICENSE_CACHE_MAX) licenseCache.clear();
+        // set() overwrites any stale entry for this key.
+        licenseCache.set(licenseKey, { valid, exp: Date.now() + LICENSE_CACHE_TTL_MS });
+        if (valid) tier = 'paid';
+      }
+    }
+  }
   const limit = tier === 'paid' ? PAID_DAILY_LIMIT : FREE_DAILY_LIMIT;
 
-  const ip = clientIp(request);
   const { allowed, remaining } = checkLimit(ip, limit);
   if (!allowed) {
     return NextResponse.json(
@@ -109,13 +140,20 @@ export async function GET(request: Request) {
   }
 
   const rate = table[to.toLowerCase()];
+  const result = amount * rate;
+  if (!isFinite(result)) {
+    return NextResponse.json(
+      { error: 'Conversion overflowed — try a smaller amount.' },
+      { status: 502, headers: rateHeaders(limit, remaining, tier) }
+    );
+  }
   return NextResponse.json(
     {
       from,
       to,
       amount,
       rate,
-      result: amount * rate,
+      result,
       rateDate,
       timestamp: new Date().toISOString(),
       tier,

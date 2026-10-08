@@ -23,7 +23,11 @@ export const ImageWithFallback = (props: ImageWithFallbackProps) => {
       // the list's reorder mode is on (reorder uses the DragHandle instead).
       draggable={false}
       onError={() => {
-        setImgSrc(fallbackSrc?.[imgIndex]);
+        // Stop when every fallback is exhausted — without this guard the
+        // index walks past the end of fallbackSrc and setImgSrc(undefined)
+        // throws inside next/image.
+        if (imgIndex >= fallbackSrc.length) return;
+        setImgSrc(fallbackSrc[imgIndex]);
         setImgIndex(imgIndex + 1);
       }}
     />

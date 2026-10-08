@@ -5,6 +5,9 @@
 
 export const FREE_DAILY_LIMIT = 1000;
 export const PAID_DAILY_LIMIT = 100000;
+// Chart proxy: heavier than /api/convert (up to 3 Yahoo fetches per call),
+// so it gets its own, tighter per-IP daily budget.
+export const CHART_DAILY_LIMIT = 300;
 
 // In-memory per-IP daily counters. Resets on cold start — approximate on
 // serverless, which is fine for a v1 abuse brake (not a billing meter).

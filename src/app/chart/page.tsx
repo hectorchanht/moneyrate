@@ -33,7 +33,7 @@ const CurrencyChart = () => {
     showASCIIArt();
   }, []);
 
-  const { data, error } = useSWR<ResponseData>(q ? `/api/currencyChart?q=${q}` : null, fetcher, { keepPreviousData: true, revalidateOnFocus: false });
+  const { data, error } = useSWR<ResponseData>(q ? `/api/currencyChart?q=${encodeURIComponent(q)}` : null, fetcher, { keepPreviousData: true, revalidateOnFocus: false });
 
   // If a pair has no data, try the reversed pair once (e.g. USD-BTC -> BTC-USD).
   useEffect(() => {
@@ -151,7 +151,7 @@ const CurrencyChart = () => {
 
         <button type="button" aria-label="Reverse currency pair" title="Reverse currency pair" onClick={() => {
           // redirect to /chart?base-target
-          window.location.href = `/chart?q=${q.split('-')[1]}-${q.split('-')[0]}`;
+          window.location.href = `/chart?q=${encodeURIComponent(`${q.split('-')[1]}-${q.split('-')[0]}`)}`;
         }}>
           <ReverseSvg className='cursor-pointer w-[24px] h-[24px]' />
         </button>

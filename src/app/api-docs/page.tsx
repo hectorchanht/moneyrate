@@ -5,6 +5,14 @@ export const metadata: Metadata = {
   title: 'API Docs — MoneyRate',
   description:
     'Free currency conversion API: 1,000 requests/day/IP on the free tier, 100,000/day with a $5/month paid key.',
+  alternates: { canonical: '/api-docs' },
+  openGraph: {
+    title: 'API Docs — MoneyRate',
+    description: 'Free currency conversion API: 1,000 requests/day/IP free, 100,000/day paid.',
+    type: 'website',
+    url: '/api-docs',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Money Rate — Fiat + Crypto Conversion' }],
+  },
 };
 
 const CODE = 'font-mono text-sm bg-base-200 rounded px-2 py-1';
