@@ -83,7 +83,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data }) => {
 
   return (
     <div className='w-full'>
-      <form className={'w-full flex justify-between items-center overflow-hidden relative'} onSubmit={(e) => e.preventDefault()} >
+      <form className={'w-full flex justify-between items-center relative'} onSubmit={(e) => e.preventDefault()} >
         <input
           placeholder={t.home.searchPlaceholder}
           type={'text'}
@@ -95,19 +95,19 @@ const SearchBar: React.FC<SearchBarProps> = ({ data }) => {
           aria-expanded={visible.length > 0 && query.length > 0}
           aria-controls="search-results"
           data-tour="tour-search"
-          className="w-full bg-base-200"
+          className="w-full bg-base-200 rounded-lg border border-base-300 pl-3 pr-10 py-2.5 text-sm placeholder:truncate focus:outline-none focus:border-primary/50"
         />
 
-        <span className={'absolute right-1 m-1 inline-flex cursor-pointer items-center'}>
+        <span className={'absolute right-2 top-1/2 -translate-y-1/2 inline-flex cursor-pointer items-center opacity-70'}>
           {!query.length
-            ? <SearchSvg />
-            : <DeleteSvg onClick={clearQuery} />
+            ? <SearchSvg className="size-5" />
+            : <DeleteSvg className="size-5" onClick={clearQuery} />
           }
         </span>
       </form>
 
       {visible.length > 0 && query.length > 0
-        ? <div id="search-results" role="listbox" className={'overflow-hidden bg-base-200'}>
+        ? <div id="search-results" role="listbox" className={'overflow-hidden bg-base-200 rounded-b-lg border border-t-0 border-base-300'}>
           {visible.map((code: string, index: number) =>
             <div key={code}
               role="option"
@@ -127,6 +127,13 @@ const SearchBar: React.FC<SearchBarProps> = ({ data }) => {
               </span>
             </div> // Call onSelect when an item is clicked
           )}
+        </div>
+        : null}
+
+      {/* NOTE (v1): English-only string; the site's 30 locales fall back to it. */}
+      {query.length > 0 && visible.length === 0
+        ? <div className="bg-base-200 rounded-b-lg border border-t-0 border-base-300 px-3 py-2 text-sm opacity-60">
+          No matching currencies
         </div>
         : null}
     </div>

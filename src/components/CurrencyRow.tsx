@@ -70,7 +70,14 @@ const CurrencyRow = ({
   };
 
   return (
-    <div id='currencyItem' data-tour={isBase ? 'tour-base-row' : undefined} style={style}>
+    <div
+      id='currencyItem'
+      data-tour={isBase ? 'tour-base-row' : undefined}
+      style={style}
+      // The base row (the amount you're converting FROM) gets a soft highlight
+      // so it stands out from the converted rows.
+      className={isBase ? 'rounded-xl bg-primary/10 px-3 -mx-3 ring-1 ring-inset ring-primary/25' : undefined}
+    >
       <div className='flex gap-2 h-42 items-center'>
         <div className='flex w-full justify-between items-center gap-2'>
           {isEditing && <DragHandle onDragStart={() => onDragStart(cur)} />}
@@ -98,7 +105,7 @@ const CurrencyRow = ({
               placeholder="100"
               aria-label={`${cur.toUpperCase()} amount (supports math, e.g. 5+3)`}
               data-tour="tour-amount-input"
-              className={`bg-base-200 h-[2em] w-[inherit] max-w-[240px] text-end`}
+              className={`bg-base-200 h-[2em] w-[inherit] max-w-[240px] text-end tabular-nums`}
             />
           ) : (
             // Click a currency to make it the active (editable) one — the input moves to this row.
@@ -107,14 +114,14 @@ const CurrencyRow = ({
               tabIndex={0}
               onClick={() => onSelectBase(cur)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectBase(cur); } }}
-              className='w-[240px] text-end cursor-pointer focus:outline focus:outline-1 focus:outline-base-content/40'
+              className='w-[240px] text-end tabular-nums cursor-pointer focus:outline focus:outline-1 focus:outline-base-content/40'
               aria-label={`Set ${cur.toUpperCase()} as base currency`}
               title="Tap to edit this currency"
             >
               <div>{val2Show}</div>
               {/* Line space is reserved while yesterday's rates load, so their arrival doesn't shift the row (CLS). */}
               {!isEditing && (typeof changePct === 'number' && isFinite(changePct) ? (
-                <div className={`text-[10px] leading-none ${changePct >= 0 ? 'text-green-700 [[data-theme=dark]_&]:text-green-500' : 'text-red-600 [[data-theme=dark]_&]:text-red-400'}`}>
+                <div className={`text-[10px] leading-none tabular-nums ${changePct >= 0 ? 'text-green-700 [[data-theme=dark]_&]:text-green-500' : 'text-red-600 [[data-theme=dark]_&]:text-red-400'}`}>
                   {changePct >= 0 ? '▲' : '▼'} {Math.abs(changePct).toFixed(2)}%
                 </div>
               ) : <div className="h-[10px]" aria-hidden="true" />)}

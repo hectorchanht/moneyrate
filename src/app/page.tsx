@@ -437,6 +437,16 @@ export default function Home() {
             <SearchBar data={effectiveAll ?? {}} />
           </span>
 
+          {/* Data freshness — the API only gives day precision, so show the
+              date rather than fake "x minutes ago" precision. Hidden while the
+              historical date picker is open (it shows the date itself). */}
+          {ratesDate && /^\d{4}-\d{2}-\d{2}$/.test(ratesDate) && !showDatePicker && (
+            <p className="text-center text-[10px] opacity-50 -mt-1 mb-1 tabular-nums">
+              {i18n.home.ratesAsOf}{' '}
+              {new Date(ratesDate + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+            </p>
+          )}
+
           <AffiliateLinks />
 
           {showDatePicker && (

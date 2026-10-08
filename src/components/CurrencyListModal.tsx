@@ -14,7 +14,7 @@ import { DefaultCurrency2Display } from '@/lib/constants';
 import { AddSvg, CrossSvg, ListSvg, SettingSvg, TableSvg, XSvg } from '@/lib/svgs';
 import { Language, LanguageCode, SortMode } from '@/lib/types';
 import { useAtom } from 'jotai';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import CountryImg from './CountryImg';
 
 type LanguageOption = {
@@ -205,6 +205,7 @@ const CurrencySetting: React.FC = () => {
 
 const CurrencyListTable: React.FC<CurrencyListTableProps> = ({ data }) => {
   const [currency2Display, setCurrency2Display] = useAtom(currency2DisplayAtom);
+  const [filter, setFilter] = useState('');
   const t = useTranslation();
 
   const addCurrency2Display = (name: string) => {
@@ -215,7 +216,25 @@ const CurrencyListTable: React.FC<CurrencyListTableProps> = ({ data }) => {
     setCurrency2Display(prev => prev.filter(c => c !== name));
   };
 
+  const filteredEntries = useMemo(() => {
+    const q = filter.trim().toLowerCase();
+    const entries = Object.entries(data ?? {});
+    if (!q) return entries;
+    return entries.filter(
+      ([code, name]) => code.toLowerCase().includes(q) || name.toLowerCase().includes(q)
+    );
+  }, [data, filter]);
+
   return <div className="overflow-x-auto">
+    {/* NOTE (v1): English-only placeholder; the site's 30 locales fall back to it. */}
+    <input
+      type="text"
+      value={filter}
+      onChange={(e) => setFilter(e.target.value)}
+      placeholder="Filter currencies…"
+      aria-label="Filter currencies"
+      className="input input-bordered input-sm w-full mb-2"
+    />
     <table className="table">
       <thead>
         <tr>
@@ -226,7 +245,7 @@ const CurrencyListTable: React.FC<CurrencyListTableProps> = ({ data }) => {
         </tr>
       </thead>
       <tbody>
-        {data && Object.entries(data).map(([code, name]) => {
+        {filteredEntries.map(([code, name]) => {
           return <tr className="hover" key={code}>
             <td className='py-0 pl-0'>
               {
@@ -246,7 +265,9 @@ const CurrencyListTable: React.FC<CurrencyListTableProps> = ({ data }) => {
 };
 
 const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data }) => {
-  const [activeTab, setActiveTab] = useState(2);
+  // Default to the currency list tab (1): the toolbar icon is a list icon,
+  // so users expect the list — not Settings — on open.
+  const [activeTab, setActiveTab] = useState(1);
 
   const openModal = () => {
     const modal = document.getElementById('currency_list_modal') as HTMLDialogElement;

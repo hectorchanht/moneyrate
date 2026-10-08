@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import useSWR from 'swr';
 import { showASCIIArt } from '@/lib/fns';
-import { DownloadSvg, ReverseSvg } from '@/lib/svgs';
+import { BackSvg, DownloadSvg, ReverseSvg } from '@/lib/svgs';
 import { fetcher } from '@/lib/api';
 
 // Define the type for the data items
@@ -130,18 +130,31 @@ const CurrencyChart = () => {
 
   return (
     <div className="w-dvw h-dvh overflow-auto pt-[20px] mx-auto px-4 sm:px-1 md:px-2 text-base-content">
-      <div className="flex justify-center text-[32px] gap-4 items-center">
+      <div className="max-w-[800px] mx-auto">
+      {/* Header: back to converter + pair title + actions. The API title
+          ("1 USD = ? CAD") reads like a bug, so the label is built from q. */}
+      <div className="flex items-center gap-2 mb-2">
+        <a
+          href="/"
+          aria-label="Back to converter"
+          title="Back to converter"
+          className="btn btn-ghost btn-sm btn-circle shrink-0"
+        >
+          <BackSvg className="size-5" />
+        </a>
+        <h1 className="text-xl font-semibold truncate tabular-nums">
+          {q ? q.split('-').join(' → ') : 'Chart'}
+        </h1>
+        <div className="flex-1" />
 
-        <button type="button" aria-label="Reverse currency pair" onClick={() => {
+        <button type="button" aria-label="Reverse currency pair" title="Reverse currency pair" onClick={() => {
           // redirect to /chart?base-target
           window.location.href = `/chart?q=${q.split('-')[1]}-${q.split('-')[0]}`;
         }}>
           <ReverseSvg className='cursor-pointer w-[24px] h-[24px]' />
         </button>
 
-        {data?.title}
-
-        <button type="button" aria-label="Download CSV" onClick={exportToCSV}>
+        <button type="button" aria-label="Download CSV" title="Download CSV" onClick={exportToCSV}>
           <DownloadSvg className='cursor-pointer w-[24px] h-[24px]' />
         </button>
       </div>
@@ -185,6 +198,7 @@ const CurrencyChart = () => {
           <Line type="monotone" dataKey="value" stroke="currentColor" isAnimationActive={false} />
         </LineChart>
       </ResponsiveContainer>
+      </div>
     </div>
   );
 };
