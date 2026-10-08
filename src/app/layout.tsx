@@ -58,6 +58,8 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <meta name="apple-mobile-web-app-title" content="Money Rate - Fiat Crypto Conversion" />
         <link rel="manifest" href="/site.webmanifest" />
+        {/* Black browser chrome + PWA splash — never flash a white screen on launch. */}
+        <meta name="theme-color" content="#000000" />
         <link rel="preconnect" href={`https://latest.${CURRENCY_API_HOST}`} crossOrigin="anonymous" />
       </head>
       <body
