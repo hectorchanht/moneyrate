@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { debounce, evalMathExpression, getDataFromLocalStorage, getDropIndex, getResponsiveCryptoDp, resolveTourLocale, setDataToLocalStorage, sortCurrencyPairs } from './fns';
+import { debounce, evalMathExpression, formatCompactNumber, getDataFromLocalStorage, getDropIndex, getResponsiveCryptoDp, resolveTourLocale, setDataToLocalStorage, sortCurrencyPairs } from './fns';
 
 describe('evalMathExpression', () => {
   it('returns a plain number unchanged', () => {
@@ -202,5 +202,19 @@ describe('resolveTourLocale', () => {
 
   it('an empty navigator.languages list defaults to en for the first-load default', () => {
     expect(resolveTourLocale([], ['en', 'de', 'fr'], 'en')).toBe('en');
+  });
+});
+
+describe('formatCompactNumber', () => {
+  it('compacts millions, billions, trillions', () => {
+    expect(formatCompactNumber(41434875.42)).toBe('41.43M');
+    expect(formatCompactNumber(6556006071.75)).toBe('6.56B');
+    expect(formatCompactNumber(2_500_000_000_000)).toBe('2.50T');
+    expect(formatCompactNumber(-1500000)).toBe('-1.50M');
+  });
+
+  it('leaves sub-million values alone', () => {
+    expect(formatCompactNumber(999999.99)).toBe('999,999.99');
+    expect(formatCompactNumber(0)).toBe('0');
   });
 });

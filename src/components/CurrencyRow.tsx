@@ -1,6 +1,6 @@
 import CountryImg from '@/components/CountryImg';
 import DragHandle from '@/components/DragHandle';
-import { evalMathExpression, getResponsiveCryptoDp, vibrate } from '@/lib/fns';
+import { evalMathExpression, formatCompactNumber, getResponsiveCryptoDp, vibrate } from '@/lib/fns';
 import { CheckSvg, CopySvg, CrossSvg, EmptySvg, PinFilledSvg, PinSvg } from '@/lib/svgs';
 import type { CopyFormat } from '@/lib/types';
 import { CSSProperties, memo, useState } from 'react';
@@ -62,6 +62,10 @@ const CurrencyRow = ({
     : defaultCurrencyValueDp > cryptoDp ? defaultCurrencyValueDp : cryptoDp;
 
   const val2Show = (valMultiplied).toLocaleString(undefined, { minimumFractionDigits: dp2Show, maximumFractionDigits: dp2Show }) ?? 0;
+  // Huge values get compact display (41.43M) so they never overlap the code;
+  // valFull keeps full precision for copy.
+  const isHuge = Math.abs(valMultiplied) >= 1_000_000;
+  const valDisplay = isHuge ? formatCompactNumber(valMultiplied) : val2Show;
 
   // Base-amount field supports math expressions (e.g. "5+3*2"); null = not editing.
   const [expr, setExpr] = useState<string | null>(null);
@@ -147,11 +151,14 @@ const CurrencyRow = ({
               tabIndex={0}
               onClick={() => onSelectBase(cur)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectBase(cur); } }}
-              className='w-[240px] text-end tabular-nums cursor-pointer focus:outline focus:outline-1 focus:outline-base-content/40'
+              className='w-[240px] min-w-0 text-end tabular-nums cursor-pointer focus:outline focus:outline-1 focus:outline-base-content/40 overflow-hidden'
               aria-label={`Set ${cur.toUpperCase()} as base currency`}
               title="Tap to edit this currency"
             >
-              <div>{val2Show}</div>
+              {/* truncate is belt-and-braces: compact display keeps values short,
+                  but no value may ever overlap the code again. title carries
+                  the full precision on hover. */}
+              <div className="truncate" title={isHuge ? val2Show : undefined}>{valDisplay}</div>
               {/* Line space is reserved while yesterday's rates load, so their arrival doesn't shift the row (CLS). */}
               {!isEditing && showChangePct && (typeof changePct === 'number' && isFinite(changePct) ? (
                 <div className={`text-[11px] leading-none tabular-nums ${changePct >= 0 ? 'text-green-700 [[data-theme=dark]_&]:text-green-500' : 'text-red-600 [[data-theme=dark]_&]:text-red-400'}`}>

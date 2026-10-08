@@ -73,7 +73,7 @@ interface CurrencyListTableProps {
 
 // Rate alerts manager (settings tab). Alerts are evaluated in page.tsx
 // whenever fresh rates arrive; this component is CRUD + permission only.
-const RateAlertsSettings: React.FC<{ currencies: string[]; baseCur: string; names: Record<string, string> }> = ({ currencies, baseCur, names }) => {
+const RateAlertsSettings: React.FC<{ currencies: string[]; baseCur: string }> = ({ currencies, baseCur }) => {
   const [alerts, setAlerts] = useAtom(rateAlertsAtom);
   const [haptics] = useAtom(hapticsAtom);
   const t = useTranslation();
@@ -83,7 +83,9 @@ const RateAlertsSettings: React.FC<{ currencies: string[]; baseCur: string; name
   const [direction, setDirection] = useState<AlertDirection>('above');
   const [perm, setPerm] = useState<string>(typeof Notification !== 'undefined' ? Notification.permission : 'unsupported');
 
-  const label = (c: string) => `${c.toUpperCase()}${names[c] ? ` — ${names[c]}` : ''}`;
+  // Code-only labels: "JPY — Japanese Yen" truncated to "JPY …" inside the
+  // half-width selects on phones (seen live 2026-10-08).
+  const label = (c: string) => c.toUpperCase();
 
   const addAlert = () => {
     const targetNum = parseFloat(target);
@@ -132,35 +134,32 @@ const RateAlertsSettings: React.FC<{ currencies: string[]; baseCur: string; name
           </select>
         </label>
       </div>
-      <div className="grid grid-cols-[1fr_auto_auto] gap-2 mb-2">
-        <label className="flex flex-col gap-1">
-          <span className="text-xs opacity-70">{t.settings.alertTarget}</span>
-          <input
-            type="number" inputMode="decimal" min="0" step="any"
-            className="input input-bordered input-sm w-full"
-            placeholder="160"
-            value={target}
-            onChange={(e) => setTarget(e.target.value)}
-            aria-label={t.settings.alertTarget}
-          />
-        </label>
-        <div className="flex flex-col gap-1">
-          <span className="text-xs opacity-70">&nbsp;</span>
-          <div className="join">
-            <button type="button" className={`btn btn-sm join-item ${direction === 'above' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setDirection('above')} aria-pressed={direction === 'above'}>
-              {t.settings.alertAbove} ↑
-            </button>
-            <button type="button" className={`btn btn-sm join-item ${direction === 'below' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setDirection('below')} aria-pressed={direction === 'below'}>
-              {t.settings.alertBelow} ↓
-            </button>
-          </div>
-        </div>
-        <div className="flex flex-col gap-1">
-          <span className="text-xs opacity-70">&nbsp;</span>
-          <button type="button" className="btn btn-primary btn-sm" onClick={addAlert} disabled={!(parseFloat(target) > 0) || !from || !to || from === to}>
-            {t.settings.alertAdd}
+      {/* Target full-width, then Above/Below + Add share one row — the old
+          3-column grid (target | above/below | add) overflowed ~360px phones
+          and cut the Add button off (seen live 2026-10-08). */}
+      <label className="flex flex-col gap-1 mb-2">
+        <span className="text-xs opacity-70">{t.settings.alertTarget}</span>
+        <input
+          type="number" inputMode="decimal" min="0" step="any"
+          className="input input-bordered input-sm w-full"
+          placeholder="160"
+          value={target}
+          onChange={(e) => setTarget(e.target.value)}
+          aria-label={t.settings.alertTarget}
+        />
+      </label>
+      <div className="flex gap-2 mb-2">
+        <div className="join flex-1">
+          <button type="button" className={`btn btn-sm join-item flex-1 ${direction === 'above' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setDirection('above')} aria-pressed={direction === 'above'}>
+            {t.settings.alertAbove} ↑
+          </button>
+          <button type="button" className={`btn btn-sm join-item flex-1 ${direction === 'below' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setDirection('below')} aria-pressed={direction === 'below'}>
+            {t.settings.alertBelow} ↓
           </button>
         </div>
+        <button type="button" className="btn btn-primary btn-sm flex-1" onClick={addAlert} disabled={!(parseFloat(target) > 0) || !from || !to || from === to}>
+          {t.settings.alertAdd}
+        </button>
       </div>
 
       {alerts.length === 0 ? (
@@ -193,7 +192,7 @@ interface CurrencyListTableProps {
   data: Record<string, string>;
 }
 
-const CurrencySetting: React.FC<{ data: Record<string, string>; baseCur: string }> = ({ data, baseCur }) => {
+const CurrencySetting: React.FC<{ baseCur: string }> = ({ baseCur }) => {
   const [isDefaultCurrencyValue, setIsDefaultCurrencyValue] = useAtom(isDefaultCurrencyValueAtom);
   const [defaultCurrencyValue, setDefaultCurrencyValue] = useAtom(defaultCurrencyValueAtom);
   const [defaultCurrencyValueDp, setDefaultCurrencyValueDp] = useAtom(defaultCurrencyValueDpAtom);
@@ -370,7 +369,7 @@ const CurrencySetting: React.FC<{ data: Record<string, string>; baseCur: string 
 
         <div className="divider m-0" />
 
-        <RateAlertsSettings currencies={currency2Display} baseCur={baseCur} names={data} />
+        <RateAlertsSettings currencies={currency2Display} baseCur={baseCur} />
 
         <div className="divider m-0" />
 
@@ -517,7 +516,7 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data, baseCur }) 
             <CurrencyListTable data={data} />
           </div>}
           {activeTab === 2 && <div>
-            <CurrencySetting data={data} baseCur={baseCur} />
+            <CurrencySetting baseCur={baseCur} />
           </div>}
           {/* {activeTab === 3 && <div>Content for Tab 3</div>} */}
 

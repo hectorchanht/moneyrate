@@ -226,3 +226,19 @@ export const vibrate = (enabled: boolean, ms = 12): void => {
     // ignore — haptics are best-effort
   }
 };
+
+// Compact display for huge converted values — e.g. 500 BTC → 41,434,875.42
+// USD overflowed the row and overlapped the currency code on phones (seen
+// live 2026-10-08). 1,234,567 → "1.23M". Copy still uses full precision.
+export const COMPACT_THRESHOLD = 1_000_000;
+export const formatCompactNumber = (v: number): string => {
+  const abs = Math.abs(v);
+  if (abs < COMPACT_THRESHOLD) {
+    return v.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  }
+  const [div, suffix]: [number, string] =
+    abs >= 1e12 ? [1e12, 'T'] : abs >= 1e9 ? [1e9, 'B'] : [1e6, 'M'];
+  return (
+    (v / div).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + suffix
+  );
+};

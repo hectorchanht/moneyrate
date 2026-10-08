@@ -111,4 +111,21 @@ describe('CurrencyRow', () => {
     render(<CurrencyRow {...baseProps} cur="EUR" val={0.9} name="Euro" isPinned />);
     expect(screen.getByRole('button', { name: /unpin eur/i })).toBeTruthy();
   });
+
+  it('compacts huge converted values so they never overlap the code', () => {
+    // 500 BTC → ~41M USD: compact display, full precision kept for copy.
+    render(<CurrencyRow {...baseProps} cur="USD" val={82869.75} name="US Dollar" baseCur="BTC" currencyValue={500} />);
+    expect(screen.getByText('41.43M')).toBeTruthy();
+  });
+
+  it('copies full precision even when the display is compacted', async () => {
+    const user = userEvent.setup();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+
+    render(<CurrencyRow {...baseProps} cur="USD" val={82869.75} name="US Dollar" baseCur="BTC" currencyValue={500} copyFormat="value" />);
+    await user.click(screen.getByRole('button', { name: /copy usd value/i }));
+
+    expect(writeText).toHaveBeenCalledWith('41,434,875.00 USD');
+  });
 });
