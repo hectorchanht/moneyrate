@@ -1,8 +1,10 @@
 "use client";
 
 import {
+  BINANCE_REFERRAL_URL,
   COINBASE_REFERRAL_URL,
   WISE_REFERRAL_URL,
+  hasBinanceLink,
   hasCoinbaseLink,
   hasWiseLink,
 } from "@/lib/affiliates";
@@ -14,7 +16,7 @@ import {
 // Renders nothing while the referral URLs are placeholders (see affiliates.ts).
 // NOTE (v1): English-only strings; the site's 30 locales fall back to these.
 export default function AffiliateLinks() {
-  if (!hasWiseLink() && !hasCoinbaseLink()) return null;
+  if (!hasWiseLink() && !hasCoinbaseLink() && !hasBinanceLink()) return null;
 
   return (
     <section
@@ -25,7 +27,7 @@ export default function AffiliateLinks() {
       // can't pull a button out of the strip mid-drag (seen live 2026-10-08).
       className="no-scrollbar mb-2 flex flex-nowrap items-center gap-2 overflow-x-auto rounded-lg border border-base-300 bg-base-200/60 px-2.5 py-1.5"
     >
-      {/* Label hides on narrow screens so the two buttons get the room. */}
+      {/* Label hides on narrow screens so the buttons get the room. */}
       <p className="hidden min-w-0 flex-1 truncate text-xs opacity-70 min-[480px]:block">Need to move money for real?</p>
       <span className="text-[9px] uppercase tracking-wider opacity-40 shrink-0">Sponsored</span>
       {hasWiseLink() && (
@@ -48,6 +50,17 @@ export default function AffiliateLinks() {
           className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#0052FF] text-white hover:bg-[#0040c8] text-[11px] px-2"
         >
           Buy crypto &rarr;
+        </a>
+      )}
+      {hasBinanceLink() && (
+        <a
+          href={BINANCE_REFERRAL_URL}
+          target="_blank"
+          rel="noopener sponsored"
+          draggable={false}
+          className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#F0B90B] text-black hover:bg-[#d9a90a] text-[11px] px-2"
+        >
+          Trade on Binance &rarr;
         </a>
       )}
     </section>
