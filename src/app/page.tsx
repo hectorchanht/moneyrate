@@ -23,6 +23,7 @@ import {
   tourSeenAtom
 } from '@/lib/atoms';
 import { getDataFromLocalStorage, getDropIndex, resolveTourLocale, setDataToLocalStorage, showASCIIArt, sortCurrencyPairs } from '@/lib/fns';
+import { CurrencyNameOverrides } from '@/lib/constants';
 import { QuestionSvg, ShareSvg, CalendarSvg } from '@/lib/svgs';
 import { buildTourSteps, getTourString, SUPPORTED_LOCALES } from '@/lib/tourSteps';
 import { CurrencyCode, Language } from '@/lib/types';
@@ -158,6 +159,13 @@ export default function Home() {
   const effectiveAll = useMemo<CurrencyRate4All | undefined>(
     () => data4All ?? (hydrated ? getDataFromLocalStorage(LS_CURRENCIES, undefined) : undefined),
     [data4All, hydrated]
+  );
+
+  // Upstream ships wrong/blank names for a handful of codes — apply the local
+  // corrections so the list modal, search dropdown, and row tooltips agree.
+  const displayNames = useMemo<Record<string, string>>(
+    () => ({ ...(effectiveAll ?? {}), ...CurrencyNameOverrides }),
+    [effectiveAll]
   );
 
   // Reusable tour launcher — shared by the gated auto-start effect and the
@@ -389,7 +397,7 @@ export default function Home() {
       isEditing={isEditing}
       windowWidth={windowWidth}
       defaultCurrencyValueDp={defaultCurrencyValueDp}
-      name={effectiveAll?.[cur]}
+      name={displayNames[cur]}
       changePct={historicalDate ? undefined : changePctByCur[cur]}
       showDivider={index < rows.length - 1}
       style={style}
@@ -417,7 +425,7 @@ export default function Home() {
 
         <div className='grid grid-cols-1 justify-between m-auto max-w-[800px] p-4'>
           <span className='flex gap-2 w-full items-start'>
-            <CurrencyListModal data={effectiveAll ?? {}} />
+            <CurrencyListModal data={displayNames} />
             <button
               type="button"
               onClick={onShare}
@@ -453,7 +461,7 @@ export default function Home() {
             >
               <CalendarSvg />
             </button>
-            <SearchBar data={effectiveAll ?? {}} />
+            <SearchBar data={displayNames} />
           </span>
 
           {/* Data freshness — the API only gives day precision, so show the

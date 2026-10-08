@@ -185,7 +185,7 @@ const CurrencyChart = () => {
 
       <div className="flex justify-center gap-2 mb-4">
         {rangePresets.map(({ label, years }) => (
-          <button key={label} type="button" className="btn btn-xs" onClick={() => applyRange(years)}>
+          <button key={label} type="button" className="btn btn-sm min-w-[52px]" onClick={() => applyRange(years)}>
             {label}
           </button>
         ))}

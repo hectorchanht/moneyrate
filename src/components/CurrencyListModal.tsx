@@ -100,8 +100,9 @@ const CurrencySetting: React.FC = () => {
           }} className="checkbox" />
           <span className="label-text pl-2 justify-between items-center flex gap-2">
             {t.settings.resetValue}
+            {/* No aria-label here: the wrapping <label> already names this
+                input; a duplicate label made two controls share one name. */}
             <input type="number" className="w-[50%] bg-base-200" placeholder={defaultCurrencyValue.toString()} disabled={!isDefaultCurrencyValue}
-              aria-label={t.settings.resetValue}
               onChange={(d) => {
                 const v = parseInt(d.target.value);
                 setDefaultCurrencyValue(isNaN(v) ? 0 : v);
@@ -233,13 +234,22 @@ const CurrencyListTable: React.FC<CurrencyListTableProps> = ({ data }) => {
       </thead>
       <tbody>
         {filteredEntries.map(([code, name]) => {
+          const listed = currency2Display.includes(code);
           return <tr className="hover" key={code}>
             <td className='py-0 pl-0'>
-              {
-                currency2Display.includes(code)
-                  ? <CrossSvg className={'cursor-pointer size-6'} onClick={() => removeCurrency2Display(code)} />
-                  : <AddSvg className={'cursor-pointer size-6'} onClick={() => addCurrency2Display(code)} />
-              }
+              {/* Real <button>s (not bare SVGs): keyboard-focusable, named for
+                  screen readers, and a 44px touch target. */}
+              <button
+                type="button"
+                onClick={() => listed ? removeCurrency2Display(code) : addCurrency2Display(code)}
+                aria-label={listed ? `Remove ${code.toUpperCase()} from list` : `Add ${code.toUpperCase()} to list`}
+                aria-pressed={listed}
+                className="flex items-center justify-center p-2 -m-1 cursor-pointer"
+              >
+                {listed
+                  ? <CrossSvg className={'size-6'} />
+                  : <AddSvg className={'size-6'} />}
+              </button>
             </td>
             <td className='p-0'><CountryImg code={code} /></td>
             <td className='px-0 text-center'>{code}</td>

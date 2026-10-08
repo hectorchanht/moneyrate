@@ -128,10 +128,10 @@ const CurrencyRow = ({
               <div>{val2Show}</div>
               {/* Line space is reserved while yesterday's rates load, so their arrival doesn't shift the row (CLS). */}
               {!isEditing && (typeof changePct === 'number' && isFinite(changePct) ? (
-                <div className={`text-[10px] leading-none tabular-nums ${changePct >= 0 ? 'text-green-700 [[data-theme=dark]_&]:text-green-500' : 'text-red-600 [[data-theme=dark]_&]:text-red-400'}`}>
+                <div className={`text-[11px] leading-none tabular-nums ${changePct >= 0 ? 'text-green-700 [[data-theme=dark]_&]:text-green-500' : 'text-red-600 [[data-theme=dark]_&]:text-red-400'}`}>
                   {changePct >= 0 ? '▲' : '▼'} {Math.abs(changePct).toFixed(2)}%
                 </div>
-              ) : <div className="h-[10px]" aria-hidden="true" />)}
+              ) : <div className="h-[11px]" aria-hidden="true" />)}
             </div>
           )}
 
@@ -147,7 +147,9 @@ const CurrencyRow = ({
                   onClick={onCopy}
                   title="Copy value"
                   aria-label={`Copy ${cur.toUpperCase()} value`}
-                  className="shrink-0 opacity-40 hover:opacity-100"
+                  // Visual icon stays small; the hit area is expanded to ~44px
+                  // via the pseudo-element so it's tappable on phones.
+                  className="shrink-0 relative opacity-40 hover:opacity-100 before:absolute before:-inset-3 before:content-['']"
                 >
                   {copied ? <CheckSvg className="size-5" /> : <CopySvg className="size-5" />}
                 </button>
