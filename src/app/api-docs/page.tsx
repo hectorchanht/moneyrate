@@ -75,6 +75,24 @@ export default function ApiDocsPage() {
         watch usage. Limits are per IP, per UTC day.
       </p>
 
+      <h2 className="text-lg font-semibold mt-6 mb-2">Developers</h2>
+      <ul className="list-disc ml-6 space-y-1 text-sm">
+        <li>
+          <strong>MCP server</strong> — <span className={CODE}>npx -y moneyrate-mcp</span> exposes{' '}
+          <span className={CODE}>convert_currency</span> and <span className={CODE}>currency_chart</span> tools
+          to Claude Desktop / Claude Code and other MCP clients. Zero dependencies, Node 18+.
+        </li>
+        <li>
+          <strong>JS/TS SDK</strong> — <span className={CODE}>npm install moneyrate-api</span>:{' '}
+          <span className={CODE}>new MoneyRate().convert(&#123;from, to, amount&#125;)</span>,{' '}
+          <span className={CODE}>.chart(q)</span>. Zero runtime dependencies, typed.
+        </li>
+        <li>
+          <strong>llms.txt</strong> — <a href="/llms.txt" className="link">/llms.txt</a> documents the API,
+          tiers, MCP server and SDK for AI agents.
+        </li>
+      </ul>
+
       <p className="text-sm mt-6">
         <a href="/" className="link">&larr; Back to the converter</a>
       </p>

@@ -1,0 +1,64 @@
+# Publish the MoneyRate MCP server and JS SDK to npm.
+#
+# Triggers:
+#   git tag mcp-v1.0.0 && git push origin mcp-v1.0.0   # MCP server (npm)
+#   git tag sdk-v1.0.0 && git push origin sdk-v1.0.0   # JS SDK (npm)
+# The version comes from the tag — no manual version bumps needed.
+#
+# One-time setup:
+#   1. Repo Settings → Secrets → Actions → add NPM_TOKEN (an npm automation
+#      token with publish rights on the `moneyrate-mcp` and `moneyrate-api`
+#      packages). The workflow fails closed without it — nothing is published.
+name: publish-mcp
+
+on:
+  push:
+    tags: ["mcp-v*", "sdk-v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  publish-mcp:
+    if: startsWith(github.ref, 'refs/tags/mcp-v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Version from tag
+        run: echo "VERSION=${GITHUB_REF#refs/tags/mcp-v}" >> "$GITHUB_ENV"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+      - name: Smoke-test + publish MCP server
+        working-directory: mcp
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm pkg set version="$VERSION"
+          # stdio smoke test against a loopback stub (no live calls in CI —
+          # the live API is rate-limited and CI has no business burning it)
+          node smoke-test.mjs
+          npm publish --access public
+
+  publish-sdk:
+    if: startsWith(github.ref, 'refs/tags/sdk-v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Version from tag
+        run: echo "VERSION=${GITHUB_REF#refs/tags/sdk-v}" >> "$GITHUB_ENV"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+      - name: Build + test + publish JS SDK
+        working-directory: sdk/js
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm pkg set version="$VERSION"
+          npm install --no-audit --no-fund
+          npm run build
+          npm test
+          npm publish --access public

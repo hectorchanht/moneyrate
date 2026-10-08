@@ -1,0 +1,54 @@
+# MoneyRate
+
+MoneyRate (https://moneyrate.lol) is a free fiat + crypto currency converter.
+Live rates, historical charts, and a freemium HTTP API for developers.
+
+## Public API
+
+Base: https://moneyrate.lol — no signup, CORS-open, JSON responses.
+
+### Convert — GET /api/convert
+
+`GET /api/convert?from=USD&to=HKD&amount=1[&license_key=...]`
+
+- `from`, `to`: 2–6 letter codes (fiat like USD/EUR/JPY, crypto like BTC/ETH)
+- `amount`: positive number, max 1e15 (default 1)
+- `license_key`: optional paid-tier Gumroad license key
+
+Response: `{"from":"USD","to":"HKD","amount":1,"rate":7.84787497,"result":7.84787497,"rateDate":"2026-10-08","timestamp":"...","tier":"free"}`
+Headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-Tier` (free|paid).
+Errors: 400 (bad params), 404 (no rate for pair), 429 (daily limit hit).
+
+Example:
+```bash
+curl "https://moneyrate.lol/api/convert?from=USD&to=EUR&amount=100"
+```
+
+### Historical chart — GET /api/currencyChart
+
+`GET /api/currencyChart?q=USD-EUR`
+
+`q` is `TARGET-BASE` (2–6 letter codes, e.g. USD-EUR, BTC-USD).
+Response: `{"data":[{"date":"01/02/2004","value":0.79,"timestamp":...}, ...], "title":"1 USD = ? EUR"}`
+Monthly points back to ~2003. Rate-limited: 300 requests/day/IP.
+
+## Tiers
+
+- **Free** — 1,000 /api/convert requests/day/IP, no key.
+- **Paid** — 100,000 requests/day/IP, $5/month via a Gumroad license key
+  (product link on https://moneyrate.lol/api-docs). Pass as `license_key`.
+
+## For AI agents
+
+- **MCP server**: `npx -y moneyrate-mcp` — tools `convert_currency` and
+  `currency_chart` (the chart tool returns a compact summary, never the full
+  series). Env: `MONEYRATE_BASE_URL` (default https://moneyrate.lol).
+- **JS/TS SDK**: `npm install moneyrate-api` — `new MoneyRate().convert({from,to,amount})`, `.chart(q)`.
+- Full endpoint docs: https://moneyrate.lol/api-docs
+- Sitemap: https://moneyrate.lol/sitemap.xml (homepage, /api-docs, 16 popular /convert/<pair> pages)
+
+## Site
+
+Converter: https://moneyrate.lol — searchable currency list, historical-rate
+picker, per-pair charts at /chart?q=USD-EUR, SEO pages like
+https://moneyrate.lol/convert/usd-to-eur
