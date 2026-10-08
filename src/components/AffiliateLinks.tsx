@@ -19,9 +19,13 @@ export default function AffiliateLinks() {
   return (
     <section
       aria-label="Sponsored links"
-      className="mb-2 flex items-center gap-2 overflow-hidden rounded-lg border border-base-300 bg-base-200/60 px-2.5 py-1.5"
+      // Horizontally scrollable (never clips a button on narrow viewports —
+      // overflow-hidden cut "Buy crypto" in half on phones). The anchors are
+      // display-only links: draggable={false} so the touch drag-drop polyfill
+      // can't pull a button out of the strip mid-drag (seen live 2026-10-08).
+      className="no-scrollbar mb-2 flex flex-nowrap items-center gap-2 overflow-x-auto rounded-lg border border-base-300 bg-base-200/60 px-2.5 py-1.5"
     >
-      {/* Label hides on narrow screens so the two buttons always fit the viewport. */}
+      {/* Label hides on narrow screens so the two buttons get the room. */}
       <p className="hidden min-w-0 flex-1 truncate text-xs opacity-70 min-[480px]:block">Need to move money for real?</p>
       <span className="text-[9px] uppercase tracking-wider opacity-40 shrink-0">Sponsored</span>
       {hasWiseLink() && (
@@ -29,6 +33,7 @@ export default function AffiliateLinks() {
           href={WISE_REFERRAL_URL}
           target="_blank"
           rel="noopener sponsored"
+          draggable={false}
           className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#9FE870] text-black hover:bg-[#86d957] text-[11px] px-2"
         >
           Send money abroad &rarr;
@@ -39,6 +44,7 @@ export default function AffiliateLinks() {
           href={COINBASE_REFERRAL_URL}
           target="_blank"
           rel="noopener sponsored"
+          draggable={false}
           className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#0052FF] text-white hover:bg-[#0040c8] text-[11px] px-2"
         >
           Buy crypto &rarr;

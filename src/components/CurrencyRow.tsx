@@ -70,15 +70,20 @@ const CurrencyRow = ({
   };
 
   return (
+    // The highlight box wraps ONLY the row content — the divider renders
+    // after it (outside), so the box never swallows the divider line or
+    // leaves dead space inside it (seen live 2026-10-08).
     <div
       id='currencyItem'
       data-tour={isBase ? 'tour-base-row' : undefined}
       style={style}
-      // The base row (the amount you're converting FROM) gets a soft highlight
-      // so it stands out from the converted rows.
-      className={isBase ? 'rounded-xl bg-primary/10 px-3 -mx-3 ring-1 ring-inset ring-primary/25' : undefined}
     >
-      <div className='flex gap-2 h-42 items-center'>
+      <div
+        // The base row (the amount you're converting FROM) gets a soft highlight
+        // so it stands out from the converted rows.
+        className={isBase ? 'rounded-xl bg-primary/10 px-3 -mx-3 ring-1 ring-inset ring-primary/25' : undefined}
+      >
+      <div className='flex gap-2 items-center'>
         <div className='flex w-full justify-between items-center gap-2'>
           {isEditing && <DragHandle onDragStart={() => onDragStart(cur)} />}
           <a
@@ -96,7 +101,9 @@ const CurrencyRow = ({
           {isBase ? (
             <input
               type="text"
-              inputMode="text"
+              // Numeric keypad on mobile; desktop keyboards still get the full
+              // math-expression support (e.g. "5+3*2") via the text type.
+              inputMode="decimal"
               value={expr !== null ? expr : (currencyValue === 0 ? '' : currencyValue.toString())}
               onFocus={() => setExpr(currencyValue === 0 ? '' : currencyValue.toString())}
               onChange={(e) => onBaseChange(e.target.value)}
@@ -147,7 +154,8 @@ const CurrencyRow = ({
               ))}
         </div>
       </div>
-      {showDivider ? <div className="divider my-2" /> : <br />}
+      </div>
+      {showDivider ? <div className="divider my-2" aria-hidden="true" /> : null}
     </div>
   );
 };

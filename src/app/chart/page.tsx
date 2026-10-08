@@ -195,8 +195,9 @@ const CurrencyChart = () => {
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={filteredData}>
           <CartesianGrid strokeDasharray="4 2 0" />
-          <XAxis dataKey="date" domain={['dataMin', 'dataMax']} />
-          <YAxis tickFormatter={(value) => scientificFormat(value).toString()} />
+          {/* minTickGap keeps date labels from colliding on narrow viewports. */}
+          <XAxis dataKey="date" domain={['dataMin', 'dataMax']} minTickGap={32} tick={{ fontSize: 11 }} />
+          <YAxis tickFormatter={(value) => scientificFormat(value).toString()} width={56} tick={{ fontSize: 11 }} />
           <Tooltip labelStyle={{ color: 'black' }} contentStyle={{ background: 'white' }} itemStyle={{ fontWeight: '700', color: 'black' }} formatter={(value) => [value]} />
           <Line type="monotone" dataKey="value" stroke="currentColor" isAnimationActive={false} />
         </LineChart>

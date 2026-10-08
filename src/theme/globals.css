@@ -143,3 +143,14 @@ input[type="number"] {
 .checkbox[aria-checked="true"] {
   animation: none;
 }
+
+/* Horizontally scrollable strips (e.g. the sponsored links row) that must
+   never clip their buttons on narrow viewports — scrollbar hidden, touch
+   scrolling still works. */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

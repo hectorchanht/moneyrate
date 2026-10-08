@@ -23,7 +23,7 @@ import {
   tourSeenAtom
 } from '@/lib/atoms';
 import { getDataFromLocalStorage, getDropIndex, resolveTourLocale, setDataToLocalStorage, showASCIIArt, sortCurrencyPairs } from '@/lib/fns';
-import { QuestionSvg, ShareSvg } from '@/lib/svgs';
+import { QuestionSvg, ShareSvg, CalendarSvg } from '@/lib/svgs';
 import { buildTourSteps, getTourString, SUPPORTED_LOCALES } from '@/lib/tourSteps';
 import { CurrencyCode, Language } from '@/lib/types';
 import type { Driver } from 'driver.js';
@@ -82,7 +82,7 @@ export default function Home() {
   const [defaultCurrencyValueDp] = useAtom(defaultCurrencyValueDpAtom);
   const [sortMode] = useAtom(sortModeAtom);
   const [tourSeen, setTourSeen] = useAtom(tourSeenAtom);
-  const [showDatePicker] = useAtom(showDatePickerAtom);
+  const [showDatePicker, setShowDatePicker] = useAtom(showDatePickerAtom);
   const [language, setLanguage] = useAtom(languageAtom);
   const i18n = useTranslation();
 
@@ -400,7 +400,14 @@ export default function Home() {
     />
   );
 
-  if ((err1 || err2) && !effectiveBaseCur) return <div className="text-center">Error fetching data. Please try again later.</div>;
+  if ((err1 || err2) && !effectiveBaseCur) return (
+    <div className="text-center p-8">
+      <p>Error fetching data. Please try again later.</p>
+      <button type="button" className="btn btn-primary btn-sm mt-4" onClick={() => window.location.reload()}>
+        Retry
+      </button>
+    </div>
+  );
   // Rows need both tables; ending the skeleton when only one has arrived empties the list and jumps the footer (CLS).
   const showSkeleton = (isLoad1 && !effectiveAll) || (isLoad2 && !effectiveBaseCur);
 
@@ -417,7 +424,7 @@ export default function Home() {
               title="Copy shareable link"
               aria-label="Copy shareable link"
               data-tour="tour-share"
-              className="h-[52px] w-[30px] shrink-0 flex items-center justify-center relative"
+              className="h-[52px] w-[44px] shrink-0 flex items-center justify-center relative"
             >
               <ShareSvg />
               {shareCopied && (
@@ -429,11 +436,23 @@ export default function Home() {
               onClick={() => startTour()}
               title={i18n.tour.replayLabel}
               aria-label={i18n.tour.replayLabel}
-              className="tour-replay-btn h-[52px] w-[30px] shrink-0 flex items-center justify-center"
+              className="tour-replay-btn h-[52px] w-[44px] shrink-0 flex items-center justify-center"
             >
               <QuestionSvg />
             </button>
             <ThemeToggle />
+            {/* One-tap historical rates — the picker used to hide behind a
+                settings checkbox nobody found (moved out of settings 2026-10-08). */}
+            <button
+              type="button"
+              onClick={() => setShowDatePicker(!showDatePicker)}
+              title="Historical rates"
+              aria-label="Historical rates"
+              aria-pressed={showDatePicker}
+              className={`h-[52px] w-[44px] shrink-0 flex items-center justify-center ${showDatePicker ? 'text-primary' : ''}`}
+            >
+              <CalendarSvg />
+            </button>
             <SearchBar data={effectiveAll ?? {}} />
           </span>
 

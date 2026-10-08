@@ -7,7 +7,6 @@ import {
   isEditingAtom,
   languageAtom,
   PERSISTED_ATOM_KEYS,
-  showDatePickerAtom,
   sortModeAtom
 } from '@/lib/atoms';
 import { DefaultCurrency2Display } from '@/lib/constants';
@@ -72,7 +71,6 @@ const CurrencySetting: React.FC = () => {
   const [currency2Display, setCurrency2Display] = useAtom(currency2DisplayAtom);
   const [language, setLanguage] = useAtom(languageAtom);
   const [sortMode, setSortMode] = useAtom(sortModeAtom);
-  const [showDatePicker, setShowDatePicker] = useAtom(showDatePickerAtom);
   const t = useTranslation();
 
   const sortOptions: { value: SortMode; label: string }[] = [
@@ -91,17 +89,6 @@ const CurrencySetting: React.FC = () => {
           }} className="checkbox" />
           <span className="label-text px-2">
             {t.settings.enableDeleteDragAndDrop}
-          </span>
-        </label>
-
-        <div className="divider m-0" />
-
-        <label className="label cursor-pointer">
-          <input type="checkbox" checked={showDatePicker} onChange={() => {
-            setShowDatePicker(!showDatePicker);
-          }} className="checkbox" />
-          <span className="label-text px-2">
-            Show historical date picker
           </span>
         </label>
 
@@ -280,7 +267,7 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data }) => {
   };
 
   return (
-    <div className='h-[52px] w-[30px] flex items-center justify-center'>
+    <div className='h-[52px] w-[44px] flex items-center justify-center'>
       <button type="button" onClick={openModal} aria-label="Open currency list and settings" data-tour="tour-list-settings">
         <ListSvg />
       </button>
@@ -290,15 +277,15 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data }) => {
         <div className="modal-box max-w-[460px] p-2" >
 
           <div role="tablist" className="tabs tabs-bordered mb-2">
-            <a role="tab" aria-label="Currency list" aria-selected={activeTab === 1} className={`tab ${activeTab === 1 ? 'tab-active' : ''}`} onClick={() => setActiveTab(1)}>
+            <button type="button" role="tab" aria-label="Currency list" aria-selected={activeTab === 1} className={`tab ${activeTab === 1 ? 'tab-active' : ''}`} onClick={() => setActiveTab(1)}>
               <TableSvg />
-            </a>
-            <a role="tab" aria-label="Settings" aria-selected={activeTab === 2} className={`tab ${activeTab === 2 ? 'tab-active' : ''}`} onClick={() => setActiveTab(2)}>
+            </button>
+            <button type="button" role="tab" aria-label="Settings" aria-selected={activeTab === 2} className={`tab ${activeTab === 2 ? 'tab-active' : ''}`} onClick={() => setActiveTab(2)}>
               <SettingSvg />
-            </a>
-            <a role="tab" aria-label="Close" className={`tab`} onClick={closeModal}>
+            </button>
+            <button type="button" role="tab" aria-label="Close" className={`tab`} onClick={closeModal}>
               <XSvg />
-            </a>
+            </button>
           </div>
 
           {/* Tab content rendering */}
