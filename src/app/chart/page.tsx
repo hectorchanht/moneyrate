@@ -130,7 +130,9 @@ const CurrencyChart = () => {
 
   return (
     <div className="w-dvw h-dvh overflow-auto pt-[20px] mx-auto px-4 sm:px-1 md:px-2 text-base-content">
-      <div className="max-w-[800px] mx-auto">
+      {/* h-full flex-col: the chart below needs a definite-height ancestor for
+          its percentage height — without this the chart collapses to 0. */}
+      <div className="max-w-[800px] mx-auto h-full flex flex-col">
       {/* Header: back to converter + pair title + actions. The API title
           ("1 USD = ? CAD") reads like a bug, so the label is built from q. */}
       <div className="flex items-center gap-2 mb-2">
@@ -189,7 +191,8 @@ const CurrencyChart = () => {
         ))}
       </div>
 
-      <ResponsiveContainer width="100%" height="70%">
+      <div className="flex-1 min-h-[300px]">
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart data={filteredData}>
           <CartesianGrid strokeDasharray="4 2 0" />
           <XAxis dataKey="date" domain={['dataMin', 'dataMax']} />
@@ -198,6 +201,7 @@ const CurrencyChart = () => {
           <Line type="monotone" dataKey="value" stroke="currentColor" isAnimationActive={false} />
         </LineChart>
       </ResponsiveContainer>
+      </div>
       </div>
     </div>
   );
