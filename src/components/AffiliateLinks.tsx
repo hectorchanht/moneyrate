@@ -27,8 +27,6 @@ export default function AffiliateLinks() {
       // can't pull a button out of the strip mid-drag (seen live 2026-10-08).
       className="no-scrollbar mb-2 flex flex-nowrap items-center gap-2 overflow-x-auto rounded-lg border border-base-300 bg-base-200/60 px-2.5 py-1.5"
     >
-      {/* Label hides on narrow screens so the buttons get the room. */}
-      <p className="hidden min-w-0 flex-1 truncate text-xs opacity-70 min-[480px]:block">Need to move money for real?</p>
       <span className="text-[9px] uppercase tracking-wider opacity-40 shrink-0">Sponsored</span>
       {hasWiseLink() && (
         <a
