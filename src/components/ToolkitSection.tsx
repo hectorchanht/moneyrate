@@ -1,6 +1,7 @@
 "use client";
 
 import { useAtom } from "jotai";
+import { useTranslation } from "@/hooks/useTranslation";
 import { hapticsAtom } from "@/lib/atoms";
 import { vibrate } from "@/lib/fns";
 import { BellSvg, DownloadSvg, ShareSvg } from "@/lib/svgs";
@@ -10,10 +11,11 @@ import { WISE_REFERRAL_URL } from "@/lib/affiliates";
 // under the converter (positioning A, 2026-10-09). Three moments:
 // rate alerts, tax-ready FX averages (downloadable CSV), and the cheapest
 // way to send money abroad (Wise affiliate link).
-// Labels are English-only in v1 — same precedent as the AffiliateLinks
-// button labels (the "Sponsored" disclosure carries the localization).
+// Labels are localized across all 30 locales (same keys as AffiliateLinks)
+// so they react to language change.
 export default function ToolkitSection({ baseCur }: { baseCur: string }) {
   const [haptics] = useAtom(hapticsAtom);
+  const i18n = useTranslation();
 
   const openAlerts = () => {
     vibrate(haptics);
@@ -33,19 +35,19 @@ export default function ToolkitSection({ baseCur }: { baseCur: string }) {
 
   return (
     <section
-      aria-label="Money toolkit"
+      aria-label={i18n.home.toolkit}
       className="no-scrollbar mb-2 mt-1 flex flex-nowrap items-center gap-2 overflow-x-auto px-0.5 py-1"
     >
-      <span className="text-[9px] uppercase tracking-wider opacity-40 shrink-0">Toolkit</span>
+      <span className="text-[9px] uppercase tracking-wider opacity-40 shrink-0">{i18n.home.toolkit}</span>
       <button type="button" onClick={openAlerts} className={item}>
-        <BellSvg className="size-4" /> Rate alerts
+        <BellSvg className="size-4" /> {i18n.home.toolkitAlerts}
       </button>
       <a
         href={`/api/tax-csv?base=${encodeURIComponent(baseCur.toUpperCase())}&year=${year}`}
         className={item}
-        aria-label={`Download ${year} FX averages CSV for tax filing`}
+        aria-label={i18n.home.toolkitTax}
       >
-        <DownloadSvg className="size-4" /> Tax-ready FX averages
+        <DownloadSvg className="size-4" /> {i18n.home.toolkitTax}
       </a>
       <a
         href={WISE_REFERRAL_URL}
@@ -54,7 +56,7 @@ export default function ToolkitSection({ baseCur }: { baseCur: string }) {
         draggable={false}
         className={item}
       >
-        <ShareSvg className="size-4" /> Send money cheapest
+        <ShareSvg className="size-4" /> {i18n.home.toolkitSend}
       </a>
     </section>
   );

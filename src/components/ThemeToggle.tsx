@@ -10,6 +10,8 @@ import { useEffect, useState } from 'react';
 const NEXT_MODE: Record<ThemeMode, ThemeMode> = { dark: 'light', light: 'system', system: 'dark' };
 
 // One-tap theme cycler: dark -> light -> system -> dark.
+// The icon always shows the CURRENT state (moon = dark, sun = light,
+// monitor = system) — never the action — so all three states read distinctly.
 export default function ThemeToggle() {
   const [themeMode, setThemeMode] = useAtom(themeModeAtom);
   const haptics = useAtomValue(hapticsAtom);
@@ -29,7 +31,7 @@ export default function ThemeToggle() {
       data-tour="tour-theme-toggle"
       className="h-[44px] w-[44px] shrink-0 flex items-center justify-center"
     >
-      {mode === 'light' ? <MoonSvg /> : mode === 'system' ? <MonitorSvg /> : <SunSvg />}
+      {mode === 'dark' ? <MoonSvg /> : mode === 'light' ? <SunSvg /> : <MonitorSvg />}
     </button>
   );
 }

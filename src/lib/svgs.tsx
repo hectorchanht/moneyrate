@@ -104,5 +104,7 @@ export const ImageSvg = ({ ...props }) => <svg xmlns="http://www.w3.org/2000/svg
 </svg>;
 
 export const GlobeSvg = ({ ...props }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6" {...props}>
-  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5a11.953 11.953 0 0 1-10.196-5.918m15.686 0A12 12 0 0 1 12 10.5a12 12 0 0 1-10.196-5.918" />
+  <circle cx="12" cy="12" r="9" />
+  <ellipse cx="12" cy="12" rx="4" ry="9" />
+  <path strokeLinecap="round" d="M3.5 12h17" />
 </svg>;

@@ -19,8 +19,8 @@ import {
 // Monetization strip — first content block under the toolbar, above the
 // currency list, so it's always above the fold. Single slim row (not a tall
 // card) to stay out of the converter's way. Solid brand-color buttons with a
-// "Sponsored" disclosure (localized across all 30 locales; the button labels
-// stay English-only for now — the v1 state).
+// "Sponsored" disclosure and button labels localized across all 30 locales
+// (positioning A follow-up, 2026-10-09 — labels now react to language change).
 // Buttons are ordered by cross-border moment (positioning A, 2026-10-09):
 // Send (Wise) · Travel (Airalo) · Tax (Koinly) · Trade (Coinbase/Binance) ·
 // Business (Airwallex).
@@ -47,7 +47,7 @@ export default function AffiliateLinks() {
           draggable={false}
           className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#9FE870] text-black hover:bg-[#86d957] text-[11px] px-2"
         >
-          Send money abroad &rarr;
+          {i18n.home.affiliateSend} &rarr;
         </a>
       )}
       {hasAiraloLink() && (
@@ -58,7 +58,7 @@ export default function AffiliateLinks() {
           draggable={false}
           className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#F43F5E] text-white hover:bg-[#d92f4d] text-[11px] px-2"
         >
-          Get travel eSIM &rarr;
+          {i18n.home.affiliateTravel} &rarr;
         </a>
       )}
       {hasKoinlyLink() && (
@@ -69,7 +69,7 @@ export default function AffiliateLinks() {
           draggable={false}
           className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#4F46E5] text-white hover:bg-[#3f39c4] text-[11px] px-2"
         >
-          Crypto tax reports &rarr;
+          {i18n.home.affiliateTax} &rarr;
         </a>
       )}
       {hasCoinbaseLink() && (
@@ -80,7 +80,7 @@ export default function AffiliateLinks() {
           draggable={false}
           className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#0052FF] text-white hover:bg-[#0040c8] text-[11px] px-2"
         >
-          Buy crypto &rarr;
+          {i18n.home.affiliateBuyCrypto} &rarr;
         </a>
       )}
       {hasBinanceLink() && (
@@ -91,7 +91,7 @@ export default function AffiliateLinks() {
           draggable={false}
           className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#F0B90B] text-black hover:bg-[#d9a90a] text-[11px] px-2"
         >
-          Trade on Binance &rarr;
+          {i18n.home.affiliateTrade} &rarr;
         </a>
       )}
       {hasAirwallexLink() && (
@@ -102,7 +102,7 @@ export default function AffiliateLinks() {
           draggable={false}
           className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#0B1F4B] text-white hover:bg-[#16295c] text-[11px] px-2"
         >
-          Business FX accounts &rarr;
+          {i18n.home.affiliateBusiness} &rarr;
         </a>
       )}
     </section>
