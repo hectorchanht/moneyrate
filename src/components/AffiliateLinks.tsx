@@ -1,11 +1,17 @@
 "use client";
 
 import {
+  AIRALO_REFERRAL_URL,
+  AIRWALLEX_REFERRAL_URL,
   BINANCE_REFERRAL_URL,
   COINBASE_REFERRAL_URL,
+  KOINLY_REFERRAL_URL,
   WISE_REFERRAL_URL,
+  hasAiraloLink,
+  hasAirwallexLink,
   hasBinanceLink,
   hasCoinbaseLink,
+  hasKoinlyLink,
   hasWiseLink,
 } from "@/lib/affiliates";
 
@@ -16,7 +22,7 @@ import {
 // Renders nothing while the referral URLs are placeholders (see affiliates.ts).
 // NOTE (v1): English-only strings; the site's 30 locales fall back to these.
 export default function AffiliateLinks() {
-  if (!hasWiseLink() && !hasCoinbaseLink() && !hasBinanceLink()) return null;
+  if (!hasWiseLink() && !hasCoinbaseLink() && !hasBinanceLink() && !hasAiraloLink() && !hasKoinlyLink() && !hasAirwallexLink()) return null;
 
   return (
     <section
@@ -59,6 +65,39 @@ export default function AffiliateLinks() {
           className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#F0B90B] text-black hover:bg-[#d9a90a] text-[11px] px-2"
         >
           Trade on Binance &rarr;
+        </a>
+      )}
+      {hasAiraloLink() && (
+        <a
+          href={AIRALO_REFERRAL_URL}
+          target="_blank"
+          rel="noopener sponsored"
+          draggable={false}
+          className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#F43F5E] text-white hover:bg-[#d92f4d] text-[11px] px-2"
+        >
+          Get travel eSIM &rarr;
+        </a>
+      )}
+      {hasKoinlyLink() && (
+        <a
+          href={KOINLY_REFERRAL_URL}
+          target="_blank"
+          rel="noopener sponsored"
+          draggable={false}
+          className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#4F46E5] text-white hover:bg-[#3f39c4] text-[11px] px-2"
+        >
+          Crypto tax reports &rarr;
+        </a>
+      )}
+      {hasAirwallexLink() && (
+        <a
+          href={AIRWALLEX_REFERRAL_URL}
+          target="_blank"
+          rel="noopener sponsored"
+          draggable={false}
+          className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#0B1F4B] text-white hover:bg-[#16295c] text-[11px] px-2"
+        >
+          Business FX accounts &rarr;
         </a>
       )}
     </section>

@@ -103,6 +103,40 @@ export default function ApiDocsPage() {
         <li><span className={CODE}>key</span> — optional Pro license key: removes the footer</li>
       </ul>
 
+      <h2 id="tax-csv" className="text-lg font-semibold mt-6 mb-2">Tax CSV</h2>
+      <p className="text-sm opacity-70 mb-2">
+        Annual FX averages for tax filing — monthly + annual averages for 24
+        major currencies, as a downloadable CSV. Works for any country&apos;s
+        tax year, not just one jurisdiction.
+      </p>
+      <pre className="bg-base-200 rounded p-3 text-sm overflow-x-auto">
+{`$ curl "${SITE_URL}/api/tax-csv?base=USD&year=2025" -o usd-2025.csv
+Month,EUR,GBP,JPY,...
+2025-01,0.96,0.80,154.2,...
+...
+Annual average,0.95,0.79,151.8,...`}
+      </pre>
+      <ul className="list-disc ml-6 space-y-1 text-sm mt-2">
+        <li>The <strong>current year is free</strong>; historical years (2020+) need a Pro <span className={CODE}>key</span></li>
+        <li>20 requests/day/IP — each call fans out to ~24 rate sources</li>
+      </ul>
+
+      <h2 id="email-alerts" className="text-lg font-semibold mt-6 mb-2">Email alerts</h2>
+      <p className="text-sm opacity-70 mb-2">
+        Get one email when a rate hits your target — no app open needed.
+        Subscribe in the app (Settings → Email alerts) or via the API:
+      </p>
+      <pre className="bg-base-200 rounded p-3 text-sm overflow-x-auto">
+{`$ curl -X POST ${SITE_URL}/api/alerts/subscribe \
+    -H 'Content-Type: application/json' \
+    -d '{"email":"you@example.com","base":"USD","target":"CAD",
+         "direction":"above","target_rate":1.42}'`}
+      </pre>
+      <p className="text-sm opacity-70 mt-2">
+        One active alert per email address (v1); firing is one-shot —
+        resubscribing re-arms. Checked daily.
+      </p>
+
       <h2 className="text-lg font-semibold mt-6 mb-2">Developers</h2>
       <ul className="list-disc ml-6 space-y-1 text-sm">
         <li>

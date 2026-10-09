@@ -210,6 +210,108 @@ interface CurrencyListTableProps {
 
 // Pro license settings (English-only strings — same precedent as AffiliateLinks).
 // The key is a Gumroad license key for the paid tier; verified via /api/license.
+// Email rate alerts via Resend (English-only strings — same precedent as
+// AffiliateLinks). One active alert per email address (v1); firing is
+// one-shot, resubscribing re-arms. Needs RESEND_API_KEY on Vercel.
+const EmailAlertsSettings: React.FC<{ currencies: string[]; baseCur: string }> = ({ currencies, baseCur }) => {
+  const [haptics] = useAtom(hapticsAtom);
+  const [email, setEmail] = useState('');
+  const [from, setFrom] = useState(baseCur);
+  const [to, setTo] = useState(currencies.find(c => c !== baseCur) ?? '');
+  const [target, setTarget] = useState('');
+  const [direction, setDirection] = useState<AlertDirection>('above');
+  const [status, setStatus] = useState<'idle' | 'sending' | 'ok' | 'dup' | 'bad' | 'off'>('idle');
+
+  const subscribe = async () => {
+    const targetNum = parseFloat(target);
+    if (!EMAIL_OK.test(email) || !from || !to || from === to || !(targetNum > 0)) return;
+    setStatus('sending');
+    try {
+      const res = await fetch('/api/alerts/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), base: from, target: to, direction, target_rate: targetNum }),
+      });
+      if (res.ok) { setStatus('ok'); setTarget(''); }
+      else if (res.status === 409) setStatus('dup');
+      else if (res.status === 503) setStatus('off');
+      else setStatus('bad');
+    } catch {
+      setStatus('bad');
+    }
+    vibrate(haptics);
+  };
+
+  const ok = EMAIL_OK.test(email) && from && to && from !== to && parseFloat(target) > 0;
+
+  return (
+    <div>
+      <div className="label">
+        <span className="label-text flex items-center gap-2"><BellSvg className="size-5" />Email alerts</span>
+      </div>
+      <p className="text-xs opacity-60 mb-2">
+        One email when your target hits — no app open needed. One active alert per address.
+      </p>
+      <label className="flex flex-col gap-1 mb-2">
+        <span className="text-xs opacity-70">Email</span>
+        <input
+          type="email" inputMode="email"
+          className="input input-bordered input-sm w-full"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(e) => { setEmail(e.target.value); setStatus('idle'); }}
+          aria-label="Email for alerts"
+        />
+      </label>
+      <div className="grid grid-cols-2 gap-2 mb-2">
+        <label className="flex flex-col gap-1">
+          <span className="text-xs opacity-70">From</span>
+          <select className="select select-bordered select-sm w-full" value={from} onChange={(e) => setFrom(e.target.value)} aria-label="Alert from currency">
+            {currencies.map(c => <option key={c} value={c}>{c.toUpperCase()}</option>)}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-xs opacity-70">To</span>
+          <select className="select select-bordered select-sm w-full" value={to} onChange={(e) => setTo(e.target.value)} aria-label="Alert to currency">
+            {currencies.map(c => <option key={c} value={c}>{c.toUpperCase()}</option>)}
+          </select>
+        </label>
+      </div>
+      <label className="flex flex-col gap-1 mb-2">
+        <span className="text-xs opacity-70">Target rate</span>
+        <input
+          type="number" inputMode="decimal" min="0" step="any"
+          className="input input-bordered input-sm w-full"
+          placeholder="160"
+          value={target}
+          onChange={(e) => { setTarget(e.target.value); setStatus('idle'); }}
+          aria-label="Alert target rate"
+        />
+      </label>
+      <div className="flex gap-2 mb-1">
+        <div className="join flex-1">
+          <button type="button" className={`btn btn-sm join-item flex-1 ${direction === 'above' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setDirection('above')} aria-pressed={direction === 'above'}>
+            Above ↑
+          </button>
+          <button type="button" className={`btn btn-sm join-item flex-1 ${direction === 'below' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setDirection('below')} aria-pressed={direction === 'below'}>
+            Below ↓
+          </button>
+        </div>
+        <button type="button" className="btn btn-primary btn-sm flex-1" onClick={subscribe} disabled={!ok || status === 'sending'}>
+          {status === 'sending' ? 'Subscribing…' : 'Notify me'}
+        </button>
+      </div>
+      {status === 'ok' && <p className="text-xs text-success mb-1">Subscribed — check your inbox for confirmation.</p>}
+      {status === 'dup' && <p className="text-xs text-warning mb-1">This email already has an active alert.</p>}
+      {status === 'bad' && <p className="text-xs text-error mb-1">Something went wrong — try again.</p>}
+      {status === 'off' && <p className="text-xs text-warning mb-1">Email alerts aren&apos;t configured yet.</p>}
+    </div>
+  );
+};
+
+const EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+
 const ProSettings: React.FC = () => {
   const [licenseKey, setLicenseKey] = useAtom(licenseKeyAtom);
   const [pro, setPro] = useAtom(proAtom);
@@ -480,6 +582,10 @@ const CurrencySetting: React.FC<{ baseCur: string }> = ({ baseCur }) => {
         <div className="divider m-0" />
 
         <ProSettings />
+
+        <div className="divider m-0" />
+
+        <EmailAlertsSettings currencies={currency2Display} baseCur={baseCur} />
 
         <div className="divider m-0" />
 

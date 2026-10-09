@@ -8,6 +8,8 @@ export const PAID_DAILY_LIMIT = 100000;
 // Chart proxy: heavier than /api/convert (up to 3 Yahoo fetches per call),
 // so it gets its own, tighter per-IP daily budget.
 export const CHART_DAILY_LIMIT = 300;
+// Tax-CSV: fans out to ~24 Yahoo fetches per call, so a tight per-IP budget.
+export const TAXCSV_DAILY_LIMIT = 20;
 
 // In-memory per-IP daily counters. Resets on cold start — approximate on
 // serverless, which is fine for a v1 abuse brake (not a billing meter).
