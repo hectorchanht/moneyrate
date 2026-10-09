@@ -24,7 +24,7 @@ import {
   pinnedCurrenciesAtom,
   rateAlertsAtom,
   showChangePctAtom,
-  showCopyButtonsAtom,
+  showPinButtonsAtom,
   showDatePickerAtom,
   sortModeAtom,
   tourSeenAtom
@@ -98,7 +98,7 @@ export default function Home() {
   const [compactRows] = useAtom(compactRowsAtom);
   const [copyFormat] = useAtom(copyFormatAtom);
   const [haptics] = useAtom(hapticsAtom);
-  const [showCopyButtons] = useAtom(showCopyButtonsAtom);
+  const [showPinButtons] = useAtom(showPinButtonsAtom);
   const [pinnedCurrencies, setPinnedCurrencies] = useAtom(pinnedCurrenciesAtom);
   const [rateAlerts, setRateAlerts] = useAtom(rateAlertsAtom);
   const i18n = useTranslation();
@@ -512,7 +512,7 @@ export default function Home() {
       showChangePct={showChangePct}
       compact={compactRows}
       copyFormat={copyFormat}
-      showCopyButton={showCopyButtons}
+      showPinButton={showPinButtons}
       haptics={haptics}
       isPinned={pinnedCurrencies.includes(cur)}
       onDragStart={onDragStart}

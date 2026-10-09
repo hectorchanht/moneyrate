@@ -22,7 +22,7 @@ const baseProps = {
   compact: false,
   copyFormat: 'value' as const,
   haptics: false,
-  showCopyButton: true,
+  showPinButton: true,
   isPinned: false,
   onDragStart: vi.fn(),
   onSelectBase: vi.fn(),
@@ -100,11 +100,10 @@ describe('CurrencyRow', () => {
     expect(screen.queryByText(/1\.50%/)).toBeNull();
   });
 
-  it('hides the copy button when showCopyButton is false', () => {
-    render(<CurrencyRow {...baseProps} cur="EUR" val={0.9} name="Euro" showCopyButton={false} />);
-    expect(screen.queryByRole('button', { name: /copy eur value/i })).toBeNull();
-    // Pin button stays visible.
-    expect(screen.getByRole('button', { name: /pin eur to top/i })).toBeTruthy();
+  it('hides the pin button when showPinButton is false (copy stays visible)', () => {
+    render(<CurrencyRow {...baseProps} cur="EUR" val={0.9} name="Euro" showPinButton={false} />);
+    expect(screen.queryByRole('button', { name: /pin eur to top/i })).toBeNull();
+    expect(screen.getByRole('button', { name: /copy eur value/i })).toBeTruthy();
   });
 
   it('toggles pin on pin-button click', async () => {

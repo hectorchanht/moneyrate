@@ -22,7 +22,7 @@ export interface CurrencyRowProps {
   compact: boolean;
   copyFormat: CopyFormat;
   haptics: boolean;
-  showCopyButton: boolean;
+  showPinButton: boolean;
   isPinned: boolean;
   onDragStart: (cur: string) => void;
   onSelectBase: (cur: string) => void;
@@ -47,7 +47,7 @@ const CurrencyRow = ({
   compact,
   copyFormat,
   haptics,
-  showCopyButton,
+  showPinButton,
   isPinned,
   onDragStart,
   onSelectBase,
@@ -181,6 +181,8 @@ const CurrencyRow = ({
               : (
                 <>
                   {/* Pin to top — hidden in editing mode (drag handles own that space). */}
+                  {/* Pin button is opt-in (settings → show pin buttons), hidden by default. */}
+                  {showPinButton && (
                   <button
                     type="button"
                     onClick={onPin}
@@ -191,8 +193,7 @@ const CurrencyRow = ({
                   >
                     {isPinned ? <PinFilledSvg className="size-5" /> : <PinSvg className="size-5" />}
                   </button>
-                  {/* Copy button is opt-in (settings → show copy buttons), hidden by default. */}
-                  {showCopyButton && (
+                  )}
                   <button
                     type="button"
                     onClick={onCopy}
@@ -204,7 +205,6 @@ const CurrencyRow = ({
                   >
                     {copied ? <CheckSvg className="size-5" /> : <CopySvg className="size-5" />}
                   </button>
-                  )}
                 </>
               ))}
         </div>

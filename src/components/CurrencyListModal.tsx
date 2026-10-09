@@ -12,7 +12,7 @@ import {
   PERSISTED_ATOM_KEYS,
   rateAlertsAtom,
   showChangePctAtom,
-  showCopyButtonsAtom,
+  showPinButtonsAtom,
   sortModeAtom,
   themeModeAtom
 } from '@/lib/atoms';
@@ -206,7 +206,7 @@ const CurrencySetting: React.FC<{ baseCur: string }> = ({ baseCur }) => {
   const [compactRows, setCompactRows] = useAtom(compactRowsAtom);
   const [copyFormat, setCopyFormat] = useAtom(copyFormatAtom);
   const [haptics, setHaptics] = useAtom(hapticsAtom);
-  const [showCopyButtons, setShowCopyButtons] = useAtom(showCopyButtonsAtom);
+  const [showPinButtons, setShowPinButtons] = useAtom(showPinButtonsAtom);
   const t = useTranslation();
 
   const sortOptions: { value: SortMode; label: string }[] = [
@@ -363,9 +363,9 @@ const CurrencySetting: React.FC<{ baseCur: string }> = ({ baseCur }) => {
         <div className="divider m-0" />
 
         <label className="label cursor-pointer">
-          <input type="checkbox" checked={showCopyButtons} onChange={() => { vibrate(haptics); setShowCopyButtons(!showCopyButtons); }} className="checkbox" />
+          <input type="checkbox" checked={showPinButtons} onChange={() => { vibrate(haptics); setShowPinButtons(!showPinButtons); }} className="checkbox" />
           <span className="label-text px-2">
-            {t.settings.showCopyButtons}
+            {t.settings.showPinButtons}
           </span>
         </label>
 
