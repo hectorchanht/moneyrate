@@ -207,9 +207,11 @@ const CurrencyChart = () => {
         ))}
       </div>
 
-      <div className="flex-1 min-h-[300px]">
+      {/* Full-bleed: -mx cancels the outer container's px so the chart uses
+          every pixel edge to edge (mobile px-2 / sm px-1 / md px-2). */}
+      <div className="flex-1 min-h-[300px] -mx-2 sm:-mx-1 md:-mx-2">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={filteredData}>
+        <LineChart data={filteredData} margin={{ top: 8, right: 5, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray="4 2 0" />
           {/* minTickGap keeps date labels from colliding on narrow viewports. */}
           <XAxis dataKey="date" domain={['dataMin', 'dataMax']} minTickGap={32} tick={{ fontSize: 11 }} />
