@@ -31,3 +31,8 @@ npm run lint       # next lint
 npm test           # unit tests (Vitest)
 npm run test:e2e   # end-to-end tests (Playwright)
 ```
+
+## Contact
+
+- hello@moneyrate.lol
+- support@moneyrate.lol
