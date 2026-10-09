@@ -67,13 +67,41 @@ export default function ApiDocsPage() {
 
       <h2 id="paid" className="text-lg font-semibold mt-6 mb-2">Paid tier</h2>
       <p className="text-sm opacity-70 mb-2">
-        The paid key is not on sale yet — the free tier covers almost everyone.
-        When it launches, your Gumroad license key unlocks the paid limit;
-        every response carries <span className={CODE}>X-Tier</span>,{' '}
+        A <span className={CODE}>license_key</span> from the $5/month Gumroad
+        plan unlocks the paid limit — the API and the app both accept it today.
+        Every response carries <span className={CODE}>X-Tier</span>,{' '}
         <span className={CODE}>X-RateLimit-Limit</span> and{' '}
         <span className={CODE}>X-RateLimit-Remaining</span> headers so you can
         watch usage. Limits are per IP, per UTC day.
       </p>
+
+      <h2 id="pro" className="text-lg font-semibold mt-6 mb-2">MoneyRate Pro (in the app)</h2>
+      <p className="text-sm opacity-70 mb-2">
+        The same license key unlocks Pro inside the converter: paste it in
+        Settings → <strong>MoneyRate Pro</strong> to verify.
+      </p>
+      <ul className="list-disc ml-6 space-y-1 text-sm">
+        <li><strong>Unlimited rate alerts</strong> — the free plan allows 3; Pro has no cap.</li>
+        <li><strong>White-label embeds</strong> — append <span className={CODE}>?key=YOUR_KEY</span> to
+          the embed URL below to drop the “Powered by” footer.</li>
+      </ul>
+
+      <h2 id="embed" className="text-lg font-semibold mt-6 mb-2">Embed the converter</h2>
+      <p className="text-sm opacity-70 mb-2">
+        Drop a live mini-converter on any site with one iframe. Free with a
+        small “Powered by moneyrate.lol” footer — or go white-label with a Pro key.
+      </p>
+      <pre className="bg-base-200 rounded p-3 text-sm overflow-x-auto">
+{`<iframe
+  src="${SITE_URL}/embed?base=USD&target=CAD&amount=100"
+  width="320" height="168" style="border:0">
+</iframe>`}
+      </pre>
+      <ul className="list-disc ml-6 space-y-1 text-sm mt-2">
+        <li><span className={CODE}>base</span>, <span className={CODE}>target</span> — 2–6 letter codes</li>
+        <li><span className={CODE}>amount</span> — optional, default 1</li>
+        <li><span className={CODE}>key</span> — optional Pro license key: removes the footer</li>
+      </ul>
 
       <h2 className="text-lg font-semibold mt-6 mb-2">Developers</h2>
       <ul className="list-disc ml-6 space-y-1 text-sm">

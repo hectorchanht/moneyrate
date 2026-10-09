@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { resolveTier } from '@/lib/license';
 import {
   FREE_DAILY_LIMIT,
   PAID_DAILY_LIMIT,
@@ -21,39 +22,6 @@ const CODE_RE = /^[A-Za-z]{2,6}$/;
 // Sanity cap: above this, amount * rate overflows to Infinity and the JSON
 // body ships result: null. 1e15 is far beyond any real conversion.
 const MAX_AMOUNT = 1e15;
-
-// Verified-license cache: one Gumroad API call per key per hour, not one per
-// request. Both positive and negative results are cached. Bounded so a flood
-// of random keys can't grow the map without limit.
-const LICENSE_CACHE_TTL_MS = 60 * 60 * 1000;
-const LICENSE_CACHE_MAX = 5000;
-const licenseCache = new Map<string, { valid: boolean; exp: number }>();
-// Per-IP daily budget for Gumroad verification attempts — without this,
-// random keys burn unlimited Gumroad API calls BEFORE the main rate-limit
-// check ever runs.
-const VERIFY_DAILY_LIMIT = 10;
-
-async function verifyGumroadLicense(key: string): Promise<boolean> {
-  const token = process.env.GUMROAD_ACCESS_TOKEN;
-  const permalink = process.env.GUMROAD_PRODUCT_PERMALINK;
-  if (!token || !permalink || !key) return false;
-  try {
-    const res = await fetch('https://api.gumroad.com/v2/licenses/verify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        product_permalink: permalink,
-        license_key: key,
-        access_token: token,
-      }),
-    });
-    const json = await res.json();
-    const p = json?.purchase;
-    return json?.success === true && p?.refunded !== true && p?.chargebacked !== true;
-  } catch {
-    return false;
-  }
-}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -78,25 +46,8 @@ export async function GET(request: Request) {
   const ip = clientIp(request);
 
   // Tier: paid only with a valid Gumroad license key; invalid keys fall back
-  // to free silently (friendly API, no hard error).
-  let tier: 'free' | 'paid' = 'free';
-  if (licenseKey) {
-    const cached = licenseCache.get(licenseKey);
-    if (cached && Date.now() <= cached.exp) {
-      if (cached.valid) tier = 'paid';
-    } else {
-      // Verification calls Gumroad's API, so it gets its own per-IP budget —
-      // checked BEFORE the main rate limit, so junk keys can't burn it freely.
-      const vb = checkLimit('verify:' + ip, VERIFY_DAILY_LIMIT);
-      if (vb.allowed) {
-        const valid = await verifyGumroadLicense(licenseKey);
-        if (licenseCache.size >= LICENSE_CACHE_MAX) licenseCache.clear();
-        // set() overwrites any stale entry for this key.
-        licenseCache.set(licenseKey, { valid, exp: Date.now() + LICENSE_CACHE_TTL_MS });
-        if (valid) tier = 'paid';
-      }
-    }
-  }
+  // to free silently (friendly API, no hard error). Shared with /api/license.
+  const tier = await resolveTier(licenseKey, ip);
   const limit = tier === 'paid' ? PAID_DAILY_LIMIT : FREE_DAILY_LIMIT;
 
   const { allowed, remaining } = checkLimit(ip, limit);

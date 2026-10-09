@@ -27,8 +27,8 @@ describe('PERSISTED_ATOM_KEYS drift guard', () => {
     expect(PERSISTED_ATOM_KEYS).toContain('showDatePicker');
   });
 
-  it('has 19 unique entries', () => {
-    expect(PERSISTED_ATOM_KEYS).toHaveLength(19);
+  it('has 21 unique entries', () => {
+    expect(PERSISTED_ATOM_KEYS).toHaveLength(21);
     expect(new Set(PERSISTED_ATOM_KEYS).size).toBe(PERSISTED_ATOM_KEYS.length);
   });
 });

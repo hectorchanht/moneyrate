@@ -25,10 +25,14 @@ export const hapticsAtom = atomWithStorage<boolean>('haptics', true);
 export const showPinButtonsAtom = atomWithStorage<boolean>('showPinButtons', false);
 export const pinnedCurrenciesAtom = atomWithStorage<string[]>('pinnedCurrencies', []);
 export const rateAlertsAtom = atomWithStorage<RateAlert[]>('rateAlerts', []);
+// Pro license: key pasted in Settings, verified via /api/license (Gumroad).
+// Unlocks unlimited rate alerts + white-label embeds (see /api-docs#pro).
+export const licenseKeyAtom = atomWithStorage<string>('licenseKey', '');
+export const proAtom = atomWithStorage<boolean>('pro', false);
 
 // Single source of truth for every persisted localStorage key above.
 // MUST stay in sync (same keys, same declaration order) with the atomWithStorage
 // calls above — the drift-guard test in atoms.test.ts fails if they diverge.
 // Consumed by the settings Reset handler so no persisted key (e.g. tourSeen,
 // showDatePicker) is ever left behind.
-export const PERSISTED_ATOM_KEYS = ['baseCur', 'currency2Display', 'currencyValue', 'isEditing', 'isDefaultCurrencyValue', 'defaultCurrencyValue', 'defaultCurrencyValueDp', 'language', 'sortMode', 'themeMode', 'tourSeen', 'showDatePicker', 'showChangePct', 'compactRows', 'copyFormat', 'haptics', 'showPinButtons', 'pinnedCurrencies', 'rateAlerts'] as const;
+export const PERSISTED_ATOM_KEYS = ['baseCur', 'currency2Display', 'currencyValue', 'isEditing', 'isDefaultCurrencyValue', 'defaultCurrencyValue', 'defaultCurrencyValueDp', 'language', 'sortMode', 'themeMode', 'tourSeen', 'showDatePicker', 'showChangePct', 'compactRows', 'copyFormat', 'haptics', 'showPinButtons', 'pinnedCurrencies', 'rateAlerts', 'licenseKey', 'pro'] as const;

@@ -9,7 +9,9 @@ import {
   isDefaultCurrencyValueAtom,
   isEditingAtom,
   languageAtom,
+  licenseKeyAtom,
   PERSISTED_ATOM_KEYS,
+  proAtom,
   rateAlertsAtom,
   showChangePctAtom,
   showPinButtonsAtom,
@@ -74,9 +76,14 @@ interface CurrencyListTableProps {
 
 // Rate alerts manager (settings tab). Alerts are evaluated in page.tsx
 // whenever fresh rates arrive; this component is CRUD + permission only.
+// Free plan cap on rate alerts; Pro (license key in Settings) is unlimited.
+const FREE_ALERT_LIMIT = 3;
+
 const RateAlertsSettings: React.FC<{ currencies: string[]; baseCur: string }> = ({ currencies, baseCur }) => {
   const [alerts, setAlerts] = useAtom(rateAlertsAtom);
   const [haptics] = useAtom(hapticsAtom);
+  const [pro] = useAtom(proAtom);
+  const [capHit, setCapHit] = useState(false);
   const t = useTranslation();
   const [from, setFrom] = useState(baseCur);
   const [to, setTo] = useState(currencies.find(c => c !== baseCur) ?? '');
@@ -91,6 +98,7 @@ const RateAlertsSettings: React.FC<{ currencies: string[]; baseCur: string }> = 
   const addAlert = () => {
     const targetNum = parseFloat(target);
     if (!from || !to || from === to || !(targetNum > 0)) return;
+    if (!pro && alerts.length >= FREE_ALERT_LIMIT) { setCapHit(true); vibrate(haptics); return; }
     vibrate(haptics);
     const alert: RateAlert = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -163,6 +171,13 @@ const RateAlertsSettings: React.FC<{ currencies: string[]; baseCur: string }> = 
         </button>
       </div>
 
+      {!pro && (
+        <p className="text-xs opacity-60 mb-2">
+          {capHit
+            ? <>Free plan allows {FREE_ALERT_LIMIT} alerts — <a href="/api-docs#pro" className="link">go Pro</a> for unlimited.</>
+            : <>Free plan: {FREE_ALERT_LIMIT} alerts · <a href="/api-docs#pro" className="link">Pro</a> for unlimited</>}
+        </p>
+      )}
       {alerts.length === 0 ? (
         <p className="text-xs opacity-50 mb-1">{t.settings.alertNoAlerts}</p>
       ) : (
@@ -178,7 +193,7 @@ const RateAlertsSettings: React.FC<{ currencies: string[]; baseCur: string }> = 
                   {t.settings.alertRearm}
                 </button>
               )}
-              <button type="button" className="btn btn-ghost btn-xs" aria-label={`${t.settings.alertDelete} 1 ${a.from.toUpperCase()} ${a.to.toUpperCase()}`} onClick={() => { vibrate(haptics); setAlerts(prev => prev.filter(x => x.id !== a.id)); }}>
+              <button type="button" className="btn btn-ghost btn-xs" aria-label={`${t.settings.alertDelete} 1 ${a.from.toUpperCase()} ${a.to.toUpperCase()}`} onClick={() => { vibrate(haptics); setCapHit(false); setAlerts(prev => prev.filter(x => x.id !== a.id)); }}>
                 <CrossSvg className="size-4" />
               </button>
             </li>
@@ -192,6 +207,84 @@ const RateAlertsSettings: React.FC<{ currencies: string[]; baseCur: string }> = 
 interface CurrencyListTableProps {
   data: Record<string, string>;
 }
+
+// Pro license settings (English-only strings — same precedent as AffiliateLinks).
+// The key is a Gumroad license key for the paid tier; verified via /api/license.
+const ProSettings: React.FC = () => {
+  const [licenseKey, setLicenseKey] = useAtom(licenseKeyAtom);
+  const [pro, setPro] = useAtom(proAtom);
+  const [haptics] = useAtom(hapticsAtom);
+  const [input, setInput] = useState(licenseKey);
+  const [status, setStatus] = useState<'idle' | 'checking' | 'ok' | 'bad'>('idle');
+
+  const verify = async () => {
+    const key = input.trim();
+    if (!key) return;
+    setStatus('checking');
+    try {
+      const res = await fetch(`/api/license?key=${encodeURIComponent(key)}`);
+      const json = await res.json();
+      if (json?.valid) {
+        setLicenseKey(key);
+        setPro(true);
+        setStatus('ok');
+      } else {
+        setPro(false);
+        setStatus('bad');
+      }
+    } catch {
+      setStatus('bad');
+    }
+    vibrate(haptics);
+  };
+
+  const remove = () => {
+    setLicenseKey('');
+    setPro(false);
+    setInput('');
+    setStatus('idle');
+    vibrate(haptics);
+  };
+
+  return (
+    <div>
+      <div className="label">
+        <span className="label-text flex items-center gap-2">
+          ✦ MoneyRate Pro
+          {pro && <span className="badge badge-success badge-sm">Active</span>}
+        </span>
+      </div>
+      <p className="text-xs opacity-60 mb-2">
+        Unlimited rate alerts + white-label embeds. <a href="/api-docs#pro" className="link">Learn more</a>
+      </p>
+      <div className="flex gap-2 mb-1">
+        <input
+          type="text"
+          className="input input-bordered input-sm flex-1 min-w-0 font-mono"
+          placeholder="Gumroad license key"
+          value={input}
+          onChange={(e) => { setInput(e.target.value); setStatus('idle'); }}
+          aria-label="Pro license key"
+        />
+        <button type="button" className="btn btn-sm btn-primary shrink-0" onClick={verify} disabled={!input.trim() || status === 'checking'}>
+          {status === 'checking' ? 'Checking…' : pro ? 'Re-verify' : 'Activate'}
+        </button>
+        {(pro || licenseKey) && (
+          <button type="button" className="btn btn-sm btn-ghost shrink-0" onClick={remove}>
+            Remove
+          </button>
+        )}
+      </div>
+      {status === 'bad' && (
+        <p className="text-xs text-error mb-1">That key didn&apos;t verify — check it and try again.</p>
+      )}
+      {status === 'ok' && (
+        <p className="text-xs text-success mb-1">Pro activated — unlimited alerts unlocked.</p>
+      )}
+    </div>
+  );
+};
+
 
 const CurrencySetting: React.FC<{ baseCur: string }> = ({ baseCur }) => {
   const [isDefaultCurrencyValue, setIsDefaultCurrencyValue] = useAtom(isDefaultCurrencyValueAtom);
@@ -207,6 +300,8 @@ const CurrencySetting: React.FC<{ baseCur: string }> = ({ baseCur }) => {
   const [copyFormat, setCopyFormat] = useAtom(copyFormatAtom);
   const [haptics, setHaptics] = useAtom(hapticsAtom);
   const [showPinButtons, setShowPinButtons] = useAtom(showPinButtonsAtom);
+  const [, setLicenseKey] = useAtom(licenseKeyAtom);
+  const [, setPro] = useAtom(proAtom);
   const t = useTranslation();
 
   const sortOptions: { value: SortMode; label: string }[] = [
@@ -384,6 +479,10 @@ const CurrencySetting: React.FC<{ baseCur: string }> = ({ baseCur }) => {
 
         <div className="divider m-0" />
 
+        <ProSettings />
+
+        <div className="divider m-0" />
+
         <label className="label">
           <span className="label-text">{t.settings.currenciesToDisplay}</span>
         </label>
@@ -404,6 +503,8 @@ const CurrencySetting: React.FC<{ baseCur: string }> = ({ baseCur }) => {
           setCompactRows(false);
           setCopyFormat('full');
           setHaptics(true);
+          setLicenseKey('');
+          setPro(false);
           window.location.reload();
         }}>
           {t.settings.reset}

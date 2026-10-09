@@ -1,3 +1,4 @@
+import AffiliateLinks from '@/components/AffiliateLinks';
 import { getCurrencyRateApiUrls } from '@/lib/api';
 import { POPULAR_PAIRS, pairSlug, parsePair } from '@/lib/pairs';
 import type { Metadata } from 'next';
@@ -62,6 +63,9 @@ export default async function ConvertPairPage({ params }: { params: { pair: stri
       <nav className="text-xs opacity-60 mb-4">
         <Link href="/" className="underline">Home</Link> / {B} to {T}
       </nav>
+
+      {/* Affiliate strip above the fold — same as the homepage. */}
+      <AffiliateLinks />
 
       <h1 className="text-2xl font-semibold mb-2">Convert {B} to {T}</h1>
 
