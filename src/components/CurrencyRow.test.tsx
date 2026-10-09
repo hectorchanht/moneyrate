@@ -22,6 +22,7 @@ const baseProps = {
   compact: false,
   copyFormat: 'value' as const,
   haptics: false,
+  showCopyButton: true,
   isPinned: false,
   onDragStart: vi.fn(),
   onSelectBase: vi.fn(),
@@ -97,6 +98,13 @@ describe('CurrencyRow', () => {
   it('hides the 24h change badge when showChangePct is false', () => {
     render(<CurrencyRow {...baseProps} cur="EUR" val={0.9} name="Euro" changePct={1.5} showChangePct={false} />);
     expect(screen.queryByText(/1\.50%/)).toBeNull();
+  });
+
+  it('hides the copy button when showCopyButton is false', () => {
+    render(<CurrencyRow {...baseProps} cur="EUR" val={0.9} name="Euro" showCopyButton={false} />);
+    expect(screen.queryByRole('button', { name: /copy eur value/i })).toBeNull();
+    // Pin button stays visible.
+    expect(screen.getByRole('button', { name: /pin eur to top/i })).toBeTruthy();
   });
 
   it('toggles pin on pin-button click', async () => {

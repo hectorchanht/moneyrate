@@ -21,6 +21,8 @@ export const showChangePctAtom = atomWithStorage<boolean>('showChangePct', true)
 export const compactRowsAtom = atomWithStorage<boolean>('compactRows', false);
 export const copyFormatAtom = atomWithStorage<CopyFormat>('copyFormat', 'full');
 export const hapticsAtom = atomWithStorage<boolean>('haptics', true);
+// Row copy buttons are hidden by default (declutter); opt-in via settings.
+export const showCopyButtonsAtom = atomWithStorage<boolean>('showCopyButtons', false);
 export const pinnedCurrenciesAtom = atomWithStorage<string[]>('pinnedCurrencies', []);
 export const rateAlertsAtom = atomWithStorage<RateAlert[]>('rateAlerts', []);
 
@@ -29,4 +31,4 @@ export const rateAlertsAtom = atomWithStorage<RateAlert[]>('rateAlerts', []);
 // calls above — the drift-guard test in atoms.test.ts fails if they diverge.
 // Consumed by the settings Reset handler so no persisted key (e.g. tourSeen,
 // showDatePicker) is ever left behind.
-export const PERSISTED_ATOM_KEYS = ['baseCur', 'currency2Display', 'currencyValue', 'isEditing', 'isDefaultCurrencyValue', 'defaultCurrencyValue', 'defaultCurrencyValueDp', 'language', 'sortMode', 'themeMode', 'tourSeen', 'showDatePicker', 'showChangePct', 'compactRows', 'copyFormat', 'haptics', 'pinnedCurrencies', 'rateAlerts'] as const;
+export const PERSISTED_ATOM_KEYS = ['baseCur', 'currency2Display', 'currencyValue', 'isEditing', 'isDefaultCurrencyValue', 'defaultCurrencyValue', 'defaultCurrencyValueDp', 'language', 'sortMode', 'themeMode', 'tourSeen', 'showDatePicker', 'showChangePct', 'compactRows', 'copyFormat', 'haptics', 'showCopyButtons', 'pinnedCurrencies', 'rateAlerts'] as const;

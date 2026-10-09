@@ -12,6 +12,7 @@ import {
   PERSISTED_ATOM_KEYS,
   rateAlertsAtom,
   showChangePctAtom,
+  showCopyButtonsAtom,
   sortModeAtom,
   themeModeAtom
 } from '@/lib/atoms';
@@ -205,6 +206,7 @@ const CurrencySetting: React.FC<{ baseCur: string }> = ({ baseCur }) => {
   const [compactRows, setCompactRows] = useAtom(compactRowsAtom);
   const [copyFormat, setCopyFormat] = useAtom(copyFormatAtom);
   const [haptics, setHaptics] = useAtom(hapticsAtom);
+  const [showCopyButtons, setShowCopyButtons] = useAtom(showCopyButtonsAtom);
   const t = useTranslation();
 
   const sortOptions: { value: SortMode; label: string }[] = [
@@ -357,6 +359,15 @@ const CurrencySetting: React.FC<{ baseCur: string }> = ({ baseCur }) => {
             <option value={value} key={value}>{label}</option>
           ))}
         </select>
+
+        <div className="divider m-0" />
+
+        <label className="label cursor-pointer">
+          <input type="checkbox" checked={showCopyButtons} onChange={() => { vibrate(haptics); setShowCopyButtons(!showCopyButtons); }} className="checkbox" />
+          <span className="label-text px-2">
+            {t.settings.showCopyButtons}
+          </span>
+        </label>
 
         <div className="divider m-0" />
 
