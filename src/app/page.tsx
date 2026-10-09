@@ -2,6 +2,7 @@
 
 import CurrencyListModal, { languageOptions } from '@/components/CurrencyListModal';
 import AffiliateLinks from '@/components/AffiliateLinks';
+import ToolkitSection from '@/components/ToolkitSection';
 import CurrencyRow from '@/components/CurrencyRow';
 import InstallButton from '@/components/InstallButton';
 import SearchBar from '@/components/SearchBar';
@@ -748,6 +749,10 @@ export default function Home() {
               {rows.map(([cur, val], i) => renderRow(cur, val, i))}
             </div>
           )}
+
+          {/* Cross-border money toolkit (positioning A) — below the converter:
+              rate alerts, tax-ready FX averages, cheapest way to send money. */}
+          <ToolkitSection baseCur={baseCur} />
 
         </div>
       </main>

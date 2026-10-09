@@ -25,20 +25,20 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Money Rate - Fiat Crypto Conversion",
-  description: "Instantly fiat and crypto conversion for you and me.",
+  title: "MoneyRate — Currency Converter for Life Between Currencies",
+  description: "Free currency converter for expats, travelers, and cross-border freelancers. Live rates, rate alerts, tax-ready FX averages, plus the cheapest ways to send money abroad.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Money Rate - Fiat Crypto Conversion",
-    description: "Instantly fiat and crypto conversion for you and me.",
+    title: "MoneyRate — Currency Converter for Life Between Currencies",
+    description: "Free currency converter for expats, travelers, and cross-border freelancers. Live rates, rate alerts, tax-ready FX averages, plus the cheapest ways to send money abroad.",
     type: "website",
     url: "/",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Money Rate — Fiat + Crypto Conversion" }],
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "MoneyRate — Currency Converter for Life Between Currencies" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Money Rate - Fiat Crypto Conversion",
-    description: "Instantly fiat and crypto conversion for you and me.",
+    title: "MoneyRate — Currency Converter for Life Between Currencies",
+    description: "Free currency converter for expats, travelers, and cross-border freelancers. Live rates, rate alerts, tax-ready FX averages, plus the cheapest ways to send money abroad.",
     images: ["/og-image.png"],
   },
 };
@@ -59,7 +59,7 @@ export default function RootLayout({
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <meta name="apple-mobile-web-app-title" content="Money Rate - Fiat Crypto Conversion" />
+        <meta name="apple-mobile-web-app-title" content="MoneyRate" />
         <link rel="manifest" href="/site.webmanifest" />
         {/* Black browser chrome + PWA splash — never flash a white screen on launch. */}
         <meta name="theme-color" content="#000000" />

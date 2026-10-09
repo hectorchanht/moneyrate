@@ -21,6 +21,9 @@ import {
 // card) to stay out of the converter's way. Solid brand-color buttons with a
 // "Sponsored" disclosure (localized across all 30 locales; the button labels
 // stay English-only for now — the v1 state).
+// Buttons are ordered by cross-border moment (positioning A, 2026-10-09):
+// Send (Wise) · Travel (Airalo) · Tax (Koinly) · Trade (Coinbase/Binance) ·
+// Business (Airwallex).
 // Renders nothing while the referral URLs are placeholders (see affiliates.ts).
 export default function AffiliateLinks() {
   const i18n = useTranslation();
@@ -47,28 +50,6 @@ export default function AffiliateLinks() {
           Send money abroad &rarr;
         </a>
       )}
-      {hasCoinbaseLink() && (
-        <a
-          href={COINBASE_REFERRAL_URL}
-          target="_blank"
-          rel="noopener sponsored"
-          draggable={false}
-          className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#0052FF] text-white hover:bg-[#0040c8] text-[11px] px-2"
-        >
-          Buy crypto &rarr;
-        </a>
-      )}
-      {hasBinanceLink() && (
-        <a
-          href={BINANCE_REFERRAL_URL}
-          target="_blank"
-          rel="noopener sponsored"
-          draggable={false}
-          className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#F0B90B] text-black hover:bg-[#d9a90a] text-[11px] px-2"
-        >
-          Trade on Binance &rarr;
-        </a>
-      )}
       {hasAiraloLink() && (
         <a
           href={AIRALO_REFERRAL_URL}
@@ -89,6 +70,28 @@ export default function AffiliateLinks() {
           className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#4F46E5] text-white hover:bg-[#3f39c4] text-[11px] px-2"
         >
           Crypto tax reports &rarr;
+        </a>
+      )}
+      {hasCoinbaseLink() && (
+        <a
+          href={COINBASE_REFERRAL_URL}
+          target="_blank"
+          rel="noopener sponsored"
+          draggable={false}
+          className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#0052FF] text-white hover:bg-[#0040c8] text-[11px] px-2"
+        >
+          Buy crypto &rarr;
+        </a>
+      )}
+      {hasBinanceLink() && (
+        <a
+          href={BINANCE_REFERRAL_URL}
+          target="_blank"
+          rel="noopener sponsored"
+          draggable={false}
+          className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#F0B90B] text-black hover:bg-[#d9a90a] text-[11px] px-2"
+        >
+          Trade on Binance &rarr;
         </a>
       )}
       {hasAirwallexLink() && (
