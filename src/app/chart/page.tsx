@@ -77,6 +77,26 @@ const CurrencyChart = () => {
     return [[lo - pad, hi + pad], vals.length < 60];
   }, [filteredData]);
 
+  // Function to format numbers in scientific notation
+  const scientificFormat = (number: number) => {
+    const parts = number.toString().split('.');
+    if (number === 0) return '0';
+    if (parts.length > 1 && parts[1].length > 3) {
+      return parseFloat(number.toFixed(3));
+    }
+    if (number > 0.001 && number < 1000) return number;
+    return new Intl.NumberFormat('en-US', { notation: 'scientific' }).format(number);
+  }
+
+  // Y-axis width from the longest formatted label: the old fixed 40px clipped
+  // 7-char labels like "493.432" at the viewport edge (seen live 2026-10-09).
+  // ~6.2px per tabular-numeral char at 10px + 8px gutter, capped so a freak
+  // value can't eat the chart.
+  const yAxisWidth = useMemo(() => {
+    const maxLen = filteredData.reduce((m, d) => Math.max(m, scientificFormat(d.value).toString().length), 6);
+    return Math.min(72, Math.ceil(maxLen * 6.2 + 8));
+  }, [filteredData]);
+
   if (!!error && triedReverse) return <div className="text-center">No data for {q}</div>;
   if (!data || !q) {
     return (
@@ -91,17 +111,6 @@ const CurrencyChart = () => {
         <div style={{ width: 'calc( 100vw - 40px )' }} className="skeleton rounded-none h-[70%]"></div>
       </div>
     );
-  }
-
-  // Function to format numbers in scientific notation
-  const scientificFormat = (number: number) => {
-    const parts = number.toString().split('.');
-    if (number === 0) return '0';
-    if (parts.length > 1 && parts[1].length > 3) {
-      return parseFloat(number.toFixed(3));
-    }
-    if (number > 0.001 && number < 1000) return number;
-    return new Intl.NumberFormat('en-US', { notation: 'scientific' }).format(number);
   }
 
   const exportToCSV = () => {
@@ -213,11 +222,15 @@ const CurrencyChart = () => {
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={filteredData} margin={{ top: 8, right: 5, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray="4 2 0" />
-          {/* minTickGap keeps date labels from colliding on narrow viewports. */}
-          <XAxis dataKey="date" domain={['dataMin', 'dataMax']} minTickGap={32} tick={{ fontSize: 11 }} />
+          {/* minTickGap keeps date labels from colliding on narrow viewports.
+              The API ships dates as dd/mm/yyyy (en-GB) — ticks render them as
+              dd-mm-yyyy. */}
+          <XAxis dataKey="date" domain={['dataMin', 'dataMax']} minTickGap={32} tick={{ fontSize: 11 }} tickFormatter={(v: string) => v.replace(/\//g, '-')} />
           {/* YAxis width 40 (not 56): labels are ≤6 chars, so the chart starts
-              as far left as possible with minimum empty gutter. */}
-          <YAxis domain={yDomain} tickFormatter={(value) => scientificFormat(value).toString()} width={40} tick={{ fontSize: 10 }} />
+              as far left as possible with minimum empty gutter. Width is
+              computed from the longest formatted label (yAxisWidth) so longer
+              values like "493.432" never clip at the viewport edge. */}
+          <YAxis domain={yDomain} tickFormatter={(value) => scientificFormat(value).toString()} width={yAxisWidth} tick={{ fontSize: 10 }} />
           <Tooltip labelStyle={{ color: 'black' }} contentStyle={{ background: 'white' }} itemStyle={{ fontWeight: '700', color: 'black' }} formatter={(value) => [value]} />
           <Line type="monotone" dataKey="value" stroke="currentColor" isAnimationActive={false} dot={showDots} />
         </LineChart>

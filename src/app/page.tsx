@@ -1,6 +1,6 @@
 "use client";
 
-import CurrencyListModal from '@/components/CurrencyListModal';
+import CurrencyListModal, { languageOptions } from '@/components/CurrencyListModal';
 import AffiliateLinks from '@/components/AffiliateLinks';
 import CurrencyRow from '@/components/CurrencyRow';
 import InstallButton from '@/components/InstallButton';
@@ -31,7 +31,7 @@ import {
 } from '@/lib/atoms';
 import { getDataFromLocalStorage, getDropIndex, resolveTourLocale, setDataToLocalStorage, showASCIIArt, sortCurrencyPairs, vibrate } from '@/lib/fns';
 import { CurrencyNameOverrides } from '@/lib/constants';
-import { BellSvg, ImageSvg, QuestionSvg, ShareSvg, CalendarSvg } from '@/lib/svgs';
+import { BellSvg, GlobeSvg, ImageSvg, QuestionSvg, ShareSvg, CalendarSvg } from '@/lib/svgs';
 import { buildTourSteps, getTourString, SUPPORTED_LOCALES } from '@/lib/tourSteps';
 import { shareRateCard } from '@/lib/shareCard';
 import { CurrencyCode, Language, RateAlert } from '@/lib/types';
@@ -160,6 +160,7 @@ export default function Home() {
 
   const [shareCopied, setShareCopied] = useState(false);
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [firedAlert, setFiredAlert] = useState<RateAlert | null>(null);
 
   const onShare = useCallback(async () => {
@@ -595,6 +596,41 @@ export default function Home() {
               >
                 <QuestionSvg />
               </button>
+              {/* Language menu: one-tap globe in the top bar — the settings
+                  select buried it where nobody looked. Same 30 languages as
+                  the settings select (languageOptions, single source). */}
+              <div className="relative shrink-0">
+                <button
+                  type="button"
+                  onClick={() => { vibrate(haptics); setLangMenuOpen(v => !v); }}
+                  title={i18n.settings.changeLanguage}
+                  aria-label={i18n.settings.changeLanguage}
+                  aria-expanded={langMenuOpen}
+                  aria-haspopup="menu"
+                  className="h-[44px] w-[44px] shrink-0 flex items-center justify-center"
+                >
+                  <GlobeSvg />
+                </button>
+                {langMenuOpen && (
+                  <>
+                    <button type="button" aria-hidden tabIndex={-1} className="fixed inset-0 z-40 cursor-default" onClick={() => setLangMenuOpen(false)} />
+                    <div className="absolute left-0 top-full mt-1 z-50 w-44 max-h-72 overflow-y-auto rounded-box bg-base-200 shadow-lg p-1 flex flex-col" role="menu">
+                      {languageOptions.map(({ value, label }) => (
+                        <button
+                          key={value}
+                          type="button"
+                          role="menuitemradio"
+                          aria-checked={language === value}
+                          className={`btn btn-ghost btn-sm justify-start ${language === value ? 'text-primary font-semibold' : ''}`}
+                          onClick={() => { setLanguage(value); setLangMenuOpen(false); vibrate(haptics); }}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
               <ThemeToggle />
               {/* One-tap historical rates — the picker used to hide behind a
                   settings checkbox nobody found (moved out of settings 2026-10-08). */}
@@ -618,12 +654,14 @@ export default function Home() {
           </div>
 
           {/* Data freshness — the API only gives day precision, so show the
-              date rather than fake "x minutes ago" precision. Hidden while the
-              historical date picker is open (it shows the date itself). */}
+              date rather than fake "x minutes ago" precision. Rendered in the
+              APP's language (not the browser's) so it matches the label.
+              Hidden while the historical date picker is open (it shows the
+              date itself). */}
           {ratesDate && /^\d{4}-\d{2}-\d{2}$/.test(ratesDate) && !showDatePicker && (
             <p className="text-center text-[10px] opacity-50 -mt-1 mb-1 tabular-nums">
               {i18n.home.ratesAsOf}{' '}
-              {new Date(ratesDate + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+              {new Date(ratesDate + 'T00:00:00').toLocaleDateString(language, { month: 'short', day: 'numeric' })}
             </p>
           )}
 

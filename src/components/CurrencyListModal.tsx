@@ -26,12 +26,14 @@ import { useAtom } from 'jotai';
 import React, { useMemo, useState } from 'react';
 import CountryImg from './CountryImg';
 
-type LanguageOption = {
+export type LanguageOption = {
   value: Language;
   label: string;
 };
 
-const languageOptions: LanguageOption[] = [
+// Shared with the top-bar globe menu (page.tsx) so the dropdown and the
+// settings select always list the same 30 languages.
+export const languageOptions: LanguageOption[] = [
   { value: 'en', label: 'English' },
   { value: 'zh-TW', label: '繁體中文' },
   { value: 'zh-CN', label: '简体中文' },

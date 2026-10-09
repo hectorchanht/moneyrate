@@ -5,7 +5,8 @@ export const translations = {
       description: 'Instantly fiat and crypto conversion for you and me.',
       searchPlaceholder: 'fiat 💸 (usd) | crypto 📈 (btc)',
       ratesAsOf: 'Rates as of',
-      today: 'today'
+      today: 'today',
+      sponsored: 'Sponsored'
     },
     settings: {
       enableDeleteDragAndDrop: 'Enable Delete & Drag and Drop 🔧',
@@ -78,7 +79,8 @@ export const translations = {
       description: '立即轉換法幣和加密貨幣，為你我而設。',
       searchPlaceholder: '法幣 💸 (usd) | 加密貨幣 📈 (btc)',
       ratesAsOf: '匯率更新於',
-      today: '今天'
+      today: '今天',
+      sponsored: '贊助'
     },
     settings: {
       enableDeleteDragAndDrop: '啟用刪除和拖放 🔧',
@@ -151,7 +153,8 @@ export const translations = {
       description: '立即转换法币和加密货币，为你我而设。',
       searchPlaceholder: '法币 💸 (usd) | 加密货币 📈 (btc)',
       ratesAsOf: '汇率更新于',
-      today: '今天'
+      today: '今天',
+      sponsored: '赞助'
     },
     settings: {
       enableDeleteDragAndDrop: '启用删除和拖放 🔧',
@@ -224,7 +227,8 @@ export const translations = {
       description: 'あなたと私ための即時フィアットと暗号通貨変換。',
       searchPlaceholder: 'フィアット 💸 (usd) | 暗号通貨 📈 (btc)',
       ratesAsOf: '為替レート基準日',
-      today: '今日'
+      today: '今日',
+      sponsored: 'スポンサー'
     },
     settings: {
       enableDeleteDragAndDrop: '削除とドラッグアンドドロップを有効にする 🔧',
@@ -296,7 +300,8 @@ export const translations = {
       description: '당신과 나에게 즉시 법정화와 암호화폐 변환을 제공합니다.',
       searchPlaceholder: '법정화 💸 (usd) | 암호화폐 📈 (btc)',
       ratesAsOf: '환율 기준일',
-      today: '오늘'
+      today: '오늘',
+      sponsored: '스폰서'
     },
     settings: {
       enableDeleteDragAndDrop: '삭제 및 드래그 앤 드롭 활성화 🔧',
@@ -368,7 +373,8 @@ export const translations = {
       description: 'Conversion instantanée de fiat et de crypto pour vous et moi.',
       searchPlaceholder: 'fiat 💸 (usd) | crypto 📈 (btc)',
       ratesAsOf: 'Taux au',
-      today: 'aujourd\'hui'
+      today: 'aujourd\'hui',
+      sponsored: 'Sponsorisé'
     },
     settings: {
       enableDeleteDragAndDrop: 'Activer Supprimer et Glisser-Déposer 🔧',
@@ -440,7 +446,8 @@ export const translations = {
       description: 'Sofortige Umrechnung von Fiat und Kryptowährungen für dich und mich.',
       searchPlaceholder: 'fiat 💸 (usd) | kryptowährung 📈 (btc)',
       ratesAsOf: 'Kurse vom',
-      today: 'heute'
+      today: 'heute',
+      sponsored: 'Gesponsert'
     },
     settings: {
       enableDeleteDragAndDrop: 'Löschen und Ziehen und Fallenlassen aktivieren 🔧',
@@ -512,7 +519,8 @@ export const translations = {
       description: 'Conversión instantánea de fiat y criptomonedas para ti y para mí.',
       searchPlaceholder: 'fiat 💸 (usd) | criptomoneda 📈 (btc)',
       ratesAsOf: 'Tasas al',
-      today: 'hoy'
+      today: 'hoy',
+      sponsored: 'Patrocinado'
     },
     settings: {
       enableDeleteDragAndDrop: 'Habilitar Eliminar y Arrastrar y Soltar 🔧',
@@ -584,7 +592,8 @@ export const translations = {
       description: 'Conversione istantanea di fiat e criptovalute per te e per me.',
       searchPlaceholder: 'fiat 💸 (usd) | criptovaluta 📈 (btc)',
       ratesAsOf: 'Tassi aggiornati al',
-      today: 'oggi'
+      today: 'oggi',
+      sponsored: 'Sponsorizzato'
     },
     settings: {
       enableDeleteDragAndDrop: 'Abilita Elimina e Trascina e Rilascia 🔧',
@@ -656,7 +665,8 @@ export const translations = {
       description: 'Conversão instantânea de fiat e criptomoedas para você e para mim.',
       searchPlaceholder: 'fiat 💸 (usd) | criptomoeda 📈 (btc)',
       ratesAsOf: 'Taxas em',
-      today: 'hoje'
+      today: 'hoje',
+      sponsored: 'Patrocinado'
     },
     settings: {
       enableDeleteDragAndDrop: 'Habilitar Excluir e Arrastar e Soltar 🔧',
@@ -728,7 +738,8 @@ export const translations = {
       description: 'Немедленная конвертация фиат и криптовалют для вас и для меня.',
       searchPlaceholder: 'фиат 💸 (usd) | криптовалюта 📈 (btc)',
       ratesAsOf: 'Курс на',
-      today: 'сегодня'
+      today: 'сегодня',
+      sponsored: 'Реклама'
     },
     settings: {
       enableDeleteDragAndDrop: 'Включить Удаление и Перетаскивание 🔧',
@@ -800,7 +811,8 @@ export const translations = {
       description: 'تحويل فوري لفيات والعملات المشفرة من أجلك وأجلي.',
       searchPlaceholder: 'فيات 💸 (usd) | عملة مشفرة 📈 (btc)',
       ratesAsOf: 'الأسعار كما في',
-      today: 'اليوم'
+      today: 'اليوم',
+      sponsored: 'إعلان'
     },
     settings: {
       enableDeleteDragAndDrop: 'تمكين حذف وسحب وإسقاط 🔧',
@@ -872,7 +884,8 @@ export const translations = {
       description: 'आप और मेरे लिए तत्काल फिएट और क्रिप्टो मुद्रा परिवर्तन।',
       searchPlaceholder: 'फिएट 💸 (usd) | क्रिप्टो मुद्रा 📈 (btc)',
       ratesAsOf: 'दरें इस तारीख तक',
-      today: 'आज'
+      today: 'आज',
+      sponsored: 'प्रायोजित'
     },
     settings: {
       enableDeleteDragAndDrop: 'हटाना और खींचना और छोड़ना सक्षम करें 🔧',
@@ -944,7 +957,8 @@ export const translations = {
       description: 'আপনি এবং আমার জন্য তাত্ক্ষণিক ফিয়াট এবং ক্রিপ্টো মুদ্রা রূপান্তর।',
       searchPlaceholder: 'ফিয়াট 💸 (usd) | ক্রিপ্টো মুদ্রা 📈 (btc)',
       ratesAsOf: 'হার হালনাগাদ',
-      today: 'আজ'
+      today: 'আজ',
+      sponsored: 'স্পনসরড'
     },
     settings: {
       enableDeleteDragAndDrop: 'মুছে ফেলা এবং টানা এবং ছেড়ে দেওয়া সক্ষম করুন 🔧',
@@ -1016,7 +1030,8 @@ export const translations = {
       description: 'ਤੁਹਾਡੇ ਅਤੇ ਮੇਰੇ ਲਈ ਤਤਕਾਲ ਫਿਯਾਟ ਅਤੇ ਕ੍ਰਿਪਟੋ ਮੁਦਰਾ ਪਰਿਵਰਤਨ।',
       searchPlaceholder: 'ਫਿਯਾਟ 💸 (usd) | ਕ੍ਰਿਪਟੋ ਮੁਦਰਾ 📈 (btc)',
       ratesAsOf: 'ਦਰਾਂ ਇਸ ਮਿਤੀ ਤੱਕ',
-      today: 'ਅੱਜ'
+      today: 'ਅੱਜ',
+      sponsored: 'ਸਪਾਂਸਰਡ'
     },
     settings: {
       enableDeleteDragAndDrop: 'ਹਟਾਉਣਾ ਅਤੇ ਖਿੱਚਣਾ ਅਤੇ ਛੱਡਣਾ ਸਕਸ਼ਮ ਕਰੋ 🔧',
@@ -1088,7 +1103,8 @@ export const translations = {
       description: 'آپ اور میرے لیے فوری فیت اور کپٹو کرنسی تبدیل۔',
       searchPlaceholder: 'فیت 💸 (usd) | کپٹو کرنسی 📈 (btc)',
       ratesAsOf: 'شرحیں بمطابق',
-      today: 'آج'
+      today: 'آج',
+      sponsored: 'اشتہار'
     },
     settings: {
       enableDeleteDragAndDrop: 'ہٹانے اور کھینچنے اور چھوڑنے کو فعال کریں 🔧',
@@ -1160,7 +1176,8 @@ export const translations = {
       description: 'Chuyển đổi tức thời của fiat và crypto cho bạn và tôi.',
       searchPlaceholder: 'fiat 💸 (usd) | crypto 📈 (btc)',
       ratesAsOf: 'Tỷ giá cập nhật ngày',
-      today: 'hôm nay'
+      today: 'hôm nay',
+      sponsored: 'Được tài trợ'
     },
     settings: {
       enableDeleteDragAndDrop: 'Kích hoạt Xóa và Kéo và Thả 🔧',
@@ -1232,7 +1249,8 @@ export const translations = {
       description: 'การแปลงฟิเอตและคริปโตทันทีสำหรับคุณและฉัน。',
       searchPlaceholder: 'ฟิเอต 💸 (usd) | คริปโต 📈 (btc)',
       ratesAsOf: 'อัตราแลกเปลี่ยน ณ วันที่',
-      today: 'วันนี้'
+      today: 'วันนี้',
+      sponsored: 'สปอนเซอร์'
     },
     settings: {
       enableDeleteDragAndDrop: 'เปิดใช้งานลบและลากแล้วปล่อย 🔧',
@@ -1304,7 +1322,8 @@ export const translations = {
       description: 'Konversi fiat dan kripto instan untuk kamu dan saya.',
       searchPlaceholder: 'fiat 💸 (usd) | kripto 📈 (btc)',
       ratesAsOf: 'Kurs per',
-      today: 'hari ini'
+      today: 'hari ini',
+      sponsored: 'Bersponsor'
     },
     settings: {
       enableDeleteDragAndDrop: 'Aktifkan Hapus dan Tarik dan Lepas 🔧',
@@ -1376,7 +1395,8 @@ export const translations = {
       description: 'Penukaran fiat dan kripto segera untuk kamu dan saya.',
       searchPlaceholder: 'fiat 💸 (usd) | kripto 📈 (btc)',
       ratesAsOf: 'Kadar setakat',
-      today: 'hari ini'
+      today: 'hari ini',
+      sponsored: 'Ditaja'
     },
     settings: {
       enableDeleteDragAndDrop: 'Aktifkan Padam dan Tarik dan Lepas 🔧',
@@ -1448,7 +1468,8 @@ export const translations = {
       description: 'Instant fiat en crypto conversie voor jou en mij.',
       searchPlaceholder: 'fiat 💸 (usd) | crypto 📈 (btc)',
       ratesAsOf: 'Koersen per',
-      today: 'vandaag'
+      today: 'vandaag',
+      sponsored: 'Gesponsord'
     },
     settings: {
       enableDeleteDragAndDrop: 'Verwijderen en Slepen en Loslaten inschakelen 🔧',
@@ -1520,7 +1541,8 @@ export const translations = {
       description: 'Natychmiastowa konwersja fiat i kryptowalut dla ciebie i dla mnie.',
       searchPlaceholder: 'fiat 💸 (usd) | kryptowaluta 📈 (btc)',
       ratesAsOf: 'Kursy na dzień',
-      today: 'dzisiaj'
+      today: 'dzisiaj',
+      sponsored: 'Sponsorowane'
     },
     settings: {
       enableDeleteDragAndDrop: 'Włącz Usuwanie i Przeciągnij i Upuść 🔧',
@@ -1592,7 +1614,8 @@ export const translations = {
       description: 'Conversia instantanee a fiat și criptomonedelor pentru tine și pentru mine.',
       searchPlaceholder: 'fiat 💸 (usd) | criptomonedă 📈 (btc)',
       ratesAsOf: 'Cursuri valabile la',
-      today: 'astăzi'
+      today: 'astăzi',
+      sponsored: 'Sponsorizat'
     },
     settings: {
       enableDeleteDragAndDrop: 'Activează Șterge și Trage și Lasă 🔧',
@@ -1664,7 +1687,8 @@ export const translations = {
       description: 'Omedelbar omvandling av fiat och krypto för dig och mig.',
       searchPlaceholder: 'fiat 💸 (usd) | krypto 📈 (btc)',
       ratesAsOf: 'Kurser per',
-      today: 'idag'
+      today: 'idag',
+      sponsored: 'Sponsrad'
     },
     settings: {
       enableDeleteDragAndDrop: 'Aktivera Radera och Dra och Släpp 🔧',
@@ -1736,7 +1760,8 @@ export const translations = {
       description: 'Øyeblikkelig fiat og krypto konvertering for deg og meg.',
       searchPlaceholder: 'fiat 💸 (usd) | krypto 📈 (btc)',
       ratesAsOf: 'Kurser per',
-      today: 'i dag'
+      today: 'i dag',
+      sponsored: 'Sponset'
     },
     settings: {
       enableDeleteDragAndDrop: 'Aktiver Slett og Dra og Slipp 🔧',
@@ -1808,7 +1833,8 @@ export const translations = {
       description: 'Øjeblikkelig fiat og krypto konvertering for dig og mig.',
       searchPlaceholder: 'fiat 💸 (usd) | krypto 📈 (btc)',
       ratesAsOf: 'Kurser pr.',
-      today: 'i dag'
+      today: 'i dag',
+      sponsored: 'Sponsoreret'
     },
     settings: {
       enableDeleteDragAndDrop: 'Aktivér Slet og Træk og Slip 🔧',
@@ -1880,7 +1906,8 @@ export const translations = {
       description: 'Välitön fiat ja krypto muunnos sinulle ja minulle.',
       searchPlaceholder: 'fiat 💸 (usd) | krypto 📈 (btc)',
       ratesAsOf: 'Kurssit päivätty',
-      today: 'tänään'
+      today: 'tänään',
+      sponsored: 'Sponsoroitu'
     },
     settings: {
       enableDeleteDragAndDrop: 'Ota Käyttöön Poista ja Vedä ja Pudota 🔧',
@@ -1952,7 +1979,8 @@ export const translations = {
       description: 'Okamžitá konverzia fiat a krypto pre vás a pre mňa.',
       searchPlaceholder: 'fiat 💸 (usd) | krypto 📈 (btc)',
       ratesAsOf: 'Kurzy k',
-      today: 'dnes'
+      today: 'dnes',
+      sponsored: 'Sponzorované'
     },
     settings: {
       enableDeleteDragAndDrop: 'Aktivovať Vymazať a Potiahnuť a Pustiť 🔧',
@@ -2024,7 +2052,8 @@ export const translations = {
       description: 'Takojšnja pretvorba fiat in kripto za vas in zame.',
       searchPlaceholder: 'fiat 💸 (usd) | kripto 📈 (btc)',
       ratesAsOf: 'Tečaji na dan',
-      today: 'danes'
+      today: 'danes',
+      sponsored: 'Sponzorirano'
     },
     settings: {
       enableDeleteDragAndDrop: 'Omogoči Izbriši in Povleci in Spusti 🔧',
@@ -2096,7 +2125,8 @@ export const translations = {
       description: 'Anında fiat ve kripto dönüşümü sizin ve benim için.',
       searchPlaceholder: 'fiat 💸 (usd) | kripto 📈 (btc)',
       ratesAsOf: 'Kurlar tarih itibarıyla',
-      today: 'bugün'
+      today: 'bugün',
+      sponsored: 'Sponsorlu'
     },
     settings: {
       enableDeleteDragAndDrop: 'Sil ve Sürükle ve Bırak\'ı Etkinleştir 🔧',
