@@ -145,7 +145,7 @@ const CurrencyChart = () => {
   ];
 
   return (
-    <div className="w-dvw h-dvh overflow-auto pt-[20px] mx-auto px-4 sm:px-1 md:px-2 text-base-content">
+    <div className="w-dvw h-dvh overflow-auto pt-[20px] mx-auto px-2 sm:px-1 md:px-2 text-base-content">
       {/* h-full flex-col: the chart below needs a definite-height ancestor for
           its percentage height — without this the chart collapses to 0. */}
       <div className="max-w-[800px] mx-auto h-full flex flex-col">
@@ -213,7 +213,9 @@ const CurrencyChart = () => {
           <CartesianGrid strokeDasharray="4 2 0" />
           {/* minTickGap keeps date labels from colliding on narrow viewports. */}
           <XAxis dataKey="date" domain={['dataMin', 'dataMax']} minTickGap={32} tick={{ fontSize: 11 }} />
-          <YAxis domain={yDomain} tickFormatter={(value) => scientificFormat(value).toString()} width={56} tick={{ fontSize: 11 }} />
+          {/* YAxis width 40 (not 56): labels are ≤6 chars, so the chart starts
+              as far left as possible with minimum empty gutter. */}
+          <YAxis domain={yDomain} tickFormatter={(value) => scientificFormat(value).toString()} width={40} tick={{ fontSize: 10 }} />
           <Tooltip labelStyle={{ color: 'black' }} contentStyle={{ background: 'white' }} itemStyle={{ fontWeight: '700', color: 'black' }} formatter={(value) => [value]} />
           <Line type="monotone" dataKey="value" stroke="currentColor" isAnimationActive={false} dot={showDots} />
         </LineChart>
