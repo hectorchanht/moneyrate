@@ -535,7 +535,8 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow">
 
-        <div className='grid grid-cols-1 justify-between m-auto max-w-[800px] p-4'>
+        {/* px-2 (not p-4): rows get maximum width for long converted values on phones. */}
+        <div className='grid grid-cols-1 justify-between m-auto max-w-[800px] px-2 py-4'>
           {/* Icon row, then the search on its own full-width line below —
               five 44px buttons plus a search input never fit one 360px row. */}
           <div className='w-full'>
@@ -716,3 +717,4 @@ export default function Home() {
     </div>
   )
 }
+

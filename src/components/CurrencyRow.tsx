@@ -110,8 +110,10 @@ const CurrencyRow = ({
       <div
         data-tour={isBase ? 'tour-base-row' : undefined}
         // The base row (the amount you're converting FROM) gets a soft highlight
-        // so it stands out from the converted rows.
-        className={isBase ? 'rounded-xl bg-primary/10 px-3 -mx-3 ring-1 ring-inset ring-primary/25' : undefined}
+        // so it stands out from the converted rows. The box is full-bleed:
+        // -mx-2 cancels the list container's px-2 so it fits edge to edge
+        // left and right (square corners — rounding would clip at the edge).
+        className={isBase ? 'bg-primary/10 px-3 -mx-2 ring-1 ring-inset ring-primary/25' : undefined}
       >
       <div className='flex gap-2 items-center'>
         <div className='flex w-full justify-between items-center gap-2'>
@@ -209,3 +211,4 @@ const CurrencyRow = ({
 };
 
 export default memo(CurrencyRow);
+

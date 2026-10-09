@@ -61,6 +61,22 @@ const CurrencyChart = () => {
     return data?.data.filter((item: DataItem) => item.timestamp >= startTimestamp && item.timestamp <= endTimestamp) || [];
   }, [data?.data, startTimestamp, endTimestamp]);
 
+  // Zoom the y-axis to the visible data range (plus a small pad) so the line
+  // uses the full chart height — recharts' default YAxis domain starts at 0,
+  // which squashed e.g. CAD→HKD into a thin band (seen live 2026-10-08).
+  // Recomputes on filteredData so the range-slider zoom stays maximal too.
+  // Dots render only for sparse ranges; with hundreds of points they merge
+  // into a useless blob.
+  const [yDomain, showDots] = useMemo<[[number, number], boolean]>(() => {
+    const vals = filteredData.map((d: DataItem) => d.value).filter((v) => Number.isFinite(v));
+    if (!vals.length) return [[0, 1], true];
+    const lo = Math.min(...vals);
+    const hi = Math.max(...vals);
+    const span = hi - lo;
+    const pad = span > 0 ? span * 0.08 : (Math.abs(hi) * 0.05 || 1);
+    return [[lo - pad, hi + pad], vals.length < 60];
+  }, [filteredData]);
+
   if (!!error && triedReverse) return <div className="text-center">No data for {q}</div>;
   if (!data || !q) {
     return (
@@ -197,9 +213,9 @@ const CurrencyChart = () => {
           <CartesianGrid strokeDasharray="4 2 0" />
           {/* minTickGap keeps date labels from colliding on narrow viewports. */}
           <XAxis dataKey="date" domain={['dataMin', 'dataMax']} minTickGap={32} tick={{ fontSize: 11 }} />
-          <YAxis tickFormatter={(value) => scientificFormat(value).toString()} width={56} tick={{ fontSize: 11 }} />
+          <YAxis domain={yDomain} tickFormatter={(value) => scientificFormat(value).toString()} width={56} tick={{ fontSize: 11 }} />
           <Tooltip labelStyle={{ color: 'black' }} contentStyle={{ background: 'white' }} itemStyle={{ fontWeight: '700', color: 'black' }} formatter={(value) => [value]} />
-          <Line type="monotone" dataKey="value" stroke="currentColor" isAnimationActive={false} />
+          <Line type="monotone" dataKey="value" stroke="currentColor" isAnimationActive={false} dot={showDots} />
         </LineChart>
       </ResponsiveContainer>
       </div>
@@ -209,3 +225,4 @@ const CurrencyChart = () => {
 };
 
 export default CurrencyChart;
+
