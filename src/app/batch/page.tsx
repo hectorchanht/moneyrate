@@ -8,8 +8,8 @@ import { POPULAR_CURRENCIES, fetchPairRate, parseBatchAmounts } from '@/lib/tool
 
 // Batch convert: paste a pile of amounts (invoice lines, receipts — one per
 // line, commas fine), convert them all at once, get the list + the total.
-// The parse is shown as removable tags: "4,600" is ambiguous (4600 vs 4+600),
-// so each parsed amount becomes a chip — tap × to drop a wrong guess.
+// Every comma separates ("4,600" → 4 and 600); the parse is shown as
+// removable tags so the interpretation is visible — tap × to drop one.
 export default function BatchPage() {
   const t = useTranslation().tools;
   const [from, setFrom] = useState('USD');

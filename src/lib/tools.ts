@@ -12,12 +12,13 @@ export const POPULAR_CURRENCIES = [
 
 // Parse a pasted list of amounts: lines, commas, semicolons or pipes;
 // tolerates "1,000", "$100", "€ 50". A comma followed by exactly three
-// digits is a thousand separator ("1,000" → 1000); any other comma is a
-// delimiter ("10, 20" → 10, 20). Returns finite positive numbers in order.
+// Commas always separate amounts ("4,600" → 4 and 600 — Hector 2026-10-10:
+// in a batch paste a comma is a delimiter, never a thousand separator).
+// Splits on newlines, commas, semicolons and pipes; strips currency symbols;
+// returns finite positive numbers in order.
 export function parseBatchAmounts(text: string): number[] {
   const out: number[] = [];
-  const deGrouped = text.replace(/(\d),(\d{3})(?!\d)/g, '$1$2');
-  for (const chunk of deGrouped.split(/[\n,;|]+/)) {
+  for (const chunk of text.split(/[\n,;|]+/)) {
     const cleaned = chunk.replace(/[^0-9.\-]/g, '');
     if (!cleaned) continue;
     const n = parseFloat(cleaned);

@@ -5,8 +5,11 @@ describe('parseBatchAmounts', () => {
   it('parses one amount per line', () => {
     expect(parseBatchAmounts('120\n1000\n55.5')).toEqual([120, 1000, 55.5]);
   });
-  it('tolerates commas, currency symbols and commas as thousand separators', () => {
-    expect(parseBatchAmounts('1,000\n$55.50\n€ 20')).toEqual([1000, 55.5, 20]);
+  it('treats every comma as a separator, never a thousand separator', () => {
+    expect(parseBatchAmounts('1,000\n$55.50\n€ 20')).toEqual([1, 55.5, 20]);
+  });
+  it('parses "4,600" as 4 and 600', () => {
+    expect(parseBatchAmounts('1,4,600')).toEqual([1, 4, 600]);
   });
   it('splits on commas and semicolons too', () => {
     expect(parseBatchAmounts('10, 20;30')).toEqual([10, 20, 30]);
