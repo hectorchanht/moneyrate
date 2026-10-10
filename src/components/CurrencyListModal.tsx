@@ -170,24 +170,41 @@ const ProSettings: React.FC = () => {
 };
 
 
-// Sponsored-strip visibility for tippers (English-only strings — same
-// precedent as ProSettings). A Gumroad tip-jar license key (verified via
-// /api/verify-tip) sets localStorage "dawn_sponsored_hidden", which
-// AffiliateLinks honors; the key itself is also kept in
+// Supporter section for tippers. A Gumroad tip-jar license key (verified via
+// /api/verify-tip) marks the user as a supporter — localStorage
+// "dawn_supporter" — which future features can gate on via isSupporter()
+// (see lib/affiliates.ts). Verification does NOT hide the Sponsored strip;
+// supporters get an explicit opt-in toggle instead: only the toggle sets
+// "dawn_sponsored_hidden", which AffiliateLinks honors (it also listens for
+// the "dawn-sponsored-visibility" window event so the strip hides/shows
+// immediately, no reload needed). The key itself is kept in
 // "dawn_tip_license_key" so the input stays pre-filled (and copyable) for
 // re-verifying on this or another device/app. The stored key is only ever
 // sent to /api/verify-tip on an explicit Verify click — never auto-submitted.
 // The admin license key also verifies here.
 const SponsoredStripSettings: React.FC = () => {
+  const t = useTranslation();
   const [haptics] = useAtom(hapticsAtom);
-  const [hidden, setHidden] = useState(false);
+  const [supporter, setSupporter] = useState(false);
+  const [hideStrip, setHideStrip] = useState(false);
   const [input, setInput] = useState('');
-  const [status, setStatus] = useState<'idle' | 'checking' | 'ok' | 'bad'>('idle');
+  const [status, setStatus] = useState<'idle' | 'checking' | 'bad'>('idle');
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      if (localStorage.getItem('dawn_sponsored_hidden') === '1') setHidden(true);
+      // Migration: anyone who verified under the old auto-hide flow has a
+      // stored key (or the hidden flag) — they count as supporters, and
+      // their strip visibility is left exactly as it was.
+      if (
+        localStorage.getItem('dawn_supporter') === '1' ||
+        localStorage.getItem('dawn_tip_license_key') ||
+        localStorage.getItem('dawn_sponsored_hidden') === '1'
+      ) {
+        localStorage.setItem('dawn_supporter', '1');
+        setSupporter(true);
+      }
+      if (localStorage.getItem('dawn_sponsored_hidden') === '1') setHideStrip(true);
       const stored = localStorage.getItem('dawn_tip_license_key');
       if (stored) setInput(stored);
     }
@@ -205,10 +222,12 @@ const SponsoredStripSettings: React.FC = () => {
       });
       const json = await res.json();
       if (json?.ok) {
-        localStorage.setItem('dawn_sponsored_hidden', '1');
+        // Choice, not auto-hide: mark supporter, keep the key, leave the
+        // strip showing until the user flips the toggle below.
+        localStorage.setItem('dawn_supporter', '1');
         localStorage.setItem('dawn_tip_license_key', key);
-        setHidden(true);
-        setStatus('ok');
+        setSupporter(true);
+        setStatus('idle');
       } else {
         setStatus('bad');
       }
@@ -218,12 +237,17 @@ const SponsoredStripSettings: React.FC = () => {
     vibrate(haptics);
   };
 
-  const showAgain = () => {
-    // Only the visibility flag is cleared — the key is kept so it stays
-    // pre-filled (and copyable) for a one-click re-verify.
-    localStorage.removeItem('dawn_sponsored_hidden');
-    setHidden(false);
-    setStatus('idle');
+  const toggleHideStrip = () => {
+    // Only the visibility flag is touched — the key and supporter status
+    // stay, so this is reversible from the same toggle.
+    const next = !hideStrip;
+    if (next) {
+      localStorage.setItem('dawn_sponsored_hidden', '1');
+    } else {
+      localStorage.removeItem('dawn_sponsored_hidden');
+    }
+    setHideStrip(next);
+    window.dispatchEvent(new Event('dawn-sponsored-visibility'));
     vibrate(haptics);
   };
 
@@ -256,17 +280,24 @@ const SponsoredStripSettings: React.FC = () => {
     <div>
       <div className="label">
         <span className="label-text flex items-center gap-2">
-          ☕ Sponsored strip
-          {hidden && <span className="badge badge-success badge-sm">Hidden</span>}
+          {supporter ? t.settings.supporterThanks : t.settings.supporterHeading}
+          {supporter && hideStrip && <span className="badge badge-success badge-sm">Hidden</span>}
         </span>
       </div>
-      {hidden ? (
-        <p className="text-xs opacity-60 mb-2">
-          ☕ Thanks for tipping — the sponsored strip is hidden.{' '}
-          <button type="button" className="link" onClick={showAgain}>
-            Show again
-          </button>
-        </p>
+      {supporter ? (
+        <>
+          <label className="flex items-center gap-3 mb-1 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              className="toggle toggle-primary"
+              checked={hideStrip}
+              onChange={toggleHideStrip}
+              aria-label={t.settings.supporterHideStrip}
+            />
+            <span className="text-sm">{t.settings.supporterHideStrip}</span>
+          </label>
+          <p className="text-xs opacity-60 mb-2">{t.settings.supporterHideStripNote}</p>
+        </>
       ) : (
         <p className="text-xs opacity-60 mb-2">
           Tipped us on Gumroad? Enter the license key from your purchase receipt email to hide the sponsored strip.
@@ -281,14 +312,16 @@ const SponsoredStripSettings: React.FC = () => {
           onChange={(e) => { setInput(e.target.value); setStatus('idle'); }}
           aria-label="Tip license key"
         />
-        <button
-          type="button"
-          className="btn btn-sm btn-primary shrink-0"
-          onClick={verify}
-          disabled={!input.trim() || status === 'checking'}
-        >
-          {status === 'checking' ? 'Checking…' : 'Verify'}
-        </button>
+        {!supporter && (
+          <button
+            type="button"
+            className="btn btn-sm btn-primary shrink-0"
+            onClick={verify}
+            disabled={!input.trim() || status === 'checking'}
+          >
+            {status === 'checking' ? 'Checking…' : 'Verify'}
+          </button>
+        )}
         <button
           type="button"
           className="btn btn-sm btn-ghost shrink-0"
@@ -300,11 +333,8 @@ const SponsoredStripSettings: React.FC = () => {
           {copied ? 'Copied' : 'Copy'}
         </button>
       </div>
-      {status === 'bad' && (
+      {status === 'bad' && !supporter && (
         <p className="text-xs text-error mb-1">That key didn&apos;t verify — check the license key in your Gumroad receipt email.</p>
-      )}
-      {status === 'ok' && (
-        <p className="text-xs text-success mb-1">Verified — the sponsored strip is hidden.</p>
       )}
     </div>
   );

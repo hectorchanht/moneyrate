@@ -28,5 +28,20 @@ export const GUMROAD_PRO_URL = "https://dawnlimited.gumroad.com/l/iyywbo";
 // Rendered as the FIRST button in the Sponsored strip (2026-10-10).
 export const TIP_JAR_URL = "https://dawnlimited.gumroad.com/l/moneyrate-tip";
 export const hasTipJarLink = () => TIP_JAR_URL.startsWith("http");
+
+// Supporter status: set in localStorage ("dawn_supporter") on a successful
+// tip-jar verification (/api/verify-tip, or the admin-key bypass). Read-only
+// helper for future supporter-gated features — nothing is gated behind it
+// yet. NOTE: the supporter flag alone never hides the Sponsored strip; only
+// "dawn_sponsored_hidden" does, and that is set solely by the explicit
+// "Hide sponsored strip" toggle in Settings → Supporter.
+export const isSupporter = (): boolean => {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.localStorage.getItem("dawn_supporter") === "1";
+  } catch {
+    return false;
+  }
+};
 export const hasKoinlyLink = () => KOINLY_REFERRAL_URL.startsWith("http");
 export const hasAirwallexLink = () => AIRWALLEX_REFERRAL_URL.startsWith("http");

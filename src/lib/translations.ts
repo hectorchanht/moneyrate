@@ -101,7 +101,11 @@ export const translations = {
       shareCopyLink: 'Copy link',
       shareImage: 'Share image',
       alertTargetHit: 'target hit!',
-      dismiss: 'Dismiss'
+      dismiss: 'Dismiss',
+      supporterHeading: '☕ Supporter',
+      supporterThanks: "☕ You're a supporter — thanks for tipping!",
+      supporterHideStrip: 'Hide sponsored strip',
+      supporterHideStripNote: 'Supporters can hide the strip anytime.'
     },
     tour: {
       welcomeTitle: 'Welcome to moneyrate',
@@ -231,7 +235,11 @@ export const translations = {
       shareCopyLink: '複製連結',
       shareImage: '分享圖片',
       alertTargetHit: '到價！',
-      dismiss: '關閉'
+      dismiss: '關閉',
+      supporterHeading: '☕ 支持者',
+      supporterThanks: '☕ 你已成為支持者 — 感謝你的打賞！',
+      supporterHideStrip: '隱藏贊助欄',
+      supporterHideStripNote: '支持者可隨時隱藏贊助欄。'
     },
     tour: {
       welcomeTitle: '歡迎使用 moneyrate',
@@ -361,7 +369,11 @@ export const translations = {
       shareCopyLink: '复制链接',
       shareImage: '分享图片',
       alertTargetHit: '到价！',
-      dismiss: '关闭'
+      dismiss: '关闭',
+      supporterHeading: '☕ 支持者',
+      supporterThanks: '☕ 你已成为支持者 — 感谢你的打赏！',
+      supporterHideStrip: '隐藏赞助栏',
+      supporterHideStripNote: '支持者可随时隐藏赞助栏。'
     },
     tour: {
       welcomeTitle: '欢迎使用 moneyrate',

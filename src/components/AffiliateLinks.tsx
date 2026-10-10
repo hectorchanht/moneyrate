@@ -28,16 +28,21 @@ import {
 // cross-border moment (positioning A, 2026-10-09): Send (Wise) · Travel
 // (Airalo) · Tax (Koinly) · Trade (Coinbase/Binance) · Business (Airwallex).
 // Renders nothing while the referral URLs are placeholders (see affiliates.ts).
-// Tippers hide the strip via Settings → Sponsored strip with a verified
-// Gumroad tip license key (/api/verify-tip), which sets localStorage
-// "dawn_sponsored_hidden"; "Show again" in the same section restores it.
+// The strip hides ONLY on the explicit opt-in flag: supporters flip "Hide
+// sponsored strip" in Settings → Supporter, which sets localStorage
+// "dawn_sponsored_hidden" and dispatches a "dawn-sponsored-visibility" window
+// event (listened to below) so the strip hides/shows immediately, no reload
+// needed. The supporter flag "dawn_supporter" (set on tip verification)
+// alone NEVER hides the strip — see isSupporter() in lib/affiliates.ts.
 export default function AffiliateLinks() {
   const i18n = useTranslation();
   const [dismissed, setDismissed] = useState(false);
   useEffect(() => {
-    if (typeof window !== "undefined" && localStorage.getItem("dawn_sponsored_hidden") === "1") {
-      setDismissed(true);
-    }
+    if (typeof window === "undefined") return;
+    const sync = () => setDismissed(localStorage.getItem("dawn_sponsored_hidden") === "1");
+    sync();
+    window.addEventListener("dawn-sponsored-visibility", sync);
+    return () => window.removeEventListener("dawn-sponsored-visibility", sync);
   }, []);
   if (dismissed) return null;
   if (!hasTipJarLink() && !hasWiseLink() && !hasCoinbaseLink() && !hasBinanceLink() && !hasAiraloLink() && !hasKoinlyLink() && !hasAirwallexLink()) return null;

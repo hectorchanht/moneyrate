@@ -6,14 +6,20 @@
 // both the currency modal's Settings tab and the toolkit modal render
 // <AlertsSection/>, so the Push/Email alert forms stay in sync.
 import { useAtom } from 'jotai';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { hapticsAtom, proAtom, rateAlertsAtom } from '@/lib/atoms';
+import { isSupporter } from '@/lib/affiliates';
 import { vibrate } from '@/lib/fns';
 import { BellSvg, CrossSvg, MailSvg, TrendDownSvg, TrendUpSvg } from '@/lib/svgs';
 import { AlertDirection, AlertKind, RateAlert } from '@/lib/types';
 
 const FREE_ALERT_LIMIT = 3;
+// Supporter unlock (2026-10-10): verified tip-jar tippers (isSupporter(),
+// localStorage "dawn_supporter") get a raised cap — a goodwill unlock,
+// client-side only. Pro (license key) stays unlimited; the free plan stays
+// at 3. No currently-free feature was limited to make room for this.
+const SUPPORTER_ALERT_LIMIT = 10;
 
 const EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -123,12 +129,18 @@ const AlertTargetForm: React.FC<AlertTargetFormProps> = ({
 
 // Push (device-notification) alerts tab. Alerts are evaluated in page.tsx
 // whenever fresh rates arrive; this component is CRUD + permission only.
-// Free plan cap on rate alerts; Pro (license key in Settings) is unlimited.
+// Free plan cap on rate alerts; supporters get 10; Pro (license key in
+// Settings) is unlimited.
 const PushAlertsTab: React.FC<{ currencies: string[]; baseCur: string }> = ({ currencies, baseCur }) => {
   const [alerts, setAlerts] = useAtom(rateAlertsAtom);
   const [haptics] = useAtom(hapticsAtom);
   const [pro] = useAtom(proAtom);
   const [capHit, setCapHit] = useState(false);
+  // Read on mount (not during render) so SSR/hydration always starts from
+  // the free-plan copy — same pattern as AffiliateLinks' dismissed flag.
+  const [supporter, setSupporter] = useState(false);
+  useEffect(() => { setSupporter(isSupporter()); }, []);
+  const alertLimit = supporter ? SUPPORTER_ALERT_LIMIT : FREE_ALERT_LIMIT;
   const t = useTranslation();
   const [from, setFrom] = useState(baseCur);
   const [to, setTo] = useState(currencies.find(c => c !== baseCur) ?? '');
@@ -140,7 +152,7 @@ const PushAlertsTab: React.FC<{ currencies: string[]; baseCur: string }> = ({ cu
   const addAlert = () => {
     const targetNum = parseFloat(target);
     if (!from || !to || from === to || !(targetNum > 0)) return;
-    if (!pro && alerts.length >= FREE_ALERT_LIMIT) { setCapHit(true); vibrate(haptics); return; }
+    if (!pro && alerts.length >= alertLimit) { setCapHit(true); vibrate(haptics); return; }
     vibrate(haptics);
     const alert: RateAlert = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -201,8 +213,8 @@ const PushAlertsTab: React.FC<{ currencies: string[]; baseCur: string }> = ({ cu
       {!pro && (
         <p className="text-xs opacity-60 mb-2">
           {capHit
-            ? <>Free plan allows {FREE_ALERT_LIMIT} alerts — <a href="/api-docs#pro" className="link">go Pro</a> for unlimited.</>
-            : <>Free plan: {FREE_ALERT_LIMIT} alerts · <a href="/api-docs#pro" className="link">Pro</a> for unlimited</>}
+            ? <>{supporter ? 'Supporter plan' : 'Free plan'} allows {alertLimit} alerts — <a href="/api-docs#pro" className="link">go Pro</a> for unlimited.</>
+            : <>{supporter ? 'Supporter plan' : 'Free plan'}: {alertLimit} alerts · <a href="/api-docs#pro" className="link">Pro</a> for unlimited</>}
         </p>
       )}
       {alerts.length === 0 ? (
