@@ -52,20 +52,22 @@ export default function TripPage() {
         <h1 className="text-xl font-semibold truncate">{t.tripTitle}</h1>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 mb-2">
-        <label className="flex flex-col gap-1">
+      {/* Mobile: Budget | FX fee on row 1, Home currency full-width on row 2
+          (a 3-col squeeze clipped the select to "U:"). sm+: three columns. */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-2">
+        <label className="flex flex-col gap-1 min-w-0">
           <span className="text-xs opacity-70">{t.tripBudget}</span>
           <input type="number" inputMode="decimal" min="0" step="any"
             className="input input-bordered w-full tabular-nums"
             value={budget} onChange={e => setBudget(e.target.value)} />
         </label>
-        <label className="flex flex-col gap-1">
-          <span className="text-xs opacity-70">{t.tripHome}</span>
+        <label className="flex flex-col gap-1 min-w-0 col-span-2 sm:col-span-1">
+          <span className="text-xs opacity-70 whitespace-nowrap">{t.tripHome}</span>
           <select className="select select-bordered w-full" value={home} onChange={e => setHome(e.target.value)}>
             {POPULAR_CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </label>
-        <label className="flex flex-col gap-1">
+        <label className="flex flex-col gap-1 min-w-0">
           <span className="text-xs opacity-70">{t.tripFee}</span>
           <input type="number" inputMode="decimal" min="0" step="any"
             className="input input-bordered w-full tabular-nums"
