@@ -690,7 +690,7 @@ export default function Home() {
 
           {/* Quick amounts (B) — one tap instead of typing. */}
           <div className="flex gap-2 overflow-x-auto no-scrollbar mb-2" role="group" aria-label="Quick amounts">
-            {[10, 50, 100, 500, 1000].map(v => (
+            {[1, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000].map(v => (
               <button
                 key={v}
                 type="button"
