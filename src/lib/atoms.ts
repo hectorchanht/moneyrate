@@ -23,6 +23,8 @@ export const copyFormatAtom = atomWithStorage<CopyFormat>('copyFormat', 'full');
 export const hapticsAtom = atomWithStorage<boolean>('haptics', true);
 // Row pin buttons are hidden by default (declutter); opt-in via settings.
 export const showPinButtonsAtom = atomWithStorage<boolean>('showPinButtons', false);
+// Row copy buttons are shown by default (useful); opt-out via settings.
+export const showCopyButtonsAtom = atomWithStorage<boolean>('showCopyButtons', true);
 export const pinnedCurrenciesAtom = atomWithStorage<string[]>('pinnedCurrencies', []);
 export const rateAlertsAtom = atomWithStorage<RateAlert[]>('rateAlerts', []);
 // Pro license: key pasted in Settings, verified via /api/license (Gumroad).
@@ -35,4 +37,4 @@ export const proAtom = atomWithStorage<boolean>('pro', false);
 // calls above — the drift-guard test in atoms.test.ts fails if they diverge.
 // Consumed by the settings Reset handler so no persisted key (e.g. tourSeen,
 // showDatePicker) is ever left behind.
-export const PERSISTED_ATOM_KEYS = ['baseCur', 'currency2Display', 'currencyValue', 'isEditing', 'isDefaultCurrencyValue', 'defaultCurrencyValue', 'defaultCurrencyValueDp', 'language', 'sortMode', 'themeMode', 'tourSeen', 'showDatePicker', 'showChangePct', 'compactRows', 'copyFormat', 'haptics', 'showPinButtons', 'pinnedCurrencies', 'rateAlerts', 'licenseKey', 'pro'] as const;
+export const PERSISTED_ATOM_KEYS = ['baseCur', 'currency2Display', 'currencyValue', 'isEditing', 'isDefaultCurrencyValue', 'defaultCurrencyValue', 'defaultCurrencyValueDp', 'language', 'sortMode', 'themeMode', 'tourSeen', 'showDatePicker', 'showChangePct', 'compactRows', 'copyFormat', 'haptics', 'showPinButtons', 'showCopyButtons', 'pinnedCurrencies', 'rateAlerts', 'licenseKey', 'pro'] as const;

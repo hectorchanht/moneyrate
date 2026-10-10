@@ -14,13 +14,14 @@ import {
   proAtom,
   rateAlertsAtom,
   showChangePctAtom,
+  showCopyButtonsAtom,
   showPinButtonsAtom,
   sortModeAtom,
   themeModeAtom
 } from '@/lib/atoms';
 import { DefaultCurrency2Display } from '@/lib/constants';
 import { vibrate } from '@/lib/fns';
-import { AddSvg, BellSvg, CrossSvg, ListSvg, SettingSvg, TableSvg, XSvg } from '@/lib/svgs';
+import { AddSvg, BellSvg, CrossSvg, ListSvg, MailSvg, SettingSvg, TableSvg, TrendDownSvg, TrendUpSvg, XSvg } from '@/lib/svgs';
 import { AlertDirection, CopyFormat, Language, LanguageCode, RateAlert, SortMode, ThemeMode } from '@/lib/types';
 import { useAtom } from 'jotai';
 import React, { useMemo, useState } from 'react';
@@ -76,12 +77,99 @@ interface CurrencyListTableProps {
   data: Record<string, string>;
 }
 
-// Rate alerts manager (settings tab). Alerts are evaluated in page.tsx
-// whenever fresh rates arrive; this component is CRUD + permission only.
-// Free plan cap on rate alerts; Pro (license key in Settings) is unlimited.
 const FREE_ALERT_LIMIT = 3;
 
-const RateAlertsSettings: React.FC<{ currencies: string[]; baseCur: string }> = ({ currencies, baseCur }) => {
+const EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+// Alert target form shared by the Push and Email tabs: From / To / Target /
+// direction picker + submit. One component so both tabs always look and
+// behave the same (unified 2026-10-09 — previously two stacked sections
+// with duplicated forms).
+interface AlertTargetFormProps {
+  currencies: string[];
+  from: string;
+  to: string;
+  target: string;
+  direction: AlertDirection;
+  setFrom: (c: string) => void;
+  setTo: (c: string) => void;
+  setTarget: (s: string) => void;
+  setDirection: (d: AlertDirection) => void;
+  submitLabel: React.ReactNode;
+  submitDisabled: boolean;
+  onSubmit: () => void;
+}
+
+// Icon direction picker — trend arrows instead of text-only buttons.
+const DirectionPicker: React.FC<{ direction: AlertDirection; setDirection: (d: AlertDirection) => void }> = ({ direction, setDirection }) => {
+  const [haptics] = useAtom(hapticsAtom);
+  const t = useTranslation();
+  const pick = (d: AlertDirection) => { vibrate(haptics); setDirection(d); };
+  const cls = (d: AlertDirection) =>
+    `btn join-item flex-1 gap-1.5 ${direction === d ? 'btn-primary' : 'btn-ghost'}`;
+  return (
+    <div className="join flex-1" role="radiogroup" aria-label={`${t.settings.alertAbove} / ${t.settings.alertBelow}`}>
+      <button type="button" role="radio" aria-checked={direction === 'above'} className={cls('above')} onClick={() => pick('above')}>
+        <TrendUpSvg className="size-4 shrink-0" />{t.settings.alertAbove}
+      </button>
+      <button type="button" role="radio" aria-checked={direction === 'below'} className={cls('below')} onClick={() => pick('below')}>
+        <TrendDownSvg className="size-4 shrink-0" />{t.settings.alertBelow}
+      </button>
+    </div>
+  );
+};
+
+const AlertTargetForm: React.FC<AlertTargetFormProps> = ({
+  currencies, from, to, target, direction,
+  setFrom, setTo, setTarget, setDirection,
+  submitLabel, submitDisabled, onSubmit,
+}) => {
+  const t = useTranslation();
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-2 mb-2">
+        <label className="flex flex-col gap-1 min-w-0">
+          <span className="text-xs opacity-70">{t.settings.alertFrom}</span>
+          {/* Default-size selects: select-sm clipped the selected value on
+              some Android builds (seen live 2026-10-09). Code-only labels:
+              "JPY — Japanese Yen" truncated to "JPY …" in half-width selects
+              (seen live 2026-10-08). */}
+          <select className="select select-bordered w-full truncate" value={from} onChange={(e) => setFrom(e.target.value)} aria-label={t.settings.alertFrom}>
+            {currencies.map(c => <option key={c} value={c}>{c.toUpperCase()}</option>)}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1 min-w-0">
+          <span className="text-xs opacity-70">{t.settings.alertTo}</span>
+          <select className="select select-bordered w-full truncate" value={to} onChange={(e) => setTo(e.target.value)} aria-label={t.settings.alertTo}>
+            {currencies.map(c => <option key={c} value={c}>{c.toUpperCase()}</option>)}
+          </select>
+        </label>
+      </div>
+      <label className="flex flex-col gap-1 mb-2">
+        <span className="text-xs opacity-70">{t.settings.alertTarget}</span>
+        <input
+          type="number" inputMode="decimal" min="0" step="any"
+          className="input input-bordered w-full"
+          placeholder="160"
+          value={target}
+          onChange={(e) => setTarget(e.target.value)}
+          aria-label={t.settings.alertTarget}
+        />
+      </label>
+      <div className="flex gap-2 mb-2">
+        <DirectionPicker direction={direction} setDirection={setDirection} />
+        <button type="button" className="btn btn-primary flex-1" onClick={onSubmit} disabled={submitDisabled}>
+          {submitLabel}
+        </button>
+      </div>
+    </>
+  );
+};
+
+// Push (device-notification) alerts tab. Alerts are evaluated in page.tsx
+// whenever fresh rates arrive; this component is CRUD + permission only.
+// Free plan cap on rate alerts; Pro (license key in Settings) is unlimited.
+const PushAlertsTab: React.FC<{ currencies: string[]; baseCur: string }> = ({ currencies, baseCur }) => {
   const [alerts, setAlerts] = useAtom(rateAlertsAtom);
   const [haptics] = useAtom(hapticsAtom);
   const [pro] = useAtom(proAtom);
@@ -92,10 +180,6 @@ const RateAlertsSettings: React.FC<{ currencies: string[]; baseCur: string }> = 
   const [target, setTarget] = useState('');
   const [direction, setDirection] = useState<AlertDirection>('above');
   const [perm, setPerm] = useState<string>(typeof Notification !== 'undefined' ? Notification.permission : 'unsupported');
-
-  // Code-only labels: "JPY — Japanese Yen" truncated to "JPY …" inside the
-  // half-width selects on phones (seen live 2026-10-08).
-  const label = (c: string) => c.toUpperCase();
 
   const addAlert = () => {
     const targetNum = parseFloat(target);
@@ -119,59 +203,24 @@ const RateAlertsSettings: React.FC<{ currencies: string[]; baseCur: string }> = 
     } catch { /* Notification API unsupported */ }
   };
 
+  const canAdd = parseFloat(target) > 0 && !!from && !!to && from !== to;
+
   return (
     <div>
-      <div className="label">
-        <span className="label-text flex items-center gap-2"><BellSvg className="size-5" />{t.settings.rateAlerts}</span>
-      </div>
-
       {perm !== 'granted' && perm !== 'unsupported' && (
-        <button type="button" className="btn btn-outline btn-sm w-full mb-2" onClick={requestPermission}>
+        <button type="button" className="btn btn-outline w-full mb-2" onClick={requestPermission}>
           {t.settings.alertEnableNotifications}{perm === 'denied' ? ' (blocked — allow in browser settings)' : ''}
         </button>
       )}
 
-      <div className="grid grid-cols-2 gap-2 mb-2">
-        <label className="flex flex-col gap-1">
-          <span className="text-xs opacity-70">{t.settings.alertFrom}</span>
-          <select className="select select-bordered select-sm w-full" value={from} onChange={(e) => setFrom(e.target.value)} aria-label={t.settings.alertFrom}>
-            {currencies.map(c => <option key={c} value={c}>{label(c)}</option>)}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1">
-          <span className="text-xs opacity-70">{t.settings.alertTo}</span>
-          <select className="select select-bordered select-sm w-full" value={to} onChange={(e) => setTo(e.target.value)} aria-label={t.settings.alertTo}>
-            {currencies.map(c => <option key={c} value={c}>{label(c)}</option>)}
-          </select>
-        </label>
-      </div>
-      {/* Target full-width, then Above/Below + Add share one row — the old
-          3-column grid (target | above/below | add) overflowed ~360px phones
-          and cut the Add button off (seen live 2026-10-08). */}
-      <label className="flex flex-col gap-1 mb-2">
-        <span className="text-xs opacity-70">{t.settings.alertTarget}</span>
-        <input
-          type="number" inputMode="decimal" min="0" step="any"
-          className="input input-bordered input-sm w-full"
-          placeholder="160"
-          value={target}
-          onChange={(e) => setTarget(e.target.value)}
-          aria-label={t.settings.alertTarget}
-        />
-      </label>
-      <div className="flex gap-2 mb-2">
-        <div className="join flex-1">
-          <button type="button" className={`btn btn-sm join-item flex-1 ${direction === 'above' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setDirection('above')} aria-pressed={direction === 'above'}>
-            {t.settings.alertAbove} ↑
-          </button>
-          <button type="button" className={`btn btn-sm join-item flex-1 ${direction === 'below' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setDirection('below')} aria-pressed={direction === 'below'}>
-            {t.settings.alertBelow} ↓
-          </button>
-        </div>
-        <button type="button" className="btn btn-primary btn-sm flex-1" onClick={addAlert} disabled={!(parseFloat(target) > 0) || !from || !to || from === to}>
-          {t.settings.alertAdd}
-        </button>
-      </div>
+      <AlertTargetForm
+        currencies={currencies}
+        from={from} to={to} target={target} direction={direction}
+        setFrom={setFrom} setTo={setTo} setTarget={setTarget} setDirection={setDirection}
+        submitLabel={t.settings.alertAdd}
+        submitDisabled={!canAdd}
+        onSubmit={addAlert}
+      />
 
       {!pro && (
         <p className="text-xs opacity-60 mb-2">
@@ -206,16 +255,10 @@ const RateAlertsSettings: React.FC<{ currencies: string[]; baseCur: string }> = 
   );
 };
 
-interface CurrencyListTableProps {
-  data: Record<string, string>;
-}
-
-// Pro license settings (English-only strings — same precedent as AffiliateLinks).
-// The key is a Gumroad license key for the paid tier; verified via /api/license.
 // Email rate alerts via Resend (English-only strings — same precedent as
 // AffiliateLinks). One active alert per email address (v1); firing is
 // one-shot, resubscribing re-arms. Needs RESEND_API_KEY on Vercel.
-const EmailAlertsSettings: React.FC<{ currencies: string[]; baseCur: string }> = ({ currencies, baseCur }) => {
+const EmailAlertsTab: React.FC<{ currencies: string[]; baseCur: string }> = ({ currencies, baseCur }) => {
   const [haptics] = useAtom(hapticsAtom);
   const [email, setEmail] = useState('');
   const [from, setFrom] = useState(baseCur);
@@ -248,9 +291,6 @@ const EmailAlertsSettings: React.FC<{ currencies: string[]; baseCur: string }> =
 
   return (
     <div>
-      <div className="label">
-        <span className="label-text flex items-center gap-2"><BellSvg className="size-5" />Email alerts</span>
-      </div>
       <p className="text-xs opacity-60 mb-2">
         One email when your target hits — no app open needed. One active alert per address.
       </p>
@@ -258,51 +298,23 @@ const EmailAlertsSettings: React.FC<{ currencies: string[]; baseCur: string }> =
         <span className="text-xs opacity-70">Email</span>
         <input
           type="email" inputMode="email"
-          className="input input-bordered input-sm w-full"
+          className="input input-bordered w-full"
           placeholder="you@example.com"
           value={email}
           onChange={(e) => { setEmail(e.target.value); setStatus('idle'); }}
           aria-label="Email for alerts"
         />
       </label>
-      <div className="grid grid-cols-2 gap-2 mb-2">
-        <label className="flex flex-col gap-1">
-          <span className="text-xs opacity-70">From</span>
-          <select className="select select-bordered select-sm w-full" value={from} onChange={(e) => setFrom(e.target.value)} aria-label="Alert from currency">
-            {currencies.map(c => <option key={c} value={c}>{c.toUpperCase()}</option>)}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1">
-          <span className="text-xs opacity-70">To</span>
-          <select className="select select-bordered select-sm w-full" value={to} onChange={(e) => setTo(e.target.value)} aria-label="Alert to currency">
-            {currencies.map(c => <option key={c} value={c}>{c.toUpperCase()}</option>)}
-          </select>
-        </label>
-      </div>
-      <label className="flex flex-col gap-1 mb-2">
-        <span className="text-xs opacity-70">Target rate</span>
-        <input
-          type="number" inputMode="decimal" min="0" step="any"
-          className="input input-bordered input-sm w-full"
-          placeholder="160"
-          value={target}
-          onChange={(e) => { setTarget(e.target.value); setStatus('idle'); }}
-          aria-label="Alert target rate"
-        />
-      </label>
-      <div className="flex gap-2 mb-1">
-        <div className="join flex-1">
-          <button type="button" className={`btn btn-sm join-item flex-1 ${direction === 'above' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setDirection('above')} aria-pressed={direction === 'above'}>
-            Above ↑
-          </button>
-          <button type="button" className={`btn btn-sm join-item flex-1 ${direction === 'below' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setDirection('below')} aria-pressed={direction === 'below'}>
-            Below ↓
-          </button>
-        </div>
-        <button type="button" className="btn btn-primary btn-sm flex-1" onClick={subscribe} disabled={!ok || status === 'sending'}>
-          {status === 'sending' ? 'Subscribing…' : 'Notify me'}
-        </button>
-      </div>
+      <AlertTargetForm
+        currencies={currencies}
+        from={from} to={to} target={target} direction={direction}
+        setFrom={setFrom} setTo={setTo}
+        setTarget={(s) => { setTarget(s); setStatus('idle'); }}
+        setDirection={setDirection}
+        submitLabel={status === 'sending' ? 'Subscribing…' : 'Notify me'}
+        submitDisabled={!ok || status === 'sending'}
+        onSubmit={subscribe}
+      />
       {status === 'ok' && <p className="text-xs text-success mb-1">Subscribed — check your inbox for confirmation.</p>}
       {status === 'dup' && <p className="text-xs text-warning mb-1">This email already has an active alert.</p>}
       {status === 'bad' && <p className="text-xs text-error mb-1">Something went wrong — try again.</p>}
@@ -311,7 +323,41 @@ const EmailAlertsSettings: React.FC<{ currencies: string[]; baseCur: string }> =
   );
 };
 
-const EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+// Alerts section: Push (device notifications) and Email tabs sharing one
+// target form (AlertTargetForm). Tabbed 2026-10-09 — the two alert types were
+// stacked sections with duplicated From/To/Target forms.
+const AlertsSection: React.FC<{ currencies: string[]; baseCur: string }> = ({ currencies, baseCur }) => {
+  const [tab, setTab] = useState<'push' | 'email'>('push');
+  const [haptics] = useAtom(hapticsAtom);
+  const t = useTranslation();
+  const cls = (name: 'push' | 'email') => `tab gap-1.5 ${tab === name ? 'tab-active' : ''}`;
+  return (
+    <div>
+      <div className="label">
+        <span className="label-text flex items-center gap-2"><BellSvg className="size-5" />{t.settings.rateAlerts}</span>
+      </div>
+      <div role="tablist" aria-label={t.settings.rateAlerts} className="tabs tabs-boxed mb-2">
+        <button type="button" role="tab" aria-selected={tab === 'push'} className={cls('push')} onClick={() => { vibrate(haptics); setTab('push'); }}>
+          <BellSvg className="size-4" />{t.settings.alertTabPush}
+        </button>
+        <button type="button" role="tab" aria-selected={tab === 'email'} className={cls('email')} onClick={() => { vibrate(haptics); setTab('email'); }}>
+          <MailSvg className="size-4" />{t.settings.alertTabEmail}
+        </button>
+      </div>
+      {tab === 'push'
+        ? <PushAlertsTab currencies={currencies} baseCur={baseCur} />
+        : <EmailAlertsTab currencies={currencies} baseCur={baseCur} />}
+    </div>
+  );
+};
+
+
+interface CurrencyListTableProps {
+  data: Record<string, string>;
+}
+
+// Pro license settings (English-only strings — same precedent as AffiliateLinks).
+// The key is a Gumroad license key for the paid tier; verified via /api/license.
 
 
 const ProSettings: React.FC = () => {
@@ -404,6 +450,7 @@ const CurrencySetting: React.FC<{ baseCur: string }> = ({ baseCur }) => {
   const [copyFormat, setCopyFormat] = useAtom(copyFormatAtom);
   const [haptics, setHaptics] = useAtom(hapticsAtom);
   const [showPinButtons, setShowPinButtons] = useAtom(showPinButtonsAtom);
+  const [showCopyButtons, setShowCopyButtons] = useAtom(showCopyButtonsAtom);
   const [, setLicenseKey] = useAtom(licenseKeyAtom);
   const [, setPro] = useAtom(proAtom);
   const t = useTranslation();
@@ -571,6 +618,15 @@ const CurrencySetting: React.FC<{ baseCur: string }> = ({ baseCur }) => {
         <div className="divider m-0" />
 
         <label className="label cursor-pointer">
+          <input type="checkbox" checked={showCopyButtons} onChange={() => { vibrate(haptics); setShowCopyButtons(!showCopyButtons); }} className="checkbox" />
+          <span className="label-text px-2">
+            {t.settings.showCopyButtons}
+          </span>
+        </label>
+
+        <div className="divider m-0" />
+
+        <label className="label cursor-pointer">
           <input type="checkbox" checked={haptics} onChange={() => { setHaptics(!haptics); vibrate(!haptics); }} className="checkbox" />
           <span className="label-text px-2">
             {t.settings.haptics}
@@ -579,15 +635,11 @@ const CurrencySetting: React.FC<{ baseCur: string }> = ({ baseCur }) => {
 
         <div className="divider m-0" />
 
-        <RateAlertsSettings currencies={currency2Display} baseCur={baseCur} />
+        <AlertsSection currencies={currency2Display} baseCur={baseCur} />
 
         <div className="divider m-0" />
 
         <ProSettings />
-
-        <div className="divider m-0" />
-
-        <EmailAlertsSettings currencies={currency2Display} baseCur={baseCur} />
 
         <div className="divider m-0" />
 
@@ -610,6 +662,7 @@ const CurrencySetting: React.FC<{ baseCur: string }> = ({ baseCur }) => {
           setShowChangePct(true);
           setCompactRows(false);
           setCopyFormat('full');
+          setShowCopyButtons(true);
           setHaptics(true);
           setLicenseKey('');
           setPro(false);
