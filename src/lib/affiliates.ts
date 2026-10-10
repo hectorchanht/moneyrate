@@ -21,7 +21,7 @@ export const hasAiraloLink = () => AIRALO_REFERRAL_URL.startsWith("http");
 
 // MoneyRate Pro: Hector's own Gumroad membership product ($5/mo). The
 // license key it issues unlocks Pro in the app + API (verified via
-// /api/license against Gumroad v2). Live since 2026-10-10.
-export const GUMROAD_PRO_URL = "https://frostbite6003.gumroad.com/l/iyywbo";
+// /api/license against Gumroad v2). Live since 2026-10-10; subdomain moved to dawnlimited 2026-10-10.
+export const GUMROAD_PRO_URL = "https://dawnlimited.gumroad.com/l/iyywbo";
 export const hasKoinlyLink = () => KOINLY_REFERRAL_URL.startsWith("http");
 export const hasAirwallexLink = () => AIRWALLEX_REFERRAL_URL.startsWith("http");
