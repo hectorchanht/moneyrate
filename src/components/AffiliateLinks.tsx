@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
   AIRALO_REFERRAL_URL,
@@ -27,8 +28,17 @@ import {
 // cross-border moment (positioning A, 2026-10-09): Send (Wise) · Travel
 // (Airalo) · Tax (Koinly) · Trade (Coinbase/Binance) · Business (Airwallex).
 // Renders nothing while the referral URLs are placeholders (see affiliates.ts).
+// Tippers can hide the strip with the trailing × (honor system —
+// localStorage "dawn_sponsored_hidden"; clearing site data restores it).
 export default function AffiliateLinks() {
   const i18n = useTranslation();
+  const [dismissed, setDismissed] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined" && localStorage.getItem("dawn_sponsored_hidden") === "1") {
+      setDismissed(true);
+    }
+  }, []);
+  if (dismissed) return null;
   if (!hasTipJarLink() && !hasWiseLink() && !hasCoinbaseLink() && !hasBinanceLink() && !hasAiraloLink() && !hasKoinlyLink() && !hasAirwallexLink()) return null;
 
   return (
@@ -118,6 +128,20 @@ export default function AffiliateLinks() {
           {i18n.home.affiliateBusiness} &rarr;
         </a>
       )}
+      {/* Dismiss for tippers — honor system, no license check. Persists in
+          localStorage; nothing re-shows the strip without clearing site data. */}
+      <button
+        type="button"
+        title="Tipped? Hide the sponsored strip"
+        aria-label="Hide the sponsored strip"
+        onClick={() => {
+          localStorage.setItem("dawn_sponsored_hidden", "1");
+          setDismissed(true);
+        }}
+        className="btn btn-xs btn-ghost shrink-0 opacity-40 text-[11px] px-1.5"
+      >
+        &times;
+      </button>
     </section>
   );
 }
