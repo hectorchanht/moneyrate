@@ -3,23 +3,32 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslation } from '@/hooks/useTranslation';
-import { BackSvg } from '@/lib/svgs';
+import { BackSvg, XSvg } from '@/lib/svgs';
 import { POPULAR_CURRENCIES, fetchPairRate, parseBatchAmounts } from '@/lib/tools';
 
 // Batch convert: paste a pile of amounts (invoice lines, receipts — one per
 // line, commas fine), convert them all at once, get the list + the total.
+// The parse is shown as removable tags: "4,600" is ambiguous (4600 vs 4+600),
+// so each parsed amount becomes a chip — tap × to drop a wrong guess.
 export default function BatchPage() {
   const t = useTranslation().tools;
   const [from, setFrom] = useState('USD');
   const [to, setTo] = useState('HKD');
   const [text, setText] = useState('');
+  const [dropped, setDropped] = useState<Set<number>>(new Set());
   const [rows, setRows] = useState<{ amount: number; converted: number }[] | null>(null);
   const [loading, setLoading] = useState(false);
 
   const fmt = (n: number) =>
     n.toLocaleString('en-US', { maximumFractionDigits: 2 });
 
-  const amounts = parseBatchAmounts(text);
+  const parsed = parseBatchAmounts(text);
+  const amounts = parsed.filter((_, i) => !dropped.has(i));
+
+  const onText = (v: string) => {
+    setText(v);
+    setDropped(new Set());
+  };
 
   const convert = async () => {
     if (amounts.length === 0 || from === to) return;
@@ -61,9 +70,27 @@ export default function BatchPage() {
         <textarea
           className="textarea textarea-bordered w-full h-32 tabular-nums"
           placeholder={t.batchPlaceholder}
-          value={text} onChange={e => setText(e.target.value)}
+          value={text} onChange={e => onText(e.target.value)}
         />
       </label>
+
+      {parsed.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mb-2">
+          {parsed.map((a, i) => dropped.has(i) ? null : (
+            <span key={i} className="badge badge-lg gap-1 tabular-nums py-3 pl-3">
+              {fmt(a)}
+              <button
+                type="button"
+                aria-label={t.batchRemoveAmount.replace('{n}', fmt(a))}
+                className="btn btn-ghost btn-xs btn-circle"
+                onClick={() => setDropped(prev => { const next = new Set(prev); next.add(i); return next; })}
+              >
+                <XSvg className="size-3.5" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
 
       <button type="button" className="btn btn-primary w-full mb-4"
         onClick={convert} disabled={amounts.length === 0 || from === to || loading}>
