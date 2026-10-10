@@ -88,14 +88,17 @@ const CurrencyChart = () => {
     return new Intl.NumberFormat('en-US', { notation: 'scientific' }).format(number);
   }
 
-  // Y-axis ticks render with 0 decimal places (Hector 2026-10-09). Two
-  // exceptions: extreme magnitudes keep scientific notation, and values
-  // under 10 keep decimals — rounding those would collapse e.g. EUR→CHF
-  // (≈0.95) into a wall of 0s and 1s.
+  // Y-axis ticks render with 0 decimal places (Hector 2026-10-09) when the
+  // visible range reaches 10 — below that, decimals are kept so small pairs
+  // (EUR→CHF ≈0.95) don't collapse into 0s and 1s. Decided from the range,
+  // not per tick, so one axis never mixes "22" with "8.874" (seen live
+  // 2026-10-10 — the per-tick <10 guard did exactly that). Extreme
+  // magnitudes keep scientific notation either way.
+  const useIntegerTicks = yDomain[1] >= 10;
   const yTickFormat = (value: number) => {
     const a = Math.abs(value);
     if (a !== 0 && (a >= 1e15 || a < 0.001)) return scientificFormat(value).toString();
-    if (a < 10) return scientificFormat(value).toString();
+    if (!useIntegerTicks) return scientificFormat(value).toString();
     return Math.round(value).toString();
   };
 
