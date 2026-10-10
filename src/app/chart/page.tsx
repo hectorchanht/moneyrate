@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import useSWR from 'swr';
 import { showASCIIArt } from '@/lib/fns';
+import { track } from '@/lib/analytics';
 import { BackSvg, DownloadSvg, ReverseSvg } from '@/lib/svgs';
 import { fetcher } from '@/lib/api';
 
@@ -189,8 +190,13 @@ const CurrencyChart = () => {
         <div className="flex-1" />
 
         <button type="button" aria-label="Reverse currency pair" title="Reverse currency pair" onClick={() => {
-          // redirect to /chart?base-target
-          window.location.href = `/chart?q=${encodeURIComponent(`${q.split('-')[1]}-${q.split('-')[0]}`)}`;
+          const parts = (q ?? '').split('-');
+          track('pair_swapped', { from: parts[0] ?? '', to: parts[1] ?? '' });
+          // Brief delay so the analytics beacon flushes before the redirect.
+          setTimeout(() => {
+            // redirect to /chart?base-target
+            window.location.href = `/chart?q=${encodeURIComponent(`${parts[1]}-${parts[0]}`)}`;
+          }, 300);
         }}>
           <ReverseSvg className='cursor-pointer w-[24px] h-[24px]' />
         </button>

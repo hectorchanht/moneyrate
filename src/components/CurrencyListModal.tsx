@@ -22,6 +22,7 @@ import {
 import { DefaultCurrency2Display } from '@/lib/constants';
 import { vibrate } from '@/lib/fns';
 import { AddSvg, CrossSvg, ListSvg, SettingSvg, TableSvg, XSvg } from '@/lib/svgs';
+import { track } from '@/lib/analytics';
 import { CopyFormat, Language, LanguageCode, SortMode, ThemeMode } from '@/lib/types';
 import { useAtom } from 'jotai';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -137,7 +138,7 @@ const ProSettings: React.FC = () => {
         Unlimited rate alerts + white-label embeds. <a href="/api-docs#pro" className="link">Learn more</a>
       </p>
       {!pro && (
-        <a href={GUMROAD_PRO_URL} target="_blank" rel="noopener" className="btn btn-primary btn-sm w-full mb-2">
+        <a href={GUMROAD_PRO_URL} target="_blank" rel="noopener" className="btn btn-primary btn-sm w-full mb-2" onClick={() => track('pro_checkout_started', { location: 'settings_pro' })}>
           ✦ Get Pro — $5/month
         </a>
       )}
@@ -228,8 +229,11 @@ const SponsoredStripSettings: React.FC = () => {
         localStorage.setItem('dawn_tip_license_key', key);
         setSupporter(true);
         setStatus('idle');
+        track('tip_verified', { success: true });
+        track('supporter_status_changed', { is_supporter: true });
       } else {
         setStatus('bad');
+        track('tip_verified', { success: false });
       }
     } catch {
       setStatus('bad');
@@ -685,7 +689,7 @@ const CurrencyListModal: React.FC<CurrencyListModalProps> = ({ data, baseCur }) 
             <button type="button" role="tab" aria-label="Currency list" aria-selected={activeTab === 1} className={`tab ${activeTab === 1 ? 'tab-active' : ''}`} onClick={() => setActiveTab(1)}>
               <TableSvg />
             </button>
-            <button type="button" role="tab" aria-label="Settings" aria-selected={activeTab === 2} className={`tab ${activeTab === 2 ? 'tab-active' : ''}`} onClick={() => setActiveTab(2)}>
+            <button type="button" role="tab" aria-label="Settings" aria-selected={activeTab === 2} className={`tab ${activeTab === 2 ? 'tab-active' : ''}`} onClick={() => { setActiveTab(2); track('settings_opened'); }}>
               <SettingSvg />
             </button>
             <button type="button" role="tab" aria-label="Close" className={`tab`} onClick={closeModal}>

@@ -41,6 +41,7 @@ import { CurrencyCode, Language, RateAlert } from '@/lib/types';
 import type { Driver } from 'driver.js';
 import { useAtom } from 'jotai';
 import { pick } from 'lodash';
+import { track, amountBucket } from '@/lib/analytics';
 import { CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FixedSizeList } from 'react-window';
 import useSWR from 'swr';
@@ -86,6 +87,12 @@ export default function Home() {
   const tourDriverRef = useRef<Driver | null>(null);
   const windowWidth = useWindowWidth();
   const [baseCur, setBaseCur] = useAtom(baseCurAtom);
+  // Debounced conversion-event tracking: the base amount input fires per
+  // keystroke, so we wait 2s of quiet before logging one currency_converted
+  // (bucketed amount — never raw user input).
+  const convertTrackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const baseCurRef = useRef(baseCur);
+  useEffect(() => { baseCurRef.current = baseCur; }, [baseCur]);
   const [currency2Display, setCurrency2Display] = useAtom(currency2DisplayAtom);
   const [currencyValue, setCurrencyValue] = useAtom(currencyValueAtom);
   const [isEditing] = useAtom(isEditingAtom);
@@ -381,6 +388,7 @@ export default function Home() {
       }, {});
       setCurrencyValue(dataAfter[cur] || 100);
     }
+    track('currency_converted', { from: baseCur, to: cur, amount_bucket: amountBucket(currencyValue) });
     setBaseCur(cur as CurrencyCode);
   }, [isDefaultCurrencyValue, defaultCurrencyValue, curObj, baseCur, currencyValue, setCurrencyValue, setBaseCur]);
 
@@ -395,6 +403,10 @@ export default function Home() {
   // Handle currency value changes
   const handleCurrencyValueChange = useCallback((value: number) => {
     setCurrencyValue(value);
+    if (convertTrackTimer.current) clearTimeout(convertTrackTimer.current);
+    convertTrackTimer.current = setTimeout(() => {
+      track('currency_converted', { from: baseCurRef.current, to: 'all', amount_bucket: amountBucket(value) });
+    }, 2000);
   }, [setCurrencyValue]);
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {

@@ -15,7 +15,7 @@ const csp = [
   `worker-src 'self'`,
   `img-src 'self' data:`,
   `font-src 'self'`,
-  `connect-src 'self' https://*.currency-api.pages.dev https://cdn.jsdelivr.net https://*.clarity.ms https://cloudflareinsights.com`,
+  `connect-src 'self' https://*.currency-api.pages.dev https://cdn.jsdelivr.net https://*.clarity.ms https://cloudflareinsights.com https://us.i.posthog.com`,
   `frame-ancestors 'none'`,
   `base-uri 'self'`,
   `object-src 'none'`,

@@ -8,6 +8,7 @@
 import { useAtom } from 'jotai';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { track } from '@/lib/analytics';
 import { hapticsAtom, proAtom, rateAlertsAtom } from '@/lib/atoms';
 import { isSupporter } from '@/lib/affiliates';
 import { vibrate } from '@/lib/fns';
@@ -161,6 +162,7 @@ const PushAlertsTab: React.FC<{ currencies: string[]; baseCur: string }> = ({ cu
     };
     setAlerts(prev => [...prev, alert]);
     setTarget('');
+    track('rate_alert_created', { from, to, direction, kind, via: 'push' });
   };
 
   const requestPermission = async () => {
@@ -236,7 +238,7 @@ const PushAlertsTab: React.FC<{ currencies: string[]; baseCur: string }> = ({ cu
                   {t.settings.alertRearm}
                 </button>
               )}
-              <button type="button" className="btn btn-ghost btn-xs" aria-label={`${t.settings.alertDelete} 1 ${a.from.toUpperCase()} ${a.to.toUpperCase()}`} onClick={() => { vibrate(haptics); setCapHit(false); setAlerts(prev => prev.filter(x => x.id !== a.id)); }}>
+              <button type="button" className="btn btn-ghost btn-xs" aria-label={`${t.settings.alertDelete} 1 ${a.from.toUpperCase()} ${a.to.toUpperCase()}`} onClick={() => { vibrate(haptics); setCapHit(false); track('rate_alert_deleted', { from: a.from, to: a.to, via: 'push' }); setAlerts(prev => prev.filter(x => x.id !== a.id)); }}>
                 <CrossSvg className="size-4" />
               </button>
             </li>
@@ -269,7 +271,7 @@ const EmailAlertsTab: React.FC<{ currencies: string[]; baseCur: string }> = ({ c
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), base: from, target: to, direction, target_rate: targetNum }),
       });
-      if (res.ok) { setStatus('ok'); setTarget(''); }
+      if (res.ok) { setStatus('ok'); setTarget(''); track('rate_alert_created', { from, to, direction, kind: 'target', via: 'email' }); }
       else if (res.status === 409) setStatus('dup');
       else if (res.status === 503) setStatus('off');
       else setStatus('bad');

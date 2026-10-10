@@ -6,6 +6,7 @@ import localFont from "next/font/local";
 // import Head from 'next/head';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import ThemeApplier from '@/components/ThemeApplier';
+import PostHogProvider from '@/components/PostHogProvider';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { CURRENCY_API_HOST } from '@/lib/api';
 import { SITE_URL } from '@/lib/pairs';
@@ -70,10 +71,12 @@ export default function RootLayout({
       >
         <ServiceWorkerRegister />
         <Provider>
-          <ThemeApplier />
-          <LanguageProvider>
-            {children}
-          </LanguageProvider>
+          <PostHogProvider>
+            <ThemeApplier />
+            <LanguageProvider>
+              {children}
+            </LanguageProvider>
+          </PostHogProvider>
         </Provider>
 
         {/* Microsoft Clarity — loaded only when a project id is configured. */}

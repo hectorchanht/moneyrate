@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { track } from "@/lib/analytics";
 import {
   AIRALO_REFERRAL_URL,
   AIRWALLEX_REFERRAL_URL,
@@ -63,6 +64,7 @@ export default function AffiliateLinks() {
           target="_blank"
           rel="noopener"
           draggable={false}
+          onClick={() => track('tip_jar_opened', { location: 'sponsored_strip' })}
           className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#F0A832] text-black hover:bg-[#d9972a] text-[11px] px-2"
         >
           {i18n.home.tipJar} &rarr;
