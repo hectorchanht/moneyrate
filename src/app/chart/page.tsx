@@ -88,12 +88,23 @@ const CurrencyChart = () => {
     return new Intl.NumberFormat('en-US', { notation: 'scientific' }).format(number);
   }
 
+  // Y-axis ticks render with 0 decimal places (Hector 2026-10-09). Two
+  // exceptions: extreme magnitudes keep scientific notation, and values
+  // under 10 keep decimals — rounding those would collapse e.g. EUR→CHF
+  // (≈0.95) into a wall of 0s and 1s.
+  const yTickFormat = (value: number) => {
+    const a = Math.abs(value);
+    if (a !== 0 && (a >= 1e15 || a < 0.001)) return scientificFormat(value).toString();
+    if (a < 10) return scientificFormat(value).toString();
+    return Math.round(value).toString();
+  };
+
   // Y-axis width from the longest formatted label: the old fixed 40px clipped
   // 7-char labels like "493.432" at the viewport edge (seen live 2026-10-09).
   // ~6.2px per tabular-numeral char at 10px + 8px gutter, capped so a freak
   // value can't eat the chart.
   const yAxisWidth = useMemo(() => {
-    const maxLen = filteredData.reduce((m, d) => Math.max(m, scientificFormat(d.value).toString().length), 6);
+    const maxLen = filteredData.reduce((m, d) => Math.max(m, yTickFormat(d.value).length), 6);
     return Math.min(72, Math.ceil(maxLen * 6.2 + 8));
   }, [filteredData]);
 
@@ -230,7 +241,7 @@ const CurrencyChart = () => {
               as far left as possible with minimum empty gutter. Width is
               computed from the longest formatted label (yAxisWidth) so longer
               values like "493.432" never clip at the viewport edge. */}
-          <YAxis domain={yDomain} tickFormatter={(value) => scientificFormat(value).toString()} width={yAxisWidth} tick={{ fontSize: 10 }} />
+          <YAxis domain={yDomain} tickFormatter={(value) => yTickFormat(value)} width={yAxisWidth} tick={{ fontSize: 10 }} />
           <Tooltip labelStyle={{ color: 'black' }} contentStyle={{ background: 'white' }} itemStyle={{ fontWeight: '700', color: 'black' }} formatter={(value) => [value]} />
           <Line type="monotone" dataKey="value" stroke="currentColor" isAnimationActive={false} dot={showDots} />
         </LineChart>
