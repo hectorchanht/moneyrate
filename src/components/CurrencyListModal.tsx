@@ -24,7 +24,7 @@ import { vibrate } from '@/lib/fns';
 import { AddSvg, CrossSvg, ListSvg, SettingSvg, TableSvg, XSvg } from '@/lib/svgs';
 import { CopyFormat, Language, LanguageCode, SortMode, ThemeMode } from '@/lib/types';
 import { useAtom } from 'jotai';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import CountryImg from './CountryImg';
 import AlertsSection from './RateAlerts';
 
@@ -164,6 +164,102 @@ const ProSettings: React.FC = () => {
       )}
       {status === 'ok' && (
         <p className="text-xs text-success mb-1">Pro activated — unlimited alerts unlocked.</p>
+      )}
+    </div>
+  );
+};
+
+
+// Sponsored-strip visibility for tippers (English-only strings — same
+// precedent as ProSettings). A Gumroad tip-jar license key (verified via
+// /api/verify-tip) sets localStorage "dawn_sponsored_hidden", which
+// AffiliateLinks honors. The admin license key also verifies here.
+const SponsoredStripSettings: React.FC = () => {
+  const [haptics] = useAtom(hapticsAtom);
+  const [hidden, setHidden] = useState(false);
+  const [input, setInput] = useState('');
+  const [status, setStatus] = useState<'idle' | 'checking' | 'ok' | 'bad'>('idle');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && localStorage.getItem('dawn_sponsored_hidden') === '1') {
+      setHidden(true);
+    }
+  }, []);
+
+  const verify = async () => {
+    const key = input.trim();
+    if (!key) return;
+    setStatus('checking');
+    try {
+      const res = await fetch('/api/verify-tip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ licenseKey: key }),
+      });
+      const json = await res.json();
+      if (json?.ok) {
+        localStorage.setItem('dawn_sponsored_hidden', '1');
+        setHidden(true);
+        setStatus('ok');
+      } else {
+        setStatus('bad');
+      }
+    } catch {
+      setStatus('bad');
+    }
+    vibrate(haptics);
+  };
+
+  const showAgain = () => {
+    localStorage.removeItem('dawn_sponsored_hidden');
+    setHidden(false);
+    setInput('');
+    setStatus('idle');
+    vibrate(haptics);
+  };
+
+  return (
+    <div>
+      <div className="label">
+        <span className="label-text flex items-center gap-2">
+          ☕ Sponsored strip
+          {hidden && <span className="badge badge-success badge-sm">Hidden</span>}
+        </span>
+      </div>
+      {hidden ? (
+        <div>
+          <p className="text-xs opacity-60 mb-2">☕ Thanks for tipping — the sponsored strip is hidden.</p>
+          <button type="button" className="btn btn-sm btn-ghost" onClick={showAgain}>
+            Show again
+          </button>
+        </div>
+      ) : (
+        <div>
+          <p className="text-xs opacity-60 mb-2">
+            Tipped us on Gumroad? Enter the license key from your purchase receipt email to hide the sponsored strip.
+          </p>
+          <div className="flex gap-2 mb-1">
+            <input
+              type="text"
+              className="input input-bordered input-sm flex-1 min-w-0 font-mono"
+              placeholder="Tip license key"
+              value={input}
+              onChange={(e) => { setInput(e.target.value); setStatus('idle'); }}
+              aria-label="Tip license key"
+            />
+            <button
+              type="button"
+              className="btn btn-sm btn-primary shrink-0"
+              onClick={verify}
+              disabled={!input.trim() || status === 'checking'}
+            >
+              {status === 'checking' ? 'Checking…' : 'Verify'}
+            </button>
+          </div>
+          {status === 'bad' && (
+            <p className="text-xs text-error mb-1">That key didn&apos;t verify — check the license key in your Gumroad receipt email.</p>
+          )}
+        </div>
       )}
     </div>
   );
@@ -374,6 +470,10 @@ const CurrencySetting: React.FC<{ baseCur: string }> = ({ baseCur }) => {
         <div className="divider m-0" />
 
         <ProSettings />
+
+        <div className="divider m-0" />
+
+        <SponsoredStripSettings />
 
         <div className="divider m-0" />
 
