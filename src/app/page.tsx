@@ -540,15 +540,23 @@ export default function Home() {
   const showSkeleton = (isLoad1 && !effectiveAll) || (isLoad2 && !effectiveBaseCur);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    // overflow-x-clip: no row (icon bar, currency rows, …) may ever widen
+    // the window — the 20px :root font-size makes rem gaps 25% bigger than
+    // standard, so tight rows used to overflow narrow viewports (seen live
+    // 2026-10-10). clip (not hidden): no scroll container, fixed overlays
+    // and the top-layer <dialog> are unaffected; nothing here is sticky.
+    <div className="flex flex-col min-h-screen overflow-x-clip">
       <main className="flex-grow">
 
         {/* px-2 (not p-4): rows get maximum width for long converted values on phones. */}
         <div className='grid grid-cols-1 justify-between m-auto max-w-[800px] px-2 py-4'>
           {/* Icon row, then the search on its own full-width line below —
-              five 44px buttons plus a search input never fit one 360px row. */}
+              six 44px buttons plus a search input never fit one 360px row.
+              gap-1 (not gap-2): the 20px :root font-size makes rem gaps 25%
+              bigger, and 6×44+5×10=314px overflowed ~320px viewports'
+              300px content box, growing the window (seen live 2026-10-10). */}
           <div className='w-full'>
-            <div className='flex gap-2 w-full items-center mb-2'>
+            <div className='flex gap-1 w-full items-center mb-2'>
               <CurrencyListModal data={displayNames} baseCur={baseCur} />
               {/* Share menu: copy link (existing) + share-as-image rate card (D). */}
               <div className="relative shrink-0">
