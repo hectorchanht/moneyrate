@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { GUMROAD_PRO_URL } from '@/lib/affiliates';
 import { SITE_URL } from '@/lib/pairs';
 
 export const metadata: Metadata = {
@@ -85,6 +86,11 @@ export default function ApiDocsPage() {
         <li><strong>White-label embeds</strong> — append <span className={CODE}>?key=YOUR_KEY</span> to
           the embed URL below to drop the “Powered by” footer.</li>
       </ul>
+      <p className="mt-3">
+        <a href={GUMROAD_PRO_URL} target="_blank" rel="noopener" className="btn btn-primary btn-sm">
+          ✦ Get Pro — $5/month
+        </a>
+      </p>
 
       <h2 id="embed" className="text-lg font-semibold mt-6 mb-2">Embed the converter</h2>
       <p className="text-sm opacity-70 mb-2">

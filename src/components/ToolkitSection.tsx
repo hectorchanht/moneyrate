@@ -8,9 +8,10 @@ import { BellSvg, DownloadSvg, GlobeSvg, ReverseSvg, ShareSvg, TableSvg } from "
 import { WISE_REFERRAL_URL } from "@/lib/affiliates";
 
 // Cross-border money toolkit — the small "life between currencies" strip
-// under the converter (positioning A, 2026-10-09). Three moments:
-// rate alerts, tax-ready FX averages (downloadable CSV), and the cheapest
-// way to send money abroad (Wise affiliate link).
+// under the converter (positioning A, 2026-10-09). Six moments:
+// rate alerts, tax-ready FX averages (downloadable CSV), the cheapest
+// way to send money abroad (Wise affiliate link), plus the trip planner,
+// rate compare and batch convert tools (added 2026-10-10).
 // Labels are localized across all 30 locales (same keys as AffiliateLinks)
 // so they react to language change.
 export default function ToolkitSection({ baseCur }: { baseCur: string }) {

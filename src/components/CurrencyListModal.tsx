@@ -1,4 +1,5 @@
 import { useTranslation } from '@/hooks/useTranslation';
+import { GUMROAD_PRO_URL } from '@/lib/affiliates';
 import {
   compactRowsAtom,
   copyFormatAtom,
@@ -451,6 +452,11 @@ const ProSettings: React.FC = () => {
       <p className="text-xs opacity-60 mb-2">
         Unlimited rate alerts + white-label embeds. <a href="/api-docs#pro" className="link">Learn more</a>
       </p>
+      {!pro && (
+        <a href={GUMROAD_PRO_URL} target="_blank" rel="noopener" className="btn btn-primary btn-sm w-full mb-2">
+          ✦ Get Pro — $5/month
+        </a>
+      )}
       <div className="flex gap-2 mb-1">
         <input
           type="text"
