@@ -32,6 +32,7 @@ import {
   tourSeenAtom
 } from '@/lib/atoms';
 import { getDataFromLocalStorage, getDropIndex, resolveTourLocale, setDataToLocalStorage, showASCIIArt, sortCurrencyPairs, vibrate } from '@/lib/fns';
+import { crossPctChange } from '@/lib/tools';
 import { CurrencyNameOverrides } from '@/lib/constants';
 import { BellSvg, GlobeSvg, ImageSvg, QuestionSvg, ShareSvg, CalendarSvg } from '@/lib/svgs';
 import { buildTourSteps, getTourString, SUPPORTED_LOCALES } from '@/lib/tourSteps';
@@ -164,7 +165,7 @@ export default function Home() {
   const [shareCopied, setShareCopied] = useState(false);
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
-  const [firedAlert, setFiredAlert] = useState<RateAlert | null>(null);
+  const [firedAlert, setFiredAlert] = useState<{ alert: RateAlert; value: number } | null>(null);
 
   const onShare = useCallback(async () => {
     const params = new URLSearchParams({ base: baseCur, amount: String(currencyValue), show: currency2Display.join(',') });
@@ -459,20 +460,32 @@ export default function Home() {
     (async () => {
       const fired: { alert: RateAlert; rate: number }[] = [];
       for (const a of pending) {
-        const rate = await getRate(a);
-        if (rate === undefined) continue;
-        if (a.direction === 'above' ? rate >= a.target : rate <= a.target) fired.push({ alert: a, rate });
+        if ((a.kind ?? 'target') === 'pct') {
+          // % move alert: 24h % change of from→to derived from the already-
+          // fetched tables (no extra requests). Needs yesterday's rates;
+          // skipped silently when they aren't loaded yet.
+          const pct = crossPctChange(changePctByCur, a.from, a.to, baseCur);
+          if (pct === undefined) continue;
+          if (a.direction === 'above' ? pct >= a.target : pct <= -a.target) fired.push({ alert: a, rate: pct });
+        } else {
+          const rate = await getRate(a);
+          if (rate === undefined) continue;
+          if (a.direction === 'above' ? rate >= a.target : rate <= a.target) fired.push({ alert: a, rate });
+        }
       }
       if (cancelled || fired.length === 0) return;
       const ids = new Set(fired.map(f => f.alert.id));
       setRateAlerts(prev => prev.map(a => (ids.has(a.id) ? { ...a, triggered: true } : a)));
       const { alert, rate } = fired[0];
-      setFiredAlert(alert);
+      setFiredAlert({ alert, value: rate });
       vibrate(haptics, 40);
       try {
         if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+          const isPct = (alert.kind ?? 'target') === 'pct';
           new Notification('💱 Rate alert', {
-            body: `1 ${alert.from.toUpperCase()} = ${rate} ${alert.to.toUpperCase()} (${alert.direction === 'above' ? '≥' : '≤'} ${alert.target})`,
+            body: isPct
+              ? `${alert.from.toUpperCase()}→${alert.to.toUpperCase()} moved ${rate >= 0 ? '+' : ''}${rate.toFixed(2)}% in 24h (${alert.direction === 'above' ? '↗ ≥' : '↘ ≤'}${alert.target}%)`
+              : `1 ${alert.from.toUpperCase()} = ${rate} ${alert.to.toUpperCase()} (${alert.direction === 'above' ? '≥' : '≤'} ${alert.target})`,
           });
         }
       } catch { /* notifications best-effort */ }
@@ -480,7 +493,7 @@ export default function Home() {
 
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [effectiveBaseCur, rateAlerts]);
+  }, [effectiveBaseCur, changePctByCur, rateAlerts]);
 
   // Share-as-image (D): render a rate-card PNG and share it (Web Share files)
   // or download it when sharing isn't available.
@@ -712,17 +725,26 @@ export default function Home() {
           </div>
 
           {/* Fired rate alert banner (A) — the atom already marks it triggered. */}
-          {firedAlert && (
-            <div className="alert alert-success mb-2 py-2 px-3" role="status">
-              <BellSvg className="size-5 shrink-0" />
-              <span className="text-sm flex-1 tabular-nums">
-                1 {firedAlert.from.toUpperCase()} {firedAlert.direction === 'above' ? '≥' : '≤'} {firedAlert.target} {firedAlert.to.toUpperCase()} — {i18n.settings.alertTargetHit}
-              </span>
-              <button type="button" className="btn btn-ghost btn-xs shrink-0" onClick={() => setFiredAlert(null)}>
-                {i18n.settings.dismiss}
-              </button>
-            </div>
-          )}
+          {firedAlert && (() => {
+            const { alert, value } = firedAlert;
+            const isPct = (alert.kind ?? 'target') === 'pct';
+            return (
+              <div className="alert alert-success mb-2 py-2 px-3" role="status">
+                <BellSvg className="size-5 shrink-0" />
+                <span className="text-sm flex-1 tabular-nums">
+                  {isPct ? (
+                    <>{alert.from.toUpperCase()}→{alert.to.toUpperCase()} {value >= 0 ? '+' : ''}{value.toFixed(2)}% ({alert.direction === 'above' ? '↗ ≥' : '↘ ≤'}{alert.target}%)</>
+                  ) : (
+                    <>1 {alert.from.toUpperCase()} {alert.direction === 'above' ? '≥' : '≤'} {alert.target} {alert.to.toUpperCase()}</>
+                  )}
+                  {' '}— {i18n.settings.alertTargetHit}
+                </span>
+                <button type="button" className="btn btn-ghost btn-xs shrink-0" onClick={() => setFiredAlert(null)}>
+                  {i18n.settings.dismiss}
+                </button>
+              </div>
+            );
+          })()}
 
           {showSkeleton ? (
             <div>

@@ -29,12 +29,19 @@ export type CopyFormat = 'value' | 'full';
 
 export type AlertDirection = 'above' | 'below';
 
+// Push-alert kind: 'target' fires when the rate hits a level; 'pct' fires on
+// a 24h % move. Stored alerts created before this field existed have no kind
+// and are treated as 'target'. Email alerts stay target-only (the server cron
+// has no 24h-ago rates to compare against).
+export type AlertKind = 'target' | 'pct';
+
 export interface RateAlert {
   id: string;
   from: string;
   to: string;
-  target: number;
-  direction: AlertDirection;
+  target: number;          // target rate (kind=target) | % threshold (kind=pct)
+  direction: AlertDirection; // target: above/below the rate; pct: above=rises ≥%, below=falls ≥%
+  kind: AlertKind;
   triggered: boolean;
   createdAt: number;
 }

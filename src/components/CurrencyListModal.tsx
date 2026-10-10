@@ -22,7 +22,7 @@ import {
 import { DefaultCurrency2Display } from '@/lib/constants';
 import { vibrate } from '@/lib/fns';
 import { AddSvg, BellSvg, CrossSvg, ListSvg, MailSvg, SettingSvg, TableSvg, TrendDownSvg, TrendUpSvg, XSvg } from '@/lib/svgs';
-import { AlertDirection, CopyFormat, Language, LanguageCode, RateAlert, SortMode, ThemeMode } from '@/lib/types';
+import { AlertDirection, AlertKind, CopyFormat, Language, LanguageCode, RateAlert, SortMode, ThemeMode } from '@/lib/types';
 import { useAtom } from 'jotai';
 import React, { useMemo, useState } from 'react';
 import CountryImg from './CountryImg';
@@ -98,22 +98,34 @@ interface AlertTargetFormProps {
   submitLabel: React.ReactNode;
   submitDisabled: boolean;
   onSubmit: () => void;
+  // Push tab only: 'target' hits a rate level, 'pct' fires on a 24h % move.
+  // Defaults to 'target' (the Email tab never passes a kind).
+  kind?: AlertKind;
 }
 
 // Icon direction picker — trend arrows instead of text-only buttons.
-const DirectionPicker: React.FC<{ direction: AlertDirection; setDirection: (d: AlertDirection) => void }> = ({ direction, setDirection }) => {
+// Labels are overridable: the % move alert uses Rises/Falls instead of
+// Above/Below.
+const DirectionPicker: React.FC<{
+  direction: AlertDirection;
+  setDirection: (d: AlertDirection) => void;
+  aboveLabel?: string;
+  belowLabel?: string;
+}> = ({ direction, setDirection, aboveLabel, belowLabel }) => {
   const [haptics] = useAtom(hapticsAtom);
   const t = useTranslation();
   const pick = (d: AlertDirection) => { vibrate(haptics); setDirection(d); };
   const cls = (d: AlertDirection) =>
     `btn join-item flex-1 gap-1.5 ${direction === d ? 'btn-primary' : 'btn-ghost'}`;
+  const up = aboveLabel ?? t.settings.alertAbove;
+  const down = belowLabel ?? t.settings.alertBelow;
   return (
-    <div className="join flex-1" role="radiogroup" aria-label={`${t.settings.alertAbove} / ${t.settings.alertBelow}`}>
+    <div className="join flex-1" role="radiogroup" aria-label={`${up} / ${down}`}>
       <button type="button" role="radio" aria-checked={direction === 'above'} className={cls('above')} onClick={() => pick('above')}>
-        <TrendUpSvg className="size-4 shrink-0" />{t.settings.alertAbove}
+        <TrendUpSvg className="size-4 shrink-0" />{up}
       </button>
       <button type="button" role="radio" aria-checked={direction === 'below'} className={cls('below')} onClick={() => pick('below')}>
-        <TrendDownSvg className="size-4 shrink-0" />{t.settings.alertBelow}
+        <TrendDownSvg className="size-4 shrink-0" />{down}
       </button>
     </div>
   );
@@ -122,9 +134,11 @@ const DirectionPicker: React.FC<{ direction: AlertDirection; setDirection: (d: A
 const AlertTargetForm: React.FC<AlertTargetFormProps> = ({
   currencies, from, to, target, direction,
   setFrom, setTo, setTarget, setDirection,
-  submitLabel, submitDisabled, onSubmit,
+  submitLabel, submitDisabled, onSubmit, kind = 'target',
 }) => {
   const t = useTranslation();
+  const isPct = kind === 'pct';
+  const targetLabel = isPct ? t.settings.alertPctThreshold : t.settings.alertTarget;
   return (
     <>
       <div className="grid grid-cols-2 gap-2 mb-2">
@@ -146,18 +160,23 @@ const AlertTargetForm: React.FC<AlertTargetFormProps> = ({
         </label>
       </div>
       <label className="flex flex-col gap-1 mb-2">
-        <span className="text-xs opacity-70">{t.settings.alertTarget}</span>
+        <span className="text-xs opacity-70">{targetLabel}</span>
         <input
           type="number" inputMode="decimal" min="0" step="any"
           className="input input-bordered w-full"
-          placeholder="160"
+          placeholder={isPct ? '3' : '160'}
           value={target}
           onChange={(e) => setTarget(e.target.value)}
-          aria-label={t.settings.alertTarget}
+          aria-label={targetLabel}
         />
       </label>
       <div className="flex gap-2 mb-2">
-        <DirectionPicker direction={direction} setDirection={setDirection} />
+        <DirectionPicker
+          direction={direction}
+          setDirection={setDirection}
+          aboveLabel={isPct ? t.settings.alertRises : undefined}
+          belowLabel={isPct ? t.settings.alertFalls : undefined}
+        />
         <button type="button" className="btn btn-primary flex-1" onClick={onSubmit} disabled={submitDisabled}>
           {submitLabel}
         </button>
@@ -179,6 +198,7 @@ const PushAlertsTab: React.FC<{ currencies: string[]; baseCur: string }> = ({ cu
   const [to, setTo] = useState(currencies.find(c => c !== baseCur) ?? '');
   const [target, setTarget] = useState('');
   const [direction, setDirection] = useState<AlertDirection>('above');
+  const [kind, setKind] = useState<AlertKind>('target');
   const [perm, setPerm] = useState<string>(typeof Notification !== 'undefined' ? Notification.permission : 'unsupported');
 
   const addAlert = () => {
@@ -188,7 +208,7 @@ const PushAlertsTab: React.FC<{ currencies: string[]; baseCur: string }> = ({ cu
     vibrate(haptics);
     const alert: RateAlert = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-      from, to, target: targetNum, direction,
+      from, to, target: targetNum, direction, kind,
       triggered: false, createdAt: Date.now(),
     };
     setAlerts(prev => [...prev, alert]);
@@ -213,6 +233,25 @@ const PushAlertsTab: React.FC<{ currencies: string[]; baseCur: string }> = ({ cu
         </button>
       )}
 
+      {/* Alert kind: target rate vs 24h % move. Email alerts stay target-only —
+          the server cron has no 24h-ago rates to compare against. */}
+      <div className="join w-full mb-2" role="radiogroup" aria-label={`${t.settings.alertKindTarget} / ${t.settings.alertKindPct}`}>
+        <button
+          type="button" role="radio" aria-checked={kind === 'target'}
+          className={`btn join-item flex-1 gap-1.5 ${kind === 'target' ? 'btn-primary' : 'btn-ghost'}`}
+          onClick={() => { vibrate(haptics); setKind('target'); }}
+        >
+          🎯 {t.settings.alertKindTarget}
+        </button>
+        <button
+          type="button" role="radio" aria-checked={kind === 'pct'}
+          className={`btn join-item flex-1 gap-1.5 ${kind === 'pct' ? 'btn-primary' : 'btn-ghost'}`}
+          onClick={() => { vibrate(haptics); setKind('pct'); }}
+        >
+          📈 {t.settings.alertKindPct}
+        </button>
+      </div>
+
       <AlertTargetForm
         currencies={currencies}
         from={from} to={to} target={target} direction={direction}
@@ -220,6 +259,7 @@ const PushAlertsTab: React.FC<{ currencies: string[]; baseCur: string }> = ({ cu
         submitLabel={t.settings.alertAdd}
         submitDisabled={!canAdd}
         onSubmit={addAlert}
+        kind={kind}
       />
 
       {!pro && (
@@ -236,7 +276,11 @@ const PushAlertsTab: React.FC<{ currencies: string[]; baseCur: string }> = ({ cu
           {alerts.map(a => (
             <li key={a.id} className="flex items-center gap-2 text-sm bg-base-200 rounded px-2 py-1.5">
               <span className="flex-1 tabular-nums">
-                1 {a.from.toUpperCase()} {a.direction === 'above' ? '≥' : '≤'} {a.target} {a.to.toUpperCase()}
+                {(a.kind ?? 'target') === 'pct' ? (
+                  <>{a.from.toUpperCase()}→{a.to.toUpperCase()} {a.direction === 'above' ? '↗' : '↘'} {a.direction === 'above' ? '≥' : '≤'}{a.target}%</>
+                ) : (
+                  <>1 {a.from.toUpperCase()} {a.direction === 'above' ? '≥' : '≤'} {a.target} {a.to.toUpperCase()}</>
+                )}
                 {a.triggered && <span className="badge badge-success badge-sm ml-2">{t.settings.alertTriggered}</span>}
               </span>
               {a.triggered && (

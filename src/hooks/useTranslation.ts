@@ -11,12 +11,14 @@ import { translations } from '@/lib/translations';
 // which is fine since nothing narrows on those literals).
 type TourNamespace = { [K in keyof typeof translations.en.tour]: string };
 type SettingsNamespace = { [K in keyof typeof translations.en.settings]: string };
-type TranslationDictionary = Omit<typeof translations.en, 'tour' | 'settings'> & {
+type ToolsNamespace = { [K in keyof typeof translations.en.tools]: string };
+type TranslationDictionary = Omit<typeof translations.en, 'tour' | 'settings' | 'tools'> & {
   tour?: Partial<TourNamespace>;
   settings?: Partial<SettingsNamespace>;
+  tools?: Partial<ToolsNamespace>;
 };
 
-export function useTranslation(): TranslationDictionary & { tour: TourNamespace; settings: SettingsNamespace } {
+export function useTranslation(): TranslationDictionary & { tour: TourNamespace; settings: SettingsNamespace; tools: ToolsNamespace } {
   const { language } = useLanguage();
   const dict = (translations[language as keyof typeof translations] || translations.en) as unknown as TranslationDictionary;
   // Per-key en fallback for `tour` (D-04) — mirrors getTourString's contract
@@ -25,9 +27,12 @@ export function useTranslation(): TranslationDictionary & { tour: TourNamespace;
   // Same treatment for `settings`: new settings keys only need authoring in
   // en (+ the locales we actually translate); every other locale falls back
   // to the English string per key instead of rendering a blank label.
+  // Same for `tools` (the /trip, /compare, /batch pages): en + zh-TW + zh-CN
+  // authored, everyone else gets English per key.
   return {
     ...dict,
     tour: { ...translations.en.tour, ...dict.tour },
     settings: { ...translations.en.settings, ...dict.settings },
+    tools: { ...translations.en.tools, ...dict.tools },
   };
 }

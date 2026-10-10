@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 import { useTranslation } from "@/hooks/useTranslation";
 import { hapticsAtom } from "@/lib/atoms";
 import { vibrate } from "@/lib/fns";
-import { BellSvg, DownloadSvg, ShareSvg } from "@/lib/svgs";
+import { BellSvg, DownloadSvg, GlobeSvg, ReverseSvg, ShareSvg, TableSvg } from "@/lib/svgs";
 import { WISE_REFERRAL_URL } from "@/lib/affiliates";
 
 // Cross-border money toolkit — the small "life between currencies" strip
@@ -57,6 +57,15 @@ export default function ToolkitSection({ baseCur }: { baseCur: string }) {
         className={item}
       >
         <ShareSvg className="size-4" /> {i18n.home.toolkitSend}
+      </a>
+      <a href="/trip" className={item} aria-label={i18n.home.toolkitTrip}>
+        <GlobeSvg className="size-4" /> {i18n.home.toolkitTrip}
+      </a>
+      <a href="/compare" className={item} aria-label={i18n.home.toolkitCompare}>
+        <ReverseSvg className="size-4" /> {i18n.home.toolkitCompare}
+      </a>
+      <a href="/batch" className={item} aria-label={i18n.home.toolkitBatch}>
+        <TableSvg className="size-4" /> {i18n.home.toolkitBatch}
       </a>
     </section>
   );
