@@ -23,5 +23,10 @@ export const hasAiraloLink = () => AIRALO_REFERRAL_URL.startsWith("http");
 // license key it issues unlocks Pro in the app + API (verified via
 // /api/license against Gumroad v2). Live since 2026-10-10; subdomain moved to dawnlimited 2026-10-10.
 export const GUMROAD_PRO_URL = "https://dawnlimited.gumroad.com/l/iyywbo";
+
+// Tip jar: Hector's own Gumroad tip-jar product ($1+ pay-what-you-want).
+// Rendered as the FIRST button in the Sponsored strip (2026-10-10).
+export const TIP_JAR_URL = "https://dawnlimited.gumroad.com/l/moneyrate-tip";
+export const hasTipJarLink = () => TIP_JAR_URL.startsWith("http");
 export const hasKoinlyLink = () => KOINLY_REFERRAL_URL.startsWith("http");
 export const hasAirwallexLink = () => AIRWALLEX_REFERRAL_URL.startsWith("http");

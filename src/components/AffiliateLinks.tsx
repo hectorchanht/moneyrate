@@ -7,12 +7,14 @@ import {
   BINANCE_REFERRAL_URL,
   COINBASE_REFERRAL_URL,
   KOINLY_REFERRAL_URL,
+  TIP_JAR_URL,
   WISE_REFERRAL_URL,
   hasAiraloLink,
   hasAirwallexLink,
   hasBinanceLink,
   hasCoinbaseLink,
   hasKoinlyLink,
+  hasTipJarLink,
   hasWiseLink,
 } from "@/lib/affiliates";
 
@@ -21,13 +23,13 @@ import {
 // card) to stay out of the converter's way. Solid brand-color buttons with a
 // "Sponsored" disclosure and button labels localized across all 30 locales
 // (positioning A follow-up, 2026-10-09 — labels now react to language change).
-// Buttons are ordered by cross-border moment (positioning A, 2026-10-09):
-// Send (Wise) · Travel (Airalo) · Tax (Koinly) · Trade (Coinbase/Binance) ·
-// Business (Airwallex).
+// Button order (2026-10-10): Hector's own tip jar FIRST, then affiliates by
+// cross-border moment (positioning A, 2026-10-09): Send (Wise) · Travel
+// (Airalo) · Tax (Koinly) · Trade (Coinbase/Binance) · Business (Airwallex).
 // Renders nothing while the referral URLs are placeholders (see affiliates.ts).
 export default function AffiliateLinks() {
   const i18n = useTranslation();
-  if (!hasWiseLink() && !hasCoinbaseLink() && !hasBinanceLink() && !hasAiraloLink() && !hasKoinlyLink() && !hasAirwallexLink()) return null;
+  if (!hasTipJarLink() && !hasWiseLink() && !hasCoinbaseLink() && !hasBinanceLink() && !hasAiraloLink() && !hasKoinlyLink() && !hasAirwallexLink()) return null;
 
   return (
     <section
@@ -39,6 +41,17 @@ export default function AffiliateLinks() {
       className="no-scrollbar mb-2 flex flex-nowrap items-center gap-2 overflow-x-auto rounded-lg border border-base-300 bg-base-200/60 px-2.5 py-1.5"
     >
       <span className="text-[9px] uppercase tracking-wider opacity-40 shrink-0">{i18n.home.sponsored}</span>
+      {hasTipJarLink() && (
+        <a
+          href={TIP_JAR_URL}
+          target="_blank"
+          rel="noopener"
+          draggable={false}
+          className="btn btn-xs shrink-0 whitespace-nowrap border-0 bg-[#F0A832] text-black hover:bg-[#d9972a] text-[11px] px-2"
+        >
+          {i18n.home.tipJar} &rarr;
+        </a>
+      )}
       {hasWiseLink() && (
         <a
           href={WISE_REFERRAL_URL}
