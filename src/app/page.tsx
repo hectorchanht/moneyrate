@@ -109,7 +109,7 @@ export default function Home() {
   }, [currencyValue]);
   const [isEditing] = useAtom(isEditingAtom);
   const [isDefaultCurrencyValue] = useAtom(isDefaultCurrencyValueAtom);
-  const [defaultCurrencyValue] = useAtom(defaultCurrencyValueAtom);
+  const [defaultCurrencyValue, setDefaultCurrencyValue] = useAtom(defaultCurrencyValueAtom);
   const [defaultCurrencyValueDp] = useAtom(defaultCurrencyValueDpAtom);
   const [sortMode] = useAtom(sortModeAtom);
   const [tourSeen, setTourSeen] = useAtom(tourSeenAtom);
@@ -652,8 +652,8 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => { vibrate(haptics); setLangMenuOpen(v => !v); }}
-                  title={i18n.settings.changeLanguage}
-                  aria-label={i18n.settings.changeLanguage}
+                  title={i18n.settings.language}
+                  aria-label={i18n.settings.language}
                   aria-expanded={langMenuOpen}
                   aria-haspopup="menu"
                   className="h-[44px] w-[44px] shrink-0 flex items-center justify-center"
@@ -740,7 +740,7 @@ export default function Home() {
                 key={v}
                 type="button"
                 ref={(el) => { if (el) quickBtnRefs.current.set(v, el); else quickBtnRefs.current.delete(v); }}
-                onClick={() => { vibrate(haptics); handleCurrencyValueChange(v); }}
+                onClick={() => { vibrate(haptics); handleCurrencyValueChange(v); setDefaultCurrencyValue(v); }}
                 aria-pressed={currencyValue === v}
                 className={`btn btn-sm shrink-0 tabular-nums ${currencyValue === v ? 'btn-primary' : 'btn-ghost'}`}
               >

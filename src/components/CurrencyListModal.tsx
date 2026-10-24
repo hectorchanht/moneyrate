@@ -23,7 +23,7 @@ import { DefaultCurrency2Display } from '@/lib/constants';
 import { vibrate } from '@/lib/fns';
 import { AddSvg, CrossSvg, ListSvg, SettingSvg, TableSvg, XSvg } from '@/lib/svgs';
 import { track } from '@/lib/analytics';
-import { CopyFormat, Language, LanguageCode, SortMode, ThemeMode } from '@/lib/types';
+import { CopyFormat, Language, SortMode, ThemeMode } from '@/lib/types';
 import { useAtom } from 'jotai';
 import React, { useEffect, useMemo, useState } from 'react';
 import CountryImg from './CountryImg';
@@ -345,6 +345,49 @@ const SponsoredStripSettings: React.FC = () => {
 };
 
 
+// ---- Settings UI primitives (sectioned layout, 2026-10-23 rebuild) ----
+
+const Section: React.FC<{ title?: string; children: React.ReactNode }> = ({ title, children }) => (
+  <section className="mb-4">
+    {title && <h3 className="px-1 mb-1.5 text-xs font-semibold uppercase tracking-widest opacity-50">{title}</h3>}
+    <div className="rounded-xl bg-base-200/60 divide-y divide-base-300/50 px-3">
+      {children}
+    </div>
+  </section>
+);
+
+const ToggleRow: React.FC<{ label: string; hint?: string; checked: boolean; onChange: () => void }> = ({ label, hint, checked, onChange }) => (
+  <label className="flex cursor-pointer items-center justify-between gap-3 py-2.5">
+    <span className="min-w-0">
+      <span className="block text-sm">{label}</span>
+      {hint && <span className="mt-0.5 block text-xs opacity-60">{hint}</span>}
+    </span>
+    <input type="checkbox" className="toggle toggle-primary shrink-0" checked={checked} onChange={onChange} aria-label={label} />
+  </label>
+);
+
+const SelectRow: React.FC<{ id: string; label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[] }> = ({ id, label, value, onChange, options }) => (
+  <div className="py-2.5">
+    <label htmlFor={id} className="mb-1.5 block text-sm">{label}</label>
+    <select id={id} className="select select-bordered select-sm w-full" value={value} onChange={(e) => onChange(e.target.value)}>
+      {options.map(({ value: v, label: l }) => <option value={v} key={v}>{l}</option>)}
+    </select>
+  </div>
+);
+
+const NumberRow: React.FC<{ label: string; hint?: string; value: number; min?: number; onChange: (v: number) => void }> = ({ label, hint, value, min, onChange }) => (
+  <label className="flex items-center justify-between gap-3 py-2.5">
+    <span className="min-w-0">
+      <span className="block text-sm">{label}</span>
+      {hint && <span className="mt-0.5 block text-xs opacity-60">{hint}</span>}
+    </span>
+    <input type="number" className="input input-bordered input-sm w-28 shrink-0 text-right tabular-nums"
+      value={value} min={min} aria-label={label}
+      onChange={(e) => { const v = parseInt(e.target.value); onChange(isNaN(v) ? 0 : v); }} />
+  </label>
+);
+
+
 const CurrencySetting: React.FC<{ baseCur: string }> = ({ baseCur }) => {
   const [isDefaultCurrencyValue, setIsDefaultCurrencyValue] = useAtom(isDefaultCurrencyValueAtom);
   const [defaultCurrencyValue, setDefaultCurrencyValue] = useAtom(defaultCurrencyValueAtom);
@@ -365,10 +408,10 @@ const CurrencySetting: React.FC<{ baseCur: string }> = ({ baseCur }) => {
   const t = useTranslation();
 
   const sortOptions: { value: SortMode; label: string }[] = [
-    { value: 'custom', label: 'Custom (drag order)' },
-    { value: 'name', label: 'Name (A–Z)' },
-    { value: 'value', label: 'Value (high → low)' },
-    { value: 'change', label: '24h change (high → low)' },
+    { value: 'custom', label: t.settings.sortCustom },
+    { value: 'name', label: t.settings.sortName },
+    { value: 'value', label: t.settings.sortValue },
+    { value: 'change', label: t.settings.sortChange },
   ];
 
   const themeOptions: { value: ThemeMode; label: string }[] = [
@@ -382,209 +425,94 @@ const CurrencySetting: React.FC<{ baseCur: string }> = ({ baseCur }) => {
     { value: 'value', label: t.settings.copyFormatValue },
   ];
 
+  const resetAllSettings = () => {
+    if (!window.confirm(t.settings.resetAllSettingsConfirm)) return;
+    // Remove only this app's persisted keys instead of nuking all same-origin localStorage.
+    PERSISTED_ATOM_KEYS.forEach((key) => localStorage.removeItem(key));
+    setCurrency2Display(DefaultCurrency2Display);
+    setLanguage('en');
+    setSortMode('custom');
+    setThemeMode('system');
+    setShowChangePct(false);
+    setCompactRows(false);
+    setCopyFormat('full');
+    setShowCopyButtons(true);
+    setHaptics(true);
+    setLicenseKey('');
+    setPro(false);
+    window.location.reload();
+  };
+
   return (
-    <div>
-      <div className="form-control">
-        <label className="label cursor-pointer">
-          <input type="checkbox" checked={isEditing} onChange={() => {
-            setIsEditing(!isEditing);
-          }} className="checkbox" />
-          <span className="label-text px-2">
-            {t.settings.enableDeleteDragAndDrop}
-          </span>
-        </label>
+    <div className="pb-2">
+      <Section title={t.settings.sectionAmount}>
+        <NumberRow label={t.settings.defaultAmount} hint={t.settings.defaultAmountHint}
+          value={defaultCurrencyValue} min={0} onChange={setDefaultCurrencyValue} />
+        <ToggleRow label={t.settings.resetOnBaseSwitch}
+          checked={isDefaultCurrencyValue} onChange={() => setIsDefaultCurrencyValue(!isDefaultCurrencyValue)} />
+        <NumberRow label={t.settings.decimalPlaces}
+          value={defaultCurrencyValueDp ?? 0} min={0} onChange={setDefaultCurrencyValueDp} />
+      </Section>
 
-        <div className="divider m-0" />
+      <Section title={t.settings.sectionDisplay}>
+        <ToggleRow label={t.settings.show24hChange} hint={t.settings.show24hChangeHint}
+          checked={showChangePct} onChange={() => { vibrate(haptics); setShowChangePct(!showChangePct); }} />
+        <ToggleRow label={t.settings.compactRows}
+          checked={compactRows} onChange={() => { vibrate(haptics); setCompactRows(!compactRows); }} />
+        <SelectRow id="settings-sort" label={t.settings.sortBy}
+          value={sortMode} onChange={(v) => setSortMode(v as SortMode)} options={sortOptions} />
+        <SelectRow id="settings-theme" label={t.settings.theme}
+          value={themeMode} onChange={(v) => { vibrate(haptics); setThemeMode(v as ThemeMode); }} options={themeOptions} />
+        <ToggleRow label={t.settings.haptics}
+          checked={haptics} onChange={() => { setHaptics(!haptics); vibrate(!haptics); }} />
+      </Section>
 
-        <label className="label cursor-pointer">
-          <input type="checkbox" checked={isDefaultCurrencyValue} onChange={() => {
-            setIsDefaultCurrencyValue(!isDefaultCurrencyValue);
-          }} className="checkbox" />
-          <span className="label-text pl-2 justify-between items-center flex gap-2">
-            {t.settings.resetValue}
-            {/* No aria-label here: the wrapping <label> already names this
-                input; a duplicate label made two controls share one name. */}
-            <input type="number" className="w-[50%] bg-base-200" placeholder={defaultCurrencyValue.toString()} disabled={!isDefaultCurrencyValue}
-              onChange={(d) => {
-                const v = parseInt(d.target.value);
-                setDefaultCurrencyValue(isNaN(v) ? 0 : v);
-              }}
-            />
-          </span>
-        </label>
+      <Section title={t.settings.sectionCurrencies}>
+        <ToggleRow label={t.settings.editList} hint={t.settings.editListHint}
+          checked={isEditing} onChange={() => setIsEditing(!isEditing)} />
+        <div className="py-2.5">
+          <label htmlFor="settings-currencies" className="mb-1.5 block text-xs opacity-60">{t.settings.currenciesHint}</label>
+          <input id="settings-currencies" type="text" className="input input-bordered input-sm w-full font-mono"
+            value={currency2Display.filter(Boolean).join(', ')}
+            onChange={(d) => setCurrency2Display(d.target.value.split(',').map(c => c.trim()).filter(Boolean))} />
+        </div>
+      </Section>
 
-        <div className="divider m-0" />
-
-        <label className="label cursor-pointer">
-
-          <span className="label-text pl-2 justify-between items-center flex gap-2">
-            {t.settings.setDp}
-            <input type="number" className="w-[50%] bg-base-200" placeholder={defaultCurrencyValueDp?.toString() ?? 0}
-              aria-label={t.settings.setDp}
-              onChange={(d) => {
-                setDefaultCurrencyValueDp(isNaN(parseInt(d.target.value)) ? 0 : parseInt(d.target.value ?? 0));
-              }}
-            />
-          </span>
-        </label>
-
-        <div className="divider m-0" />
-
-        <label className="label" htmlFor="settings-language">
-          <span className="label-text">{t.settings.changeLanguage}</span>
-        </label>
-        <select
-          id="settings-language"
-          className="select select-bordered w-full mt-2"
+      <Section title={t.settings.sectionLanguage}>
+        <SelectRow id="settings-language" label={t.settings.language}
           value={language}
-          onChange={(e) => {
-            const newLang = languageOptions.find(opt => opt.value === e.target.value)?.value as LanguageCode;
-            if (newLang) {
-              setLanguage(newLang as Language);
-            }
-          }}
-        >
-          {languageOptions.map(({ value, label }) => (
-            <option value={value} key={value}>{label}</option>
-          ))}
-        </select>
+          onChange={(v) => { const next = languageOptions.find(opt => opt.value === v)?.value; if (next) setLanguage(next as Language); }}
+          options={languageOptions} />
+      </Section>
 
-        <div className="divider m-0" />
+      <Section title={t.settings.sectionSharing}>
+        <SelectRow id="settings-copy-format" label={t.settings.copyFormat}
+          value={copyFormat} onChange={(v) => { vibrate(haptics); setCopyFormat(v as CopyFormat); }} options={copyFormatOptions} />
+        <ToggleRow label={t.settings.pinButtons} hint={t.settings.pinButtonsHint}
+          checked={showPinButtons} onChange={() => { vibrate(haptics); setShowPinButtons(!showPinButtons); }} />
+        <ToggleRow label={t.settings.copyButtons}
+          checked={showCopyButtons} onChange={() => { vibrate(haptics); setShowCopyButtons(!showCopyButtons); }} />
+      </Section>
 
-        <label className="label" htmlFor="settings-sort">
-          <span className="label-text">Sort by</span>
-        </label>
-        <select
-          id="settings-sort"
-          className="select select-bordered w-full mt-2"
-          value={sortMode}
-          onChange={(e) => setSortMode(e.target.value as SortMode)}
-        >
-          {sortOptions.map(({ value, label }) => (
-            <option value={value} key={value}>{label}</option>
-          ))}
-        </select>
-
-        <div className="divider m-0" />
-
-        <label className="label" htmlFor="settings-theme">
-          <span className="label-text">{t.settings.themeMode}</span>
-        </label>
-        <select
-          id="settings-theme"
-          className="select select-bordered w-full mt-2"
-          value={themeMode}
-          onChange={(e) => { vibrate(haptics); setThemeMode(e.target.value as ThemeMode); }}
-        >
-          {themeOptions.map(({ value, label }) => (
-            <option value={value} key={value}>{label}</option>
-          ))}
-        </select>
-
-        <div className="divider m-0" />
-
-        <label className="label cursor-pointer">
-          <input type="checkbox" checked={showChangePct} onChange={() => { vibrate(haptics); setShowChangePct(!showChangePct); }} className="checkbox" />
-          <span className="label-text px-2">
-            {t.settings.showChangePct}
-          </span>
-        </label>
-
-        <div className="divider m-0" />
-
-        <label className="label cursor-pointer">
-          <input type="checkbox" checked={compactRows} onChange={() => { vibrate(haptics); setCompactRows(!compactRows); }} className="checkbox" />
-          <span className="label-text px-2">
-            {t.settings.compactRows}
-          </span>
-        </label>
-
-        <div className="divider m-0" />
-
-        <label className="label" htmlFor="settings-copy-format">
-          <span className="label-text">{t.settings.copyFormat}</span>
-        </label>
-        <select
-          id="settings-copy-format"
-          className="select select-bordered w-full mt-2"
-          value={copyFormat}
-          onChange={(e) => { vibrate(haptics); setCopyFormat(e.target.value as CopyFormat); }}
-        >
-          {copyFormatOptions.map(({ value, label }) => (
-            <option value={value} key={value}>{label}</option>
-          ))}
-        </select>
-
-        <div className="divider m-0" />
-
-        <label className="label cursor-pointer">
-          <input type="checkbox" checked={showPinButtons} onChange={() => { vibrate(haptics); setShowPinButtons(!showPinButtons); }} className="checkbox" />
-          <span className="label-text px-2">
-            {t.settings.showPinButtons}
-          </span>
-        </label>
-
-        <div className="divider m-0" />
-
-        <label className="label cursor-pointer">
-          <input type="checkbox" checked={showCopyButtons} onChange={() => { vibrate(haptics); setShowCopyButtons(!showCopyButtons); }} className="checkbox" />
-          <span className="label-text px-2">
-            {t.settings.showCopyButtons}
-          </span>
-        </label>
-
-        <div className="divider m-0" />
-
-        <label className="label cursor-pointer">
-          <input type="checkbox" checked={haptics} onChange={() => { setHaptics(!haptics); vibrate(!haptics); }} className="checkbox" />
-          <span className="label-text px-2">
-            {t.settings.haptics}
-          </span>
-        </label>
-
-        <div className="divider m-0" />
-
+      <Section>
         <AlertsSection currencies={currency2Display} baseCur={baseCur} />
+      </Section>
 
-        <div className="divider m-0" />
-
+      <Section>
         <ProSettings />
+      </Section>
 
-        <div className="divider m-0" />
-
+      <Section>
         <SponsoredStripSettings />
+      </Section>
 
-        <div className="divider m-0" />
-
-        <label className="label">
-          <span className="label-text">{t.settings.currenciesToDisplay}</span>
-        </label>
-        <input type="text" className="input input-bordered rounded-none w-full mt-2" placeholder={t.settings.currenciesToDisplaySeparatedByComma}
-          value={currency2Display.filter(Boolean).join(',')}
-          onChange={(d) => {
-            setCurrency2Display(d.target.value.split(',').map(c => c.trim()).filter(Boolean));
-          }} />
-
-        <button className="btn btn-primary w-full mt-2" onClick={() => {
-          // Remove only this app's persisted keys instead of nuking all same-origin localStorage.
-          PERSISTED_ATOM_KEYS.forEach((key) => localStorage.removeItem(key));
-          setCurrency2Display(DefaultCurrency2Display);
-          setLanguage('en');
-          setSortMode('custom');
-          setThemeMode('system');
-          setShowChangePct(true);
-          setCompactRows(false);
-          setCopyFormat('full');
-          setShowCopyButtons(true);
-          setHaptics(true);
-          setLicenseKey('');
-          setPro(false);
-          window.location.reload();
-        }}>
-          {t.settings.reset}
-        </button>
-
-      </div>
+      <Section title={t.settings.sectionDanger}>
+        <div className="py-2.5">
+          <button type="button" className="btn btn-error btn-outline btn-sm w-full" onClick={resetAllSettings}>
+            {t.settings.resetAllSettings}
+          </button>
+        </div>
+      </Section>
     </div>
   );
 };
