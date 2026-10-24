@@ -17,7 +17,7 @@ export const themeModeAtom = atomWithStorage<ThemeMode>('themeMode', 'system');
 export const tourSeenAtom = atomWithStorage<boolean>('tourSeen', false);
 export const showDatePickerAtom = atomWithStorage<boolean>('showDatePicker', false);
 // Display prefs (settings tab, 2026-10-08 batch)
-export const showChangePctAtom = atomWithStorage<boolean>('showChangePct', true);
+export const showChangePctAtom = atomWithStorage<boolean>('showChangePct', false);
 export const compactRowsAtom = atomWithStorage<boolean>('compactRows', false);
 export const copyFormatAtom = atomWithStorage<CopyFormat>('copyFormat', 'full');
 export const hapticsAtom = atomWithStorage<boolean>('haptics', true);

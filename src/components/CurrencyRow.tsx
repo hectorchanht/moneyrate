@@ -117,9 +117,11 @@ const CurrencyRow = ({
         // so it stands out from the converted rows. The box is full-bleed:
         // -mx-2 cancels the list container's px-2 so it fits edge to edge
         // left and right (square corners — rounding would clip at the edge).
-        className={isBase ? 'bg-primary/10 px-3 -mx-2 ring-1 ring-inset ring-primary/25' : undefined}
+        // h-full: in virtualized mode each row item is a fixed 68px box — the
+        // content fills it so items-center below truly centers the row.
+        className={`${isBase ? 'bg-primary/10 px-3 -mx-2 ring-1 ring-inset ring-primary/25 ' : ''}h-full`}
       >
-      <div className='flex gap-2 items-center'>
+      <div className='flex gap-2 items-center h-full'>
         <div className='flex w-full justify-between items-center gap-2'>
           {isEditing && <DragHandle onDragStart={() => onDragStart(cur)} />}
           <a
@@ -157,7 +159,9 @@ const CurrencyRow = ({
               tabIndex={0}
               onClick={() => onSelectBase(cur)}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectBase(cur); } }}
-              className='w-[240px] min-w-0 text-end tabular-nums cursor-pointer focus:outline focus:outline-1 focus:outline-base-content/40 overflow-hidden'
+              // When the 24h-change line is hidden the value is the only line:
+              // stretch to the row height and center it vertically.
+              className={`w-[240px] min-w-0 text-end tabular-nums cursor-pointer focus:outline focus:outline-1 focus:outline-base-content/40 overflow-hidden${(!isEditing && showChangePct) ? '' : ' self-stretch flex flex-col justify-center'}`}
               aria-label={`Set ${cur.toUpperCase()} as base currency`}
               title="Tap to edit this currency"
             >

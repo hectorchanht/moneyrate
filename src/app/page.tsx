@@ -95,6 +95,18 @@ export default function Home() {
   useEffect(() => { baseCurRef.current = baseCur; }, [baseCur]);
   const [currency2Display, setCurrency2Display] = useAtom(currency2DisplayAtom);
   const [currencyValue, setCurrencyValue] = useAtom(currencyValueAtom);
+  // Quick amounts: keep the chip matching the current amount scrolled into view.
+  const quickRowRef = useRef<HTMLDivElement>(null);
+  const quickBtnRefs = useRef(new Map<number, HTMLButtonElement>());
+  useEffect(() => {
+    const row = quickRowRef.current;
+    const btn = quickBtnRefs.current.get(currencyValue);
+    if (!row || !btn) return;
+    row.scrollTo({
+      left: btn.offsetLeft - row.clientWidth / 2 + btn.clientWidth / 2,
+      behavior: 'smooth',
+    });
+  }, [currencyValue]);
   const [isEditing] = useAtom(isEditingAtom);
   const [isDefaultCurrencyValue] = useAtom(isDefaultCurrencyValueAtom);
   const [defaultCurrencyValue] = useAtom(defaultCurrencyValueAtom);
@@ -722,11 +734,12 @@ export default function Home() {
           )}
 
           {/* Quick amounts (B) — one tap instead of typing. */}
-          <div className="flex gap-2 overflow-x-auto no-scrollbar mb-2" role="group" aria-label="Quick amounts">
+          <div ref={quickRowRef} className="flex gap-2 overflow-x-auto no-scrollbar mb-2" role="group" aria-label="Quick amounts">
             {[1, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000].map(v => (
               <button
                 key={v}
                 type="button"
+                ref={(el) => { if (el) quickBtnRefs.current.set(v, el); else quickBtnRefs.current.delete(v); }}
                 onClick={() => { vibrate(haptics); handleCurrencyValueChange(v); }}
                 aria-pressed={currencyValue === v}
                 className={`btn btn-sm shrink-0 tabular-nums ${currencyValue === v ? 'btn-primary' : 'btn-ghost'}`}
