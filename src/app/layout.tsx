@@ -64,6 +64,7 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
         {/* Black browser chrome + PWA splash — never flash a white screen on launch. */}
         <meta name="theme-color" content="#000000" />
+        {/* Cloudflare Web Analytics */}<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "e8873286003041bfbe3864846b3f3f39"}'></script>
         <link rel="preconnect" href={`https://latest.${CURRENCY_API_HOST}`} crossOrigin="anonymous" />
       </head>
       <body
