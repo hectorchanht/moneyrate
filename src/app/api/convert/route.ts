@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { FRANKFURTER_API_BASE } from '@/lib/api';
+import { getFrankfurterPairRate } from '@/lib/fxRates';
 import { resolveTier } from '@/lib/license';
 import {
   FREE_DAILY_LIMIT,
@@ -64,24 +65,38 @@ export async function GET(request: Request) {
     );
   }
 
-  // Primary: Frankfurter v2 single-pair rate.
   let rate: number | null = null;
   let rateDate = '';
   let source: 'frankfurter' | 'currency-api' | null = null;
-  try {
-    const res = await fetch(`${FRANKFURTER_API_BASE}/v2/rate/${from}/${to}`, {
-      next: { revalidate: 3600 },
-    });
-    if (res.ok) {
-      const json = await res.json();
-      if (json && typeof json.rate === 'number' && Number.isFinite(json.rate)) {
-        rate = json.rate;
-        rateDate = typeof json.date === 'string' ? json.date : '';
-        source = 'frankfurter';
+
+  // Primary: the cached Frankfurter daily table (src/lib/fxRates.ts). The
+  // rates are a daily fixing, so repeat conversions are resolved from the
+  // server-side Data Cache instead of paying an upstream call per request.
+  const fromTable = await getFrankfurterPairRate(from, to);
+  if (fromTable) {
+    rate = fromTable.rate;
+    rateDate = fromTable.rateDate;
+    source = 'frankfurter';
+  }
+
+  // Frankfurter per-pair endpoint: codes the table lacks, or a failed
+  // table fetch.
+  if (rate === null) {
+    try {
+      const res = await fetch(`${FRANKFURTER_API_BASE}/v2/rate/${from}/${to}`, {
+        next: { revalidate: 3600 },
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json && typeof json.rate === 'number' && Number.isFinite(json.rate)) {
+          rate = json.rate;
+          rateDate = typeof json.date === 'string' ? json.date : '';
+          source = 'frankfurter';
+        }
       }
+    } catch {
+      /* fall back to currency-api */
     }
-  } catch {
-    /* fall back to currency-api */
   }
 
   // Fallback: currency-api full table for the base (pages.dev, then jsdelivr).
@@ -141,7 +156,12 @@ export async function GET(request: Request) {
     {
       headers: {
         ...rateHeaders(limit, remaining, tier),
-        'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
+        // The body is a daily fixing: shared caches (the CDN in front of
+        // this function) may serve the identical URL for an hour and
+        // revalidate in the background for a day, so repeat conversions
+        // never reach the function at all. max-age keeps the previous
+        // browser-side behaviour unchanged.
+        'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
       },
     }
   );

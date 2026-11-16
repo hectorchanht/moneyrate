@@ -72,6 +72,41 @@ describe('GET /api/convert', () => {
     });
   });
 
+  it('serves pairs from the cached Frankfurter table without a per-pair call', async () => {
+    const calls: string[] = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: unknown) => {
+        calls.push(String(url));
+        if (String(url).includes('/v2/rates?base=USD')) {
+          return {
+            ok: true,
+            json: async () => [
+              { date: '2026-11-16', base: 'USD', quote: 'EUR', rate: 0.90465 },
+              { date: '2026-11-16', base: 'USD', quote: 'THB', rate: 33.889 },
+            ],
+          };
+        }
+        throw new Error('per-pair / fallback upstreams must not be called');
+      })
+    );
+    const res = await GET(req('?from=EUR&to=THB&amount=2'));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body).toMatchObject({
+      from: 'EUR',
+      to: 'THB',
+      amount: 2,
+      rate: 37.461,
+      result: 74.922,
+      rateDate: '2026-11-16',
+      source: 'frankfurter',
+      tier: 'free',
+    });
+    expect(calls).toEqual([expect.stringContaining('/v2/rates?base=USD')]);
+    expect(res.headers.get('Cache-Control')).toContain('s-maxage=3600');
+  });
+
   it('falls back to currency-api when Frankfurter fails, reporting source=currency-api', async () => {
     vi.stubGlobal(
       'fetch',
