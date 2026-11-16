@@ -1,5 +1,5 @@
 import AffiliateLinks from '@/components/AffiliateLinks';
-import { getCurrencyRateApiUrls } from '@/lib/api';
+import { getCurrencyRateApiUrls, normalizeRateResponse } from '@/lib/api';
 import { POPULAR_PAIRS, pairSlug, parsePair } from '@/lib/pairs';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -7,13 +7,17 @@ import { notFound } from 'next/navigation';
 
 export const revalidate = 3600; // ISR: refresh rates hourly
 
-// Server-side rate lookup with the same primary -> jsdelivr fallback the client uses.
+// Server-side rate lookup over the same source order the client uses
+// (Frankfurter v2 primary -> currency-api fallbacks). Responses are run
+// through normalizeRateResponse so every source yields the table shape.
 async function getRate(base: string, target: string): Promise<number | null> {
   for (const url of getCurrencyRateApiUrls({ baseCurrencyCode: base })) {
     try {
       const res = await fetch(url, { next: { revalidate: 3600 } });
       if (!res.ok) continue;
-      const data = await res.json();
+      const data = normalizeRateResponse(url, await res.json()) as
+        | Record<string, Record<string, number>>
+        | null;
       const rate = data?.[base]?.[target];
       if (typeof rate === 'number' && Number.isFinite(rate)) return rate;
     } catch {

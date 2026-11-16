@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { FRANKFURTER_API_BASE } from '@/lib/api';
 import { resolveTier } from '@/lib/license';
 import {
   FREE_DAILY_LIMIT,
@@ -9,8 +10,10 @@ import {
 } from '@/lib/rateLimit';
 
 // GET /api/convert?from=USD&to=HKD&amount=1[&license_key=...]
-// Freemium currency-conversion API. Server-side fetch from the same upstream
-// the site uses (fawazahmed0/currency-api — free, no key), so no keys leak.
+// Freemium currency-conversion API. Server-side fetch from the same upstreams
+// the site uses (Frankfurter v2 primary, fawazahmed0/currency-api fallback —
+// both free, no key), so no keys leak. The success body reports which source
+// answered in `source` ("frankfurter" | "currency-api").
 //
 // Tiers:
 //   free: 1,000 req/day/IP (no key needed)
@@ -61,36 +64,61 @@ export async function GET(request: Request) {
     );
   }
 
-  const base = from.toLowerCase();
-  const urls = [
-    `https://latest.currency-api.pages.dev/v1/currencies/${base}.json`,
-    `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${base}.json`,
-  ];
-  let table: Record<string, number> | null = null;
+  // Primary: Frankfurter v2 single-pair rate.
+  let rate: number | null = null;
   let rateDate = '';
-  for (const u of urls) {
-    try {
-      const res = await fetch(u, { next: { revalidate: 3600 } });
-      if (!res.ok) continue;
+  let source: 'frankfurter' | 'currency-api' | null = null;
+  try {
+    const res = await fetch(`${FRANKFURTER_API_BASE}/v2/rate/${from}/${to}`, {
+      next: { revalidate: 3600 },
+    });
+    if (res.ok) {
       const json = await res.json();
-      if (json && typeof json[base] === 'object') {
-        table = json[base];
-        rateDate = json.date || '';
-        break;
+      if (json && typeof json.rate === 'number' && Number.isFinite(json.rate)) {
+        rate = json.rate;
+        rateDate = typeof json.date === 'string' ? json.date : '';
+        source = 'frankfurter';
       }
-    } catch {
-      /* try next mirror */
+    }
+  } catch {
+    /* fall back to currency-api */
+  }
+
+  // Fallback: currency-api full table for the base (pages.dev, then jsdelivr).
+  if (rate === null) {
+    const base = from.toLowerCase();
+    const urls = [
+      `https://latest.currency-api.pages.dev/v1/currencies/${base}.json`,
+      `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${base}.json`,
+    ];
+    let table: Record<string, number> | null = null;
+    for (const u of urls) {
+      try {
+        const res = await fetch(u, { next: { revalidate: 3600 } });
+        if (!res.ok) continue;
+        const json = await res.json();
+        if (json && typeof json[base] === 'object') {
+          table = json[base];
+          rateDate = json.date || '';
+          break;
+        }
+      } catch {
+        /* try next mirror */
+      }
+    }
+    if (table && typeof table[to.toLowerCase()] === 'number') {
+      rate = table[to.toLowerCase()];
+      source = 'currency-api';
     }
   }
 
-  if (!table || typeof table[to.toLowerCase()] !== 'number') {
+  if (rate === null) {
     return NextResponse.json(
       { error: `No rate available for ${from}→${to}.` },
       { status: 404, headers: rateHeaders(limit, remaining, tier) }
     );
   }
 
-  const rate = table[to.toLowerCase()];
   const result = amount * rate;
   if (!isFinite(result)) {
     return NextResponse.json(
@@ -106,6 +134,7 @@ export async function GET(request: Request) {
       rate,
       result,
       rateDate,
+      source,
       timestamp: new Date().toISOString(),
       tier,
     },

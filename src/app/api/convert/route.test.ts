@@ -48,6 +48,45 @@ describe('GET /api/convert', () => {
     expect(res.headers.get('X-Tier')).toBe('free');
   });
 
+  it('uses Frankfurter as the primary source and reports source=frankfurter', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: unknown) =>
+        String(url).includes('frankfurter.dev')
+          ? { ok: true, json: async () => ({ date: '2026-11-16', base: 'USD', quote: 'HKD', rate: 7.85 }) }
+          : { ok: true, json: async () => usdTable() }
+      )
+    );
+    const res = await GET(req('?from=USD&to=HKD&amount=2'));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body).toMatchObject({
+      from: 'USD',
+      to: 'HKD',
+      amount: 2,
+      rate: 7.85,
+      result: 15.7,
+      rateDate: '2026-11-16',
+      source: 'frankfurter',
+      tier: 'free',
+    });
+  });
+
+  it('falls back to currency-api when Frankfurter fails, reporting source=currency-api', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: unknown) =>
+        String(url).includes('frankfurter.dev')
+          ? { ok: false, json: async () => ({}) }
+          : { ok: true, json: async () => usdTable() }
+      )
+    );
+    const res = await GET(req('?from=USD&to=HKD&amount=2'));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body).toMatchObject({ rate: 7.8, result: 15.6, source: 'currency-api' });
+  });
+
   it('returns 404 for an unknown pair', async () => {
     vi.stubGlobal(
       'fetch',

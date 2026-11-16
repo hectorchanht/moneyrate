@@ -43,3 +43,5 @@ yarn-error.log*
 next-env.d.ts
 
 .history
+# CodeGraph index (local only)
+.codegraph/
