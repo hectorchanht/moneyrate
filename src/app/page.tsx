@@ -708,10 +708,17 @@ export default function Home() {
               Hidden while the historical date picker is open (it shows the
               date itself). */}
           {ratesDate && /^\d{4}-\d{2}-\d{2}$/.test(ratesDate) && !showDatePicker && (
-            <p className="text-center text-[10px] opacity-50 -mt-1 mb-1 tabular-nums">
-              {i18n.home.ratesAsOf}{' '}
-              {new Date(ratesDate + 'T00:00:00').toLocaleDateString(language, { month: 'short', day: 'numeric' })}
-            </p>
+            <>
+              <p className="text-center text-[10px] opacity-50 -mt-1 mb-0 tabular-nums">
+                {i18n.home.ratesAsOf}{' '}
+                {new Date(ratesDate + 'T00:00:00').toLocaleDateString(language, { month: 'short', day: 'numeric' })}
+              </p>
+              {/* Rate source — visible provenance so a small gap vs Google's
+                  live market rate reads as expected, not as an app error. */}
+              <p className="text-center text-[10px] leading-tight opacity-50 mb-1 px-2">
+                {i18n.home.rateSource}
+              </p>
+            </>
           )}
 
           <AffiliateLinks />

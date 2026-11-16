@@ -47,10 +47,25 @@ export default function ApiDocsPage() {
   "rate": 7.8,
   "result": 780,
   "rateDate": "2026-10-08",
+  "source": "frankfurter",
   "timestamp": "2026-10-08T...",
   "tier": "free"
 }`}
       </pre>
+
+      <h2 className="text-lg font-semibold mt-6 mb-2">Rate source</h2>
+      <p className="text-sm opacity-70 mb-2">
+        Rates are official daily reference rates, not live market quotes.
+        Primary source is Frankfurter v2, which blends official rates from
+        111 central-bank and institutional providers; if it is unavailable,
+        the API falls back to the fawazahmed0/currency-api. Every{' '}
+        <span className={CODE}>/api/convert</span> response carries{' '}
+        <span className={CODE}>source</span> (<span className={CODE}>frankfurter</span> or{' '}
+        <span className={CODE}>currency-api</span>) and{' '}
+        <span className={CODE}>rateDate</span>, so you can see exactly which
+        fixing a rate came from. Because these are daily fixings, small
+        differences from Google&apos;s live mid-market rate are normal.
+      </p>
 
       <h2 className="text-lg font-semibold mt-6 mb-2">Tiers</h2>
       <div className="overflow-x-auto">

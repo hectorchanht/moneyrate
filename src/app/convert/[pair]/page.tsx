@@ -9,17 +9,21 @@ export const revalidate = 3600; // ISR: refresh rates hourly
 
 // Server-side rate lookup over the same source order the client uses
 // (Frankfurter v2 primary -> currency-api fallbacks). Responses are run
-// through normalizeRateResponse so every source yields the table shape.
-async function getRate(base: string, target: string): Promise<number | null> {
+// through normalizeRateResponse so every source yields the table shape
+// ({date, [base]: {[quote]: rate}}); the date rides along for the
+// rate-source line under the rate.
+async function getRate(base: string, target: string): Promise<{ rate: number; date?: string } | null> {
   for (const url of getCurrencyRateApiUrls({ baseCurrencyCode: base })) {
     try {
       const res = await fetch(url, { next: { revalidate: 3600 } });
       if (!res.ok) continue;
       const data = normalizeRateResponse(url, await res.json()) as
-        | Record<string, Record<string, number>>
+        | (Record<string, Record<string, number>> & { date?: unknown })
         | null;
       const rate = data?.[base]?.[target];
-      if (typeof rate === 'number' && Number.isFinite(rate)) return rate;
+      if (typeof rate === 'number' && Number.isFinite(rate)) {
+        return { rate, date: typeof data?.date === 'string' ? data.date : undefined };
+      }
     } catch {
       // try next url
     }
@@ -39,7 +43,7 @@ export async function generateMetadata({ params }: { params: { pair: string } })
   if (!parsed) return { title: 'Currency Converter | Money Rate' };
   const B = parsed.base.toUpperCase();
   const T = parsed.target.toUpperCase();
-  const rate = await getRate(parsed.base, parsed.target);
+  const rate = (await getRate(parsed.base, parsed.target))?.rate ?? null;
   const title = `${B} to ${T} — Convert ${B}/${T} | Money Rate`;
   const description = rate
     ? `1 ${B} = ${fmt(rate)} ${T}. Live ${B} to ${T} exchange rate, instant converter, and historical chart.`
@@ -60,7 +64,9 @@ export default async function ConvertPairPage({ params }: { params: { pair: stri
   const { base, target } = parsed;
   const B = base.toUpperCase();
   const T = target.toUpperCase();
-  const rate = await getRate(base, target);
+  const result = await getRate(base, target);
+  const rate = result?.rate ?? null;
+  const rateDate = result?.date;
 
   return (
     <main className="max-w-[800px] mx-auto p-4 text-base-content">
@@ -76,6 +82,12 @@ export default async function ConvertPairPage({ params }: { params: { pair: stri
       {rate ? (
         <>
           <p className="text-xl mb-4">1 {B} = <strong>{fmt(rate)}</strong> {T}</p>
+
+          {/* Rate source — official daily fixing, so a small gap vs Google's
+              live market rate is expected, not an error. */}
+          <p className="text-xs opacity-50 -mt-3 mb-4">
+            {`Official reference rate via Frankfurter (central banks)${rateDate ? ` · Rates as of ${rateDate}` : ''} · Daily fixing — may differ slightly from Google's live market rate`}
+          </p>
 
           <table className="table w-full max-w-[360px] mb-6">
             <thead>
