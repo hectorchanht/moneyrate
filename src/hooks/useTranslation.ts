@@ -12,13 +12,15 @@ import { translations } from '@/lib/translations';
 type TourNamespace = { [K in keyof typeof translations.en.tour]: string };
 type SettingsNamespace = { [K in keyof typeof translations.en.settings]: string };
 type ToolsNamespace = { [K in keyof typeof translations.en.tools]: string };
-type TranslationDictionary = Omit<typeof translations.en, 'tour' | 'settings' | 'tools'> & {
+type HomeNamespace = { [K in keyof typeof translations.en.home]: string };
+type TranslationDictionary = Omit<typeof translations.en, 'tour' | 'settings' | 'tools' | 'home'> & {
   tour?: Partial<TourNamespace>;
   settings?: Partial<SettingsNamespace>;
   tools?: Partial<ToolsNamespace>;
+  home?: Partial<HomeNamespace>;
 };
 
-export function useTranslation(): TranslationDictionary & { tour: TourNamespace; settings: SettingsNamespace; tools: ToolsNamespace } {
+export function useTranslation(): TranslationDictionary & { tour: TourNamespace; settings: SettingsNamespace; tools: ToolsNamespace; home: HomeNamespace } {
   const { language } = useLanguage();
   const dict = (translations[language as keyof typeof translations] || translations.en) as unknown as TranslationDictionary;
   // Per-key en fallback for `tour` (D-04) — mirrors getTourString's contract
@@ -29,10 +31,13 @@ export function useTranslation(): TranslationDictionary & { tour: TourNamespace;
   // to the English string per key instead of rendering a blank label.
   // Same for `tools` (the /trip, /compare, /batch pages): en + zh-TW + zh-CN
   // authored, everyone else gets English per key.
+  // Same for `home`: the whyFree manifesto line is authored in en + zh-TW
+  // only (no Simplified form), so every other locale falls back to English.
   return {
     ...dict,
     tour: { ...translations.en.tour, ...dict.tour },
     settings: { ...translations.en.settings, ...dict.settings },
     tools: { ...translations.en.tools, ...dict.tools },
+    home: { ...translations.en.home, ...dict.home },
   };
 }

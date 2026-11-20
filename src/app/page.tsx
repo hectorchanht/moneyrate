@@ -824,6 +824,11 @@ export default function Home() {
 
       <footer className="m-auto w-full max-w-[800px] px-4 pb-4">
         <InstallButton />
+        <p className="mt-2 text-center text-sm opacity-70">
+          <a href="https://dawnstudio.app/#manifesto" target="_blank" rel="noreferrer" className="link link-hover">
+            {i18n.home.whyFree}
+          </a>
+        </p>
       </footer>
     </div>
   )

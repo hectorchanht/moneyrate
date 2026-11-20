@@ -22,6 +22,7 @@ export const translations = {
       toolkitTrip: 'Trip planner',
       toolkitCompare: 'Rate compare',
       toolkitBatch: 'Batch convert',
+      whyFree: "Dawn's apps are built by one creator, for himself first and for everyone, free — no ads, no data selling, basics free forever.",
     },
     tools: {
       tripTitle: 'Trip planner',
@@ -173,6 +174,7 @@ export const translations = {
       toolkitTrip: '旅行 budget',
       toolkitCompare: '匯率比較',
       toolkitBatch: '批量轉換',
+      whyFree: 'Dawn 嘅軟件由一位 creator 為自己而起、畀全世界免費用 — 冇廣告、唔賣數據、基本功能永遠免費。代天而行，願你離苦得樂。',
     },
     tools: {
       tripTitle: '旅行 budget 計數機',
