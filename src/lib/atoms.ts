@@ -12,8 +12,11 @@ export const defaultCurrencyValueAtom = atomWithStorage<number>('defaultCurrency
 export const defaultCurrencyValueDpAtom = atomWithStorage<number>('defaultCurrencyValueDp', 2);
 export const languageAtom = atomWithStorage<Language>('language', 'en');
 export const sortModeAtom = atomWithStorage<SortMode>('sortMode', 'custom');
-// Replaces the old binary themeAtom ('dark' default) — 'system' follows the OS.
-export const themeModeAtom = atomWithStorage<ThemeMode>('themeMode', 'system');
+// Dawn rule (Hector 2026-11-20): every app ships both themes and the
+// DEFAULT IS DARK — first visit opens dark. 'system' remains a user choice
+// (follows the OS) but is never the factory default; a saved choice wins
+// because atomWithStorage only falls back to this default when unset.
+export const themeModeAtom = atomWithStorage<ThemeMode>('themeMode', 'dark');
 export const tourSeenAtom = atomWithStorage<boolean>('tourSeen', false);
 export const showDatePickerAtom = atomWithStorage<boolean>('showDatePicker', false);
 // Display prefs (settings tab, 2026-10-08 batch)

@@ -251,7 +251,7 @@ const CurrencyChart = () => {
               computed from the longest formatted label (yAxisWidth) so longer
               values like "493.432" never clip at the viewport edge. */}
           <YAxis domain={yDomain} tickFormatter={(value) => yTickFormat(value)} width={yAxisWidth} tick={{ fontSize: 10 }} />
-          <Tooltip labelStyle={{ color: 'black' }} contentStyle={{ background: 'white' }} itemStyle={{ fontWeight: '700', color: 'black' }} formatter={(value) => [value]} />
+          <Tooltip labelStyle={{ color: 'black' }} contentStyle={{ background: '#faf6ec' }} itemStyle={{ fontWeight: '700', color: 'black' }} formatter={(value) => [value]} />
           <Line type="monotone" dataKey="value" stroke="currentColor" isAnimationActive={false} dot={showDots} />
         </LineChart>
       </ResponsiveContainer>
