@@ -1,23 +1,15 @@
-// Monetization: affiliate links.
+// Money: Hector's own products + voluntary support only.
 //
-// All links are live (Hector's real invite links, 2026-10-08).
-// While a URL is empty (or not an http URL), its button is NOT rendered —
-// no broken links ever go live.
-
-export const WISE_REFERRAL_URL = "https://wise.com/invite/dic/hotungc3";
-export const COINBASE_REFERRAL_URL = "https://advanced.coinbase.com/join/F95MLKD?src=referral-link";
-export const BINANCE_REFERRAL_URL = "https://www.binance.com/activity/referral-entry/CPA?ref=CPA_0027L6WVRQ";
-// Added 2026-10-08 — Hector signs up for each program and pastes his link;
-// empty (non-http) URLs render nothing, so the buttons appear automatically
-// once the links land.
-export const AIRALO_REFERRAL_URL = ""; // e.g. https://www.airalo.com/... (up to 10% via Impact)
-export const KOINLY_REFERRAL_URL = ""; // e.g. https://koinly.io/?via=... (20%+, 140+ countries)
-export const AIRWALLEX_REFERRAL_URL = ""; // via Impact (US$200/referral + up to 20% rev share)
-
-export const hasWiseLink = () => WISE_REFERRAL_URL.startsWith("http");
-export const hasCoinbaseLink = () => COINBASE_REFERRAL_URL.startsWith("http");
-export const hasBinanceLink = () => BINANCE_REFERRAL_URL.startsWith("http");
-export const hasAiraloLink = () => AIRALO_REFERRAL_URL.startsWith("http");
+// 2026-11-21 — VOLUNTARY MONEY ONLY (Hector's decision): every third-party
+// affiliate/referral link was removed from MoneyRate for good (Wise,
+// Coinbase and Binance referrals, plus the never-filled Airalo / Koinly /
+// Airwallex placeholders). Third-party institutions' links do not get to
+// occupy Dawn's surfaces; the only money-in channels are Hector's own
+// products and voluntary support. What remains in this file:
+//   1. MoneyRate Pro — Hector's own Gumroad membership product.
+//   2. The Tip Jar — voluntary "buy me a coffee" support.
+// (The filename is kept for import stability; it no longer holds any
+// affiliate links.)
 
 // MoneyRate Pro: Hector's own Gumroad membership product ($5/mo). The
 // license key it issues unlocks Pro in the app + API (verified via
@@ -25,16 +17,18 @@ export const hasAiraloLink = () => AIRALO_REFERRAL_URL.startsWith("http");
 export const GUMROAD_PRO_URL = "https://dawnlimited.gumroad.com/l/iyywbo";
 
 // Tip jar: Hector's own Gumroad tip-jar product ($1+ pay-what-you-want).
-// Rendered as the FIRST button in the Sponsored strip (2026-10-10).
+// Rendered in the support strip (see components/AffiliateLinks.tsx).
 export const TIP_JAR_URL = "https://dawnlimited.gumroad.com/l/moneyrate-tip";
 export const hasTipJarLink = () => TIP_JAR_URL.startsWith("http");
 
 // Supporter status: set in localStorage ("dawn_supporter") on a successful
 // tip-jar verification (/api/verify-tip, or the admin-key bypass). Read-only
 // helper for future supporter-gated features — nothing is gated behind it
-// yet. NOTE: the supporter flag alone never hides the Sponsored strip; only
+// yet. NOTE: the supporter flag alone never hides the support strip; only
 // "dawn_sponsored_hidden" does, and that is set solely by the explicit
-// "Hide sponsored strip" toggle in Settings → Supporter.
+// "Hide sponsored strip" toggle in Settings → Supporter. (The
+// "dawn_sponsored_hidden" key name is historical — it is persisted user
+// state and is intentionally not renamed.)
 export const isSupporter = (): boolean => {
   if (typeof window === "undefined") return false;
   try {
@@ -43,5 +37,3 @@ export const isSupporter = (): boolean => {
     return false;
   }
 };
-export const hasKoinlyLink = () => KOINLY_REFERRAL_URL.startsWith("http");
-export const hasAirwallexLink = () => AIRWALLEX_REFERRAL_URL.startsWith("http");

@@ -4,15 +4,15 @@ import { useAtom } from "jotai";
 import { useTranslation } from "@/hooks/useTranslation";
 import { currency2DisplayAtom, hapticsAtom } from "@/lib/atoms";
 import { vibrate } from "@/lib/fns";
-import { BellSvg, DownloadSvg, GlobeSvg, ReverseSvg, ShareSvg, TableSvg, XSvg } from "@/lib/svgs";
-import { WISE_REFERRAL_URL } from "@/lib/affiliates";
+import { BellSvg, DownloadSvg, GlobeSvg, ReverseSvg, TableSvg, XSvg } from "@/lib/svgs";
 import AlertsSection from "./RateAlerts";
 
 // Cross-border money toolkit — the small "life between currencies" strip
-// under the converter (positioning A, 2026-10-09). Six moments:
-// rate alerts, tax-ready FX averages (downloadable CSV), the cheapest
-// way to send money abroad (Wise affiliate link), plus the trip planner,
-// rate compare and batch convert tools (added 2026-10-10).
+// under the converter (positioning A, 2026-10-09). Moments:
+// rate alerts, tax-ready FX averages (downloadable CSV), plus the trip
+// planner, rate compare and batch convert tools (added 2026-10-10).
+// (A "send money abroad" Wise affiliate button used to sit here — removed
+// 2026-11-21 under VOLUNTARY MONEY ONLY; see lib/affiliates.ts.)
 // Labels are localized across all 30 locales (same keys as AffiliateLinks)
 // so they react to language change.
 //
@@ -51,15 +51,6 @@ export default function ToolkitSection({ baseCur }: { baseCur: string }) {
           aria-label={i18n.home.toolkitTax}
         >
           <DownloadSvg className="size-4" /> {i18n.home.toolkitTax}
-        </a>
-        <a
-          href={WISE_REFERRAL_URL}
-          target="_blank"
-          rel="noopener sponsored"
-          draggable={false}
-          className={item}
-        >
-          <ShareSvg className="size-4" /> {i18n.home.toolkitSend}
         </a>
         <a href="/trip" className={item} aria-label={i18n.home.toolkitTrip}>
           <GlobeSvg className="size-4" /> {i18n.home.toolkitTrip}

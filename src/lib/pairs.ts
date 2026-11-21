@@ -1,7 +1,7 @@
 // Popular currency pairs used for SEO landing pages and the sitemap.
 // Expanded 2026-10-08: every major fiat vs USD (both directions) + key
-// crosses + crypto — each pair page carries the affiliate strip, so
-// long-tail "X to Y" searches monetize directly.
+// crosses + crypto — each pair page carries the support (tip jar) strip,
+// so long-tail "X to Y" searches land on the full converter.
 export const POPULAR_PAIRS: [string, string][] = [
   // USD vs majors (both directions)
   ['usd', 'eur'], ['eur', 'usd'],

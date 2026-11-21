@@ -304,7 +304,7 @@ const SponsoredStripSettings: React.FC = () => {
         </>
       ) : (
         <p className="text-xs opacity-60 mb-2">
-          Tipped us on Gumroad? Enter the license key from your purchase receipt email to hide the sponsored strip.
+          Tipped us on Gumroad? Enter the license key from your purchase receipt email to hide the tip jar strip.
         </p>
       )}
       <div className="flex gap-2 mb-1">
