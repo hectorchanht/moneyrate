@@ -34,7 +34,7 @@ import {
 import { getDataFromLocalStorage, getDropIndex, resolveTourLocale, setDataToLocalStorage, showASCIIArt, sortCurrencyPairs, vibrate } from '@/lib/fns';
 import { crossPctChange } from '@/lib/tools';
 import { CurrencyNameOverrides } from '@/lib/constants';
-import { BellSvg, GlobeSvg, ImageSvg, QuestionSvg, ShareSvg, CalendarSvg } from '@/lib/svgs';
+import { BellSvg, GlobeSvg, ImageSvg, QuestionSvg, ReverseSvg, ShareSvg, XSvg, CalendarSvg } from '@/lib/svgs';
 import { buildTourSteps, getTourString, SUPPORTED_LOCALES } from '@/lib/tourSteps';
 import { shareRateCard } from '@/lib/shareCard';
 import { CurrencyCode, Language, RateAlert } from '@/lib/types';
@@ -568,8 +568,8 @@ export default function Home() {
   if ((err1 || err2) && !effectiveBaseCur) return (
     <div className="text-center p-8">
       <p>Error fetching data. Please try again later.</p>
-      <button type="button" className="btn btn-primary btn-sm mt-4" onClick={() => window.location.reload()}>
-        Retry
+      <button type="button" className="btn btn-primary btn-sm mt-4" onClick={() => window.location.reload()} aria-label="Retry" title="Retry">
+        <ReverseSvg className="size-5" />
       </button>
     </div>
   );
@@ -621,16 +621,20 @@ export default function Home() {
                         role="menuitem"
                         className="btn btn-ghost btn-sm justify-start gap-2"
                         onClick={() => { setShareMenuOpen(false); vibrate(haptics); onShare(); }}
+                        aria-label={i18n.settings.shareCopyLink}
+                        title={i18n.settings.shareCopyLink}
                       >
-                        <ShareSvg className="size-5" />{i18n.settings.shareCopyLink}
+                        <ShareSvg className="size-5" />
                       </button>
                       <button
                         type="button"
                         role="menuitem"
                         className="btn btn-ghost btn-sm justify-start gap-2"
                         onClick={doShareImage}
+                        aria-label={i18n.settings.shareImage}
+                        title={i18n.settings.shareImage}
                       >
-                        <ImageSvg className="size-5" />{i18n.settings.shareImage}
+                        <ImageSvg className="size-5" />
                       </button>
                     </div>
                   </>
@@ -735,7 +739,7 @@ export default function Home() {
                 className="bg-base-200 rounded px-1"
               />
               {historicalDate && (
-                <button type="button" className="underline" onClick={() => setHistoricalDate('')}>{i18n.home.today}</button>
+                <button type="button" onClick={() => setHistoricalDate('')} aria-label={i18n.home.today} title={i18n.home.today}><CalendarSvg className="size-5" /></button>
               )}
             </div>
           )}
@@ -771,8 +775,8 @@ export default function Home() {
                   )}
                   {' '}— {i18n.settings.alertTargetHit}
                 </span>
-                <button type="button" className="btn btn-ghost btn-xs shrink-0" onClick={() => setFiredAlert(null)}>
-                  {i18n.settings.dismiss}
+                <button type="button" className="btn btn-ghost btn-xs shrink-0" onClick={() => setFiredAlert(null)} aria-label={i18n.settings.dismiss} title={i18n.settings.dismiss}>
+                  <XSvg className="size-4" />
                 </button>
               </div>
             );

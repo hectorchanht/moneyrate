@@ -21,7 +21,7 @@ import {
 } from '@/lib/atoms';
 import { DefaultCurrency2Display } from '@/lib/constants';
 import { vibrate } from '@/lib/fns';
-import { AddSvg, CrossSvg, ListSvg, SettingSvg, TableSvg, XSvg } from '@/lib/svgs';
+import { AddSvg, CheckSvg, CopySvg, CrossSvg, ListSvg, SettingSvg, TableSvg, XSvg } from '@/lib/svgs';
 import { track } from '@/lib/analytics';
 import { CopyFormat, Language, SortMode, ThemeMode } from '@/lib/types';
 import { useAtom } from 'jotai';
@@ -151,12 +151,12 @@ const ProSettings: React.FC = () => {
           onChange={(e) => { setInput(e.target.value); setStatus('idle'); }}
           aria-label="Pro license key"
         />
-        <button type="button" className="btn btn-sm btn-primary shrink-0" onClick={verify} disabled={!input.trim() || status === 'checking'}>
-          {status === 'checking' ? 'Checking…' : pro ? 'Re-verify' : 'Activate'}
+        <button type="button" className="btn btn-sm btn-primary shrink-0" onClick={verify} disabled={!input.trim() || status === 'checking'} aria-label={status === 'checking' ? 'Checking…' : pro ? 'Re-verify' : 'Activate'} title={status === 'checking' ? 'Checking…' : pro ? 'Re-verify' : 'Activate'}>
+          <CheckSvg className="size-5" />
         </button>
         {(pro || licenseKey) && (
-          <button type="button" className="btn btn-sm btn-ghost shrink-0" onClick={remove}>
-            Remove
+          <button type="button" className="btn btn-sm btn-ghost shrink-0" onClick={remove} aria-label="Remove" title="Remove">
+            <XSvg className="size-5" />
           </button>
         )}
       </div>
@@ -322,8 +322,10 @@ const SponsoredStripSettings: React.FC = () => {
             className="btn btn-sm btn-primary shrink-0"
             onClick={verify}
             disabled={!input.trim() || status === 'checking'}
+            aria-label={status === 'checking' ? 'Checking…' : 'Verify'}
+            title={status === 'checking' ? 'Checking…' : 'Verify'}
           >
-            {status === 'checking' ? 'Checking…' : 'Verify'}
+            <CheckSvg className="size-5" />
           </button>
         )}
         <button
@@ -334,7 +336,7 @@ const SponsoredStripSettings: React.FC = () => {
           title="Copy the key for use on another device or app"
           aria-label="Copy tip license key"
         >
-          {copied ? 'Copied' : 'Copy'}
+          {copied ? <CheckSvg className="size-5" /> : <CopySvg className="size-5" />}
         </button>
       </div>
       {status === 'bad' && !supporter && (

@@ -19,14 +19,14 @@ const fireBeforeInstall = () => {
 describe('InstallButton', () => {
   it('renders nothing until the browser offers an install prompt', () => {
     render(<InstallButton />);
-    expect(screen.queryByText(/install app/i)).toBeNull();
+    expect(screen.queryByRole('button', { name: /install app/i })).toBeNull();
   });
 
   it('shows the button after beforeinstallprompt and triggers the prompt on click', async () => {
     render(<InstallButton />);
     const evt = fireBeforeInstall();
 
-    const btn = await screen.findByText(/install app/i);
+    const btn = await screen.findByRole('button', { name: /install app/i });
     fireEvent.click(btn);
     expect(evt.prompt).toHaveBeenCalled();
   });

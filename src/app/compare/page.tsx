@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslation } from '@/hooks/useTranslation';
-import { BackSvg } from '@/lib/svgs';
+import { BackSvg, SearchSvg } from '@/lib/svgs';
 import { POPULAR_CURRENCIES, fetchPairRate, spreadPct } from '@/lib/tools';
 
 // Rate compare: paste the rate a money changer / bank offers you
@@ -66,8 +66,8 @@ export default function ComparePage() {
           value={their} onChange={e => setTheir(e.target.value)} />
       </label>
 
-      <button type="button" className="btn btn-primary w-full mb-4" onClick={check} disabled={!ok || loading}>
-        {loading ? t.compareLoading : t.compareCheck}
+      <button type="button" className="btn btn-primary w-full mb-4" onClick={check} disabled={!ok || loading} aria-label={loading ? t.compareLoading : t.compareCheck} title={loading ? t.compareLoading : t.compareCheck}>
+        <SearchSvg className="size-5" />
       </button>
 
       {result && (

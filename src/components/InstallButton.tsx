@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { DownloadSvg } from '@/lib/svgs';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -33,13 +34,15 @@ export default function InstallButton() {
         <button
           type="button"
           className="btn btn-sm btn-primary"
+          aria-label="Install app"
+          title="Install app"
           onClick={async () => {
             await deferred.prompt();
             await deferred.userChoice;
             setDeferred(null);
           }}
         >
-          Install app
+          <DownloadSvg className="size-5" />
         </button>
       )}
     </div>

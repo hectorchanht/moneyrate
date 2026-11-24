@@ -12,7 +12,7 @@ import { track } from '@/lib/analytics';
 import { hapticsAtom, proAtom, rateAlertsAtom } from '@/lib/atoms';
 import { isSupporter } from '@/lib/affiliates';
 import { vibrate } from '@/lib/fns';
-import { BellSvg, CrossSvg, MailSvg, TrendDownSvg, TrendUpSvg } from '@/lib/svgs';
+import { BellSvg, CrossSvg, MailSvg, ReverseSvg, TargetSvg, TrendDownSvg, TrendUpSvg } from '@/lib/svgs';
 import { AlertDirection, AlertKind, RateAlert } from '@/lib/types';
 
 const FREE_ALERT_LIMIT = 3;
@@ -64,11 +64,11 @@ const DirectionPicker: React.FC<{
   const down = belowLabel ?? t.settings.alertBelow;
   return (
     <div className="join flex-1" role="radiogroup" aria-label={`${up} / ${down}`}>
-      <button type="button" role="radio" aria-checked={direction === 'above'} className={cls('above')} onClick={() => pick('above')}>
-        <TrendUpSvg className="size-4 shrink-0" />{up}
+      <button type="button" role="radio" aria-checked={direction === 'above'} aria-label={up} title={up} className={cls('above')} onClick={() => pick('above')}>
+        <TrendUpSvg className="size-4 shrink-0" />
       </button>
-      <button type="button" role="radio" aria-checked={direction === 'below'} className={cls('below')} onClick={() => pick('below')}>
-        <TrendDownSvg className="size-4 shrink-0" />{down}
+      <button type="button" role="radio" aria-checked={direction === 'below'} aria-label={down} title={down} className={cls('below')} onClick={() => pick('below')}>
+        <TrendDownSvg className="size-4 shrink-0" />
       </button>
     </div>
   );
@@ -81,6 +81,7 @@ const AlertTargetForm: React.FC<AlertTargetFormProps> = ({
 }) => {
   const t = useTranslation();
   const isPct = kind === 'pct';
+  const submitName = typeof submitLabel === 'string' ? submitLabel : 'Add alert';
   const targetLabel = isPct ? t.settings.alertPctThreshold : t.settings.alertTarget;
   return (
     <>
@@ -120,8 +121,8 @@ const AlertTargetForm: React.FC<AlertTargetFormProps> = ({
           aboveLabel={isPct ? t.settings.alertRises : undefined}
           belowLabel={isPct ? t.settings.alertFalls : undefined}
         />
-        <button type="button" className="btn btn-primary flex-1" onClick={onSubmit} disabled={submitDisabled}>
-          {submitLabel}
+        <button type="button" className="btn btn-primary flex-1" onClick={onSubmit} disabled={submitDisabled} aria-label={submitName} title={submitName}>
+          <BellSvg className="size-5 shrink-0" />
         </button>
       </div>
     </>
@@ -189,16 +190,18 @@ const PushAlertsTab: React.FC<{ currencies: string[]; baseCur: string }> = ({ cu
         <button
           type="button" role="radio" aria-checked={kind === 'target'}
           className={`btn join-item flex-1 gap-1.5 ${kind === 'target' ? 'btn-primary' : 'btn-ghost'}`}
+          aria-label={t.settings.alertKindTarget} title={t.settings.alertKindTarget}
           onClick={() => { vibrate(haptics); setKind('target'); }}
         >
-          🎯 {t.settings.alertKindTarget}
+          <TargetSvg className="size-4 shrink-0" />
         </button>
         <button
           type="button" role="radio" aria-checked={kind === 'pct'}
           className={`btn join-item flex-1 gap-1.5 ${kind === 'pct' ? 'btn-primary' : 'btn-ghost'}`}
+          aria-label={t.settings.alertKindPct} title={t.settings.alertKindPct}
           onClick={() => { vibrate(haptics); setKind('pct'); }}
         >
-          📈 {t.settings.alertKindPct}
+          <TrendUpSvg className="size-4 shrink-0" />
         </button>
       </div>
 
@@ -234,8 +237,8 @@ const PushAlertsTab: React.FC<{ currencies: string[]; baseCur: string }> = ({ cu
                 {a.triggered && <span className="badge badge-success badge-sm ml-2">{t.settings.alertTriggered}</span>}
               </span>
               {a.triggered && (
-                <button type="button" className="btn btn-ghost btn-xs" onClick={() => { vibrate(haptics); setAlerts(prev => prev.map(x => x.id === a.id ? { ...x, triggered: false } : x)); }}>
-                  {t.settings.alertRearm}
+                <button type="button" className="btn btn-ghost btn-xs" aria-label={t.settings.alertRearm} title={t.settings.alertRearm} onClick={() => { vibrate(haptics); setAlerts(prev => prev.map(x => x.id === a.id ? { ...x, triggered: false } : x)); }}>
+                  <ReverseSvg className="size-4" />
                 </button>
               )}
               <button type="button" className="btn btn-ghost btn-xs" aria-label={`${t.settings.alertDelete} 1 ${a.from.toUpperCase()} ${a.to.toUpperCase()}`} onClick={() => { vibrate(haptics); setCapHit(false); track('rate_alert_deleted', { from: a.from, to: a.to, via: 'push' }); setAlerts(prev => prev.filter(x => x.id !== a.id)); }}>
@@ -331,11 +334,11 @@ const AlertsSection: React.FC<{ currencies: string[]; baseCur: string }> = ({ cu
         <span className="label-text flex items-center gap-2"><BellSvg className="size-5" />{t.settings.rateAlerts}</span>
       </div>
       <div role="tablist" aria-label={t.settings.rateAlerts} className="tabs tabs-boxed mb-2">
-        <button type="button" role="tab" aria-selected={tab === 'push'} className={cls('push')} onClick={() => { vibrate(haptics); setTab('push'); }}>
-          <BellSvg className="size-4" />{t.settings.alertTabPush}
+        <button type="button" role="tab" aria-selected={tab === 'push'} aria-label={t.settings.alertTabPush} title={t.settings.alertTabPush} className={cls('push')} onClick={() => { vibrate(haptics); setTab('push'); }}>
+          <BellSvg className="size-4" />
         </button>
-        <button type="button" role="tab" aria-selected={tab === 'email'} className={cls('email')} onClick={() => { vibrate(haptics); setTab('email'); }}>
-          <MailSvg className="size-4" />{t.settings.alertTabEmail}
+        <button type="button" role="tab" aria-selected={tab === 'email'} aria-label={t.settings.alertTabEmail} title={t.settings.alertTabEmail} className={cls('email')} onClick={() => { vibrate(haptics); setTab('email'); }}>
+          <MailSvg className="size-4" />
         </button>
       </div>
       {tab === 'push'

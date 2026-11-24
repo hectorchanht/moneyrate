@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { GUMROAD_PRO_URL } from '@/lib/affiliates';
 import { SITE_URL } from '@/lib/pairs';
+import { BackSvg } from '@/lib/svgs';
 
 export const metadata: Metadata = {
   title: 'API Docs — MoneyRate',
@@ -177,7 +178,7 @@ Annual average,0.95,0.79,151.8,...`}
       </ul>
 
       <p className="text-sm mt-6">
-        <a href="/" className="link">&larr; Back to the converter</a>
+        <a href="/" className="btn btn-ghost btn-sm btn-circle" aria-label="Back to the converter" title="Back to the converter"><BackSvg className="size-5" /></a>
       </p>
     </div>
   );

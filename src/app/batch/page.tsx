@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslation } from '@/hooks/useTranslation';
-import { BackSvg, XSvg } from '@/lib/svgs';
+import { BackSvg, ReverseSvg, XSvg } from '@/lib/svgs';
 import { POPULAR_CURRENCIES, fetchPairRate, parseBatchAmounts } from '@/lib/tools';
 
 // Batch convert: paste a pile of amounts (invoice lines, receipts — one per
@@ -93,8 +93,9 @@ export default function BatchPage() {
       )}
 
       <button type="button" className="btn btn-primary w-full mb-4"
-        onClick={convert} disabled={amounts.length === 0 || from === to || loading}>
-        {loading ? t.batchLoading : t.batchConvert}
+        onClick={convert} disabled={amounts.length === 0 || from === to || loading}
+        aria-label={loading ? t.batchLoading : t.batchConvert} title={loading ? t.batchLoading : t.batchConvert}>
+        <ReverseSvg className="size-5" />
       </button>
 
       {rows && (

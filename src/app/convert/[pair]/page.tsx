@@ -1,6 +1,7 @@
 import AffiliateLinks from '@/components/AffiliateLinks';
 import { getCurrencyRateApiUrls, normalizeRateResponse } from '@/lib/api';
 import { POPULAR_PAIRS, pairSlug, parsePair } from '@/lib/pairs';
+import { ReverseSvg } from '@/lib/svgs';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -108,8 +109,8 @@ export default async function ConvertPairPage({ params }: { params: { pair: stri
       )}
 
       <div className="flex flex-wrap gap-3">
-        <Link href={`/?base=${base}&amount=1&show=${base},${target}`} className="btn btn-primary btn-sm">
-          Open converter
+        <Link href={`/?base=${base}&amount=1&show=${base},${target}`} className="btn btn-primary btn-sm btn-circle" aria-label="Open converter" title="Open converter">
+          <ReverseSvg className="size-5" />
         </Link>
         <Link href={`/chart?q=${B}-${T}`} className="btn btn-sm">
           View {B}/{T} chart

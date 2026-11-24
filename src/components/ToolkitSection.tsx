@@ -42,24 +42,24 @@ export default function ToolkitSection({ baseCur }: { baseCur: string }) {
         className="mb-2 mt-1 flex flex-wrap items-center gap-2 px-0.5 py-1"
       >
         <span className="text-[9px] uppercase tracking-wider opacity-40 shrink-0">{i18n.home.toolkit}</span>
-        <button type="button" onClick={openAlerts} className={item}>
-          <BellSvg className="size-4" /> {i18n.home.toolkitAlerts}
+        <button type="button" onClick={openAlerts} className={item} aria-label={i18n.home.toolkitAlerts} title={i18n.home.toolkitAlerts}>
+          <BellSvg className="size-4" />
         </button>
         <a
           href={`/api/tax-csv?base=${encodeURIComponent(baseCur.toUpperCase())}&year=${year}`}
           className={item}
-          aria-label={i18n.home.toolkitTax}
+          aria-label={i18n.home.toolkitTax} title={i18n.home.toolkitTax}
         >
-          <DownloadSvg className="size-4" /> {i18n.home.toolkitTax}
+          <DownloadSvg className="size-4" />
         </a>
-        <a href="/trip" className={item} aria-label={i18n.home.toolkitTrip}>
-          <GlobeSvg className="size-4" /> {i18n.home.toolkitTrip}
+        <a href="/trip" className={item} aria-label={i18n.home.toolkitTrip} title={i18n.home.toolkitTrip}>
+          <GlobeSvg className="size-4" />
         </a>
-        <a href="/compare" className={item} aria-label={i18n.home.toolkitCompare}>
-          <ReverseSvg className="size-4" /> {i18n.home.toolkitCompare}
+        <a href="/compare" className={item} aria-label={i18n.home.toolkitCompare} title={i18n.home.toolkitCompare}>
+          <ReverseSvg className="size-4" />
         </a>
-        <a href="/batch" className={item} aria-label={i18n.home.toolkitBatch}>
-          <TableSvg className="size-4" /> {i18n.home.toolkitBatch}
+        <a href="/batch" className={item} aria-label={i18n.home.toolkitBatch} title={i18n.home.toolkitBatch}>
+          <TableSvg className="size-4" />
         </a>
       </section>
 

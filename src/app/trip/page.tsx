@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslation } from '@/hooks/useTranslation';
-import { BackSvg } from '@/lib/svgs';
+import { BackSvg, CalculatorSvg } from '@/lib/svgs';
 import { POPULAR_CURRENCIES, fetchPairRate, tripSplit } from '@/lib/tools';
 
 // Trip budget planner: enter one budget in your home currency, see what it
@@ -89,8 +89,8 @@ export default function TripPage() {
         ))}
       </div>
 
-      <button type="button" className="btn btn-primary w-full mb-4" onClick={calc} disabled={!ok || loading}>
-        {loading ? t.tripLoading : t.tripCalc}
+      <button type="button" className="btn btn-primary w-full mb-4" onClick={calc} disabled={!ok || loading} aria-label={loading ? t.tripLoading : t.tripCalc} title={loading ? t.tripLoading : t.tripCalc}>
+        <CalculatorSvg className="size-5" />
       </button>
 
       {rows && (
