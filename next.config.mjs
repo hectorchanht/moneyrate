@@ -8,14 +8,15 @@ const isDev = process.env.NODE_ENV !== 'production';
 // - connect-src: browser-side SWR hits the currency-api hosts directly; the chart route is same-origin.
 // - clarity.ms: allowed for the Microsoft Clarity analytics snippet loaded from /clarity.js.
 // - static.cloudflareinsights.com / cloudflareinsights.com: Cloudflare Web Analytics beacon auto-injected by the Cloudflare proxy.
+// - us.i.posthog.com / us-assets.i.posthog.com: PostHog (src/lib/analytics.ts) — the SDK fetches remote config and lazy-loads asset scripts from these hosts; without them the CSP silently blocks PostHog's own scripts.
 const csp = [
   `default-src 'self'`,
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.clarity.ms https://*.clarity.ms https://static.cloudflareinsights.com`,
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.clarity.ms https://*.clarity.ms https://static.cloudflareinsights.com https://us.i.posthog.com https://us-assets.i.posthog.com`,
   `style-src 'self' 'unsafe-inline'`,
   `worker-src 'self'`,
   `img-src 'self' data:`,
   `font-src 'self'`,
-  `connect-src 'self' https://*.currency-api.pages.dev https://cdn.jsdelivr.net https://*.clarity.ms https://cloudflareinsights.com https://us.i.posthog.com`,
+  `connect-src 'self' https://*.currency-api.pages.dev https://cdn.jsdelivr.net https://*.clarity.ms https://cloudflareinsights.com https://us.i.posthog.com https://us-assets.i.posthog.com`,
   `frame-ancestors 'none'`,
   `base-uri 'self'`,
   `object-src 'none'`,

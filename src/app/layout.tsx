@@ -34,6 +34,7 @@ export const metadata: Metadata = {
     description: "Free currency converter for expats, travelers, and cross-border freelancers. Live rates, rate alerts, tax-ready FX averages, plus the cheapest ways to send money abroad.",
     type: "website",
     url: "/",
+    siteName: "MoneyRate",
     images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "MoneyRate — Currency Converter for Life Between Currencies" }],
   },
   twitter: {
